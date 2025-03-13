@@ -1,30 +1,32 @@
+#!/usr/bin/env python
+"""
+
+Constructs a plus-shaped arrangement of LSST Field of Vied in celestial coordinates.
+Each raft is defined as a 3×3 block of CCDs, placed in a 5×5 grid
+with the four corner positions removed. This yields 21 total rafts, creating
+the characteristic plus layout.
+"""
+
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import SkyCoord, ICRS
-from astropy_healpix import HEALPix
+from astropy.coordinates import SkyCoord
 from regions import RectangleSkyRegion, PolygonSkyRegion, Regions
 
-from m4opt.fov import footprint_healpix
-
-# Initialize a HEALPix object (using ICRS frame).
-hpx = HEALPix(nside=64, frame=ICRS())
 
 def convert_rectangle_to_polygon_skyregion(rect: RectangleSkyRegion) -> PolygonSkyRegion:
     """
     Convert a RectangleSkyRegion to a PolygonSkyRegion, preserving RA/Dec coordinates.
-    
-    This function computes the corner points of the rectangle (in degrees)
-    and uses them to create an equivalent polygonal region.
-    
+
     Parameters
     ----------
     rect : RectangleSkyRegion
-        The rectangular region to convert, including its center and dimensions.
-    
+        A rectangle on the celestial sphere, defined by a center (RA, Dec)
+        and width/height in degrees.
+
     Returns
     -------
     PolygonSkyRegion
-        PolygonSkyRegion that matches the original rectangle’s footprint.
+        Polygonal region whose corners match the rectangle's corners in RA/Dec.
     """
     ra_center = rect.center.ra.deg
     dec_center = rect.center.dec.deg
@@ -46,38 +48,65 @@ def convert_rectangle_to_polygon_skyregion(rect: RectangleSkyRegion) -> PolygonS
     ]
 
     return PolygonSkyRegion(
-        vertices=SkyCoord(ra=corners_ra*u.deg, dec=corners_dec*u.deg)
+        vertices=SkyCoord(ra=corners_ra * u.deg, dec=corners_dec * u.deg)
     )
 
-# Example parameters
-ccd_side_deg = np.sqrt(9.6 / 189)
 
-# Define three rectangular regions forming a "plus" shape
-center_rect = RectangleSkyRegion(
-    center=SkyCoord(0*u.deg, 0*u.deg),
-    width=15 * ccd_side_deg * u.deg,
-    height=9 * ccd_side_deg * u.deg
-)
+def make_plus_shaped_fov() -> Regions:
+    """
+    Create a plus-shaped LSST focal plane layout in RA/Dec coordinates.
 
-top_rect = RectangleSkyRegion(
-    center=SkyCoord(0*u.deg, 6 * ccd_side_deg * u.deg),
-    width=9 * ccd_side_deg * u.deg,
-    height=3 * ccd_side_deg * u.deg
-)
+    Each raft is modeled as a 3×3 array of CCDs. The rafts are arranged in
+    a 5×5 grid, where the four corner rafts are omitted to form a plus shape.
+    This results in 21 rafts.
 
-bottom_rect = RectangleSkyRegion(
-    center=SkyCoord(0*u.deg, -6 * ccd_side_deg * u.deg),
-    width=9 * ccd_side_deg * u.deg,
-    height=3 * ccd_side_deg * u.deg
-)
+    Returns
+    -------
+    Regions
+        A collection of PolygonSkyRegion objects, each representing one raft.
+    """
+    #  The side length of a single LSST CCD in degree
+    ccd_side_deg = np.sqrt(9.6 / 189)
+
+    # Each raft is a 3×3 block of CCDs
+    raft_width_ccd = 3
+    raft_height_ccd = 3
+
+    raft_regions = []
+    nrows, ncols = 5, 5
+
+    for row in range(nrows):
+        for col in range(ncols):
+            # Skip the four corners (top=0, bottom=4 => keep columns=1..3)
+            if (row in [0, 4]) and (col not in [1, 2, 3]):
+                continue
+
+            # Determine the center of this raft in RA/Dec
+            ra_center_deg = (col - (ncols // 2)) * raft_width_ccd * ccd_side_deg
+            dec_center_deg = ((nrows // 2) - row) * raft_height_ccd * ccd_side_deg
+
+            center_coord = SkyCoord(ra_center_deg * u.deg,
+                                    dec_center_deg * u.deg,
+                                    frame='icrs')
+
+            # Convert the raft (as a rectangle) to a polygon
+            width_deg = raft_width_ccd * ccd_side_deg
+            height_deg = raft_height_ccd * ccd_side_deg
+            rect = RectangleSkyRegion(center=center_coord,
+                                      width=width_deg * u.deg,
+                                      height=height_deg * u.deg)
+            poly = convert_rectangle_to_polygon_skyregion(rect)
+            raft_regions.append(poly)
+
+    return Regions(raft_regions)
 
 
-# Convert rectangles into polygons and combine them into a single "plus sign" region
-plus_sign = Regions([
-    convert_rectangle_to_polygon_skyregion(r) 
-    for r in [top_rect, center_rect, bottom_rect]
-])
 
+plus_sign = make_plus_shaped_fov()
+
+
+# Initialize a HEALPix object (using ICRS frame).
+hpx = HEALPix(nside=512, frame=ICRS())
 
 # Used footprint_healpix with these regions
 target_coords = SkyCoord(*(np.meshgrid([-15, 0, 15], [-15, 0, 15]) * u.deg))
@@ -87,4 +116,6 @@ pixels = np.unique(
     )
 )
 
+
 print("Unique HEALPix pixels intersecting the plus_sign footprint:", pixels)
+
