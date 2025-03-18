@@ -70,7 +70,7 @@ def make_plus_shaped_fov() -> Regions:
         A collection of PolygonSkyRegion objects, each representing one raft.
     """
     #  The side length of a single LSST CCD in degree
-    ccd_side_deg = np.sqrt(9.6 / 189)
+    ccd_side_deg = np.sqrt(3.5 / 189)
 
     # Each raft is a 3×3 block of CCDs
     raft_width_ccd = 3
