@@ -18,6 +18,8 @@ Usage:
 ---------------------------------------------------------------------------------------------------
 """
 
+import os
+
 import requests
 from tqdm.auto import tqdm
 
@@ -89,13 +91,33 @@ class ZenodoDownloader:
             )
 
             file_url = file_to_download["links"]["self"]
+
+            # Check for partially downloaded file
+            downloaded = 0
+            if os.path.exists(self.file_name):
+                downloaded = os.path.getsize(self.file_name)
+
+            headers = self.headers.copy()
+            if downloaded > 0:
+                headers["Range"] = f"bytes={downloaded}-"
+
+            headers = self.headers.copy()
+            if downloaded > 0:
+                headers["Range"] = f"bytes={downloaded}-"
+
             response = requests.get(file_url, stream=True)
             response.raise_for_status()
 
-            file_size = int(response.headers.get("content-length", 0))
-            with open(self.file_name, "wb") as file:
+            file_size = int(response.headers.get("content-length", 0)) + downloaded
+            mode = "ab" if downloaded > 0 else "wb"
+
+            with open(self.file_name, mode) as file:
                 with tqdm(
-                    total=file_size, unit="B", unit_scale=True, desc="Downloading"
+                    total=file_size,
+                    initial=downloaded,
+                    unit="B",
+                    unit_scale=True,
+                    desc="Downloading",
                 ) as progress:
                     for chunk in response.iter_content(chunk_size=8192):
                         file.write(chunk)
