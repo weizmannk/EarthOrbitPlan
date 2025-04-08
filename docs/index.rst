@@ -1,41 +1,19 @@
-.. _params_ini:
+Welcome to EarthOrbitPlan's documentation!
+=====================================
 
-params.ini — Configuration File Reference
-=================================
+EarthOrbitPlan is a scheduling and analysis pipeline that leverages the M4OPT toolkit to plan electromagnetic follow-up observations of gravitational wave events.
 
-The `params.ini` file defines all user-configurable parameters for the `m4opt-scheduler.py` script.
-This script allows you to run M4OPT scheduling on a batch of gravitational wave sky maps using different execution backends.
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-Usage
------
-
-To use this configuration file with the scheduler:
-
-.. code-block:: bash
-
-   python m4opt-scheduler.py --config params.ini
-
-Supported Backends
-------------------
-
-The following execution backends are supported via the `backend` field:
-
-- ``condor``: Submits each job to an HTCondor batch system.
-- ``parallel``: Executes jobs locally in parallel using Joblib.
-- ``dask``: Distributes jobs across an HTCondor cluster using Dask.
-
-Example Configuration
----------------------
-
-Below is a complete example configuration for the ULTRASAT mission during the O5 observing run.
-
-.. literalinclude:: ../../params.ini
-   :language: ini
-   :caption: Example configuration for M4OPT scheduling using ULTRASAT
-
+   api/_m4opt_scheduler
+   config/_params_ini
+   EarthOrbitPlan
+   tools/_zenodo_unpacker
 
 Indices and Search
-------------------
+==================
 
 * :ref:``
 * :ref:``
