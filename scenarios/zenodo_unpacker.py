@@ -111,7 +111,7 @@ def process_zip(
 
         tables = []
         for run in tqdm(runs, desc="Reading summary tables"):
-            in_run = in_root / f"{run}{detectors}" / "farah"
+            in_run = f"{in_root}/{run}{detectors}/farah"
             table = reduce(
                 join,
                 (
@@ -141,16 +141,17 @@ def process_zip(
         del tables
 
         z = z_at_value(cosmo.luminosity_distance, table["distance"] * u.Mpc).to_value()
-        table = table[table["mass2"] <= max_mass2 * (1 + z)]
+        zp1 = 1 + z
+        source_mass2 = table["mass2"] / zp1
+
+        table = table[source_mass2 <= max_mass2]
 
         table.write(out_root / "observing-scenarios.ecsv", overwrite=True)
 
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
-            in_path = (
-                in_root / f"{row['run']}{detectors}" / "farah" / "allsky" / filename
-            )
-            out_path = out_root / row["run"] / filename
+            in_path = f"{in_root}/{row['run']}{detectors}/farah/allsky/{filename}"
+            out_path = f"{out_root}/{row['run']}/{filename}"
             with in_path.open("rb") as in_file, out_path.open("wb") as out_file:
                 copyfileobj(in_file, out_file)
 
