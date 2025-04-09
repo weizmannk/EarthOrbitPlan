@@ -55,6 +55,6 @@ To install CPLEX, follow the instructions at:
 
    m4opt schedule --help
 
-For additional documentation, visit the official ReadTheDocs page:
+For additional documentation:
 
 `M4OPT Documentation <https://m4opt.readthedocs.io/en/latest/install/index.html>`_
