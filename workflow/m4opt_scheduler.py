@@ -6,33 +6,6 @@ Documentation for m4opt-scheduler.py: Batch Scheduling Script
 This script executes M4OPT-based scheduling over a batch of gravitational wave sky maps
 using different backend methods (Condor, local parallel, or Dask). It supports command-line
 configuration and .ini-based setup.
-
-You can run the script with:
-
-.. code-block:: bash
-
-    python m4opt-scheduler.py --config params.ini
-
-Functions
----------
-
-.. autofunction:: parse_arguments
-   Parses arguments from the command line or .ini config file into an argparse.Namespace object.
-
-.. autofunction:: create_wrapper
-   Creates a bash wrapper script to run the M4OPT scheduling command for a given event.
-
-.. autofunction:: run_script_locally
-   Executes a bash wrapper script locally and logs output or errors.
-
-.. autofunction:: run_parallel
-   Uses Joblib to execute scheduling wrapper scripts in parallel on multiple CPU cores.
-
-.. autofunction:: run_dask
-   Schedules M4OPT tasks on a Dask HTCondor cluster dynamically using dask_jobqueue.
-
-.. autofunction:: submit_condor_job
-   Submits the bash wrapper script as a job to an HTCondor queue using condor_submit.
 """
 
 import argparse
@@ -73,14 +46,14 @@ def parse_arguments():
         return argparse.Namespace(
             mission=cfg.get("mission"),
             bandpass=cfg.get("bandpass"),
-            absmag_mean=cfg.getfloat("absmag_mean", fallback=-12.4),
+            absmag_mean=cfg.getfloat("absmag_mean", fallback=-16),
             absmag_stdev=cfg.getfloat("absmag_stdev", fallback=1.3),
             exptime_min=cfg.getint("exptime_min", fallback=300),
-            exptime_max=cfg.getint("exptime_max", fallback=300),
-            snr=cfg.getint("snr", fallback=8),
-            delay=cfg.get("delay", fallback="0h"),
-            deadline=cfg.get("deadline", fallback="6hour"),
-            timelimit=cfg.get("timelimit", fallback="20min"),
+            exptime_max=cfg.getint("exptime_max", fallback=14400),
+            snr=cfg.getint("snr", fallback=10),
+            delay=cfg.get("delay", fallback="15min"),
+            deadline=cfg.get("deadline", fallback="24hour"),
+            timelimit=cfg.get("timelimit", fallback="2hour"),
             nside=cfg.getint("nside", fallback=128),
             job_cpu=cfg.getint("job", fallback=8),
             skymap_dir=cfg.get("skymap_dir", fallback="data"),
@@ -94,13 +67,15 @@ def parse_arguments():
             n_cores=cfg.getint("n_cores", fallback=4),
         )
 
-    parser.add_argument("--mission", type=str, required=True)
+    parser.add_argument("--mission", help="Mission name", type=str, required=True)
     parser.add_argument("--bandpass", type=str, required=True)
     parser.add_argument("--absmag-mean", type=float, default=-12.4)
     parser.add_argument("--absmag-stdev", type=float, default=1.3)
     parser.add_argument("--exptime-min", type=int, default=300)
     parser.add_argument("--exptime-max", type=int, default=300)
-    parser.add_argument("--snr", type=int, default=8)
+    parser.add_argument(
+        "--snr", help="Signal-to-noise ratio threshold", type=int, default=10
+    )
     parser.add_argument("--delay", type=str, default="0h")
     parser.add_argument("--deadline", type=str, default="6hour")
     parser.add_argument("--timelimit", type=str, default="20min")
