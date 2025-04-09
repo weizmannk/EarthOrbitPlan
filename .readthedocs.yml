@@ -9,8 +9,6 @@ build:
 
 python:
   install:
-    - pip:  # Installe wheel en premier
-        - wheel
     - requirements: docs/requirements.txt
 
 sphinx:
