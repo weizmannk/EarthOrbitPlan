@@ -3,18 +3,23 @@ Welcome to EarthOrbitPlan's documentation!
 
 EarthOrbitPlan is a scheduling and analysis pipeline that leverages the M4OPT toolkit to plan electromagnetic follow-up observations of gravitational wave events.
 
+*****************
+Table of Contents
+*****************
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   api/_m4opt_scheduler
-   config/_params_ini
-   EarthOrbitPlan
+   install/index
    tools/_zenodo_unpacker
+   config/index
+   scheduler/index
+
 
 Indices and Search
 ==================
 
-* :ref:``
-* :ref:``
-* :ref:``
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
