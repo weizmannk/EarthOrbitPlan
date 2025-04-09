@@ -32,5 +32,10 @@ Full Code
 Module Reference
 ----------------
 
-.. automodule:: zenodo_unpacker
+.. automodapi:: zenodo_unpacker
    :show-inheritance:
+   :members:
+   :private-members:
+   :undoc-members:
+   :special-members: __init__, __call__
+   :exclude-members: __weakref__, __dict__, __module__, __class__
