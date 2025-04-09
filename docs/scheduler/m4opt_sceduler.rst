@@ -17,7 +17,7 @@ Functions
 ---------
 
 
-.. automodapi:: workflows.m4opt_scheduler
+.. automodapi:: workflow.m4opt_scheduler
    :show-inheritance:
    :members:
    :private-members:
