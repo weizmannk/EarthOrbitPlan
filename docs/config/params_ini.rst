@@ -1,9 +1,9 @@
 .. _params_ini:
 
-params.ini — Configuration File Reference
-=========================================
+Configuration File Reference
+=============================
 
-The `params.ini` file defines all user-configurable parameters for the `m4opt-scheduler.py` script.
+The `params.ini` file defines all user-configurable parameters for the `m4opts_cheduler.py` script.
 This script allows you to run M4OPT scheduling on a batch of gravitational wave sky maps using different execution backends.
 
 Usage
@@ -27,8 +27,7 @@ The following execution backends are supported via the `backend` field:
 Example Configuration
 ---------------------
 
-Below is a complete example configuration for the ULTRASAT mission during the O5 observing run.
+Below is a complete parameters configuration for M4OPT scheduling using ULTRASAT
 
 .. literalinclude:: ../../params.ini
    :language: ini
-   :caption: Example configuration for M4OPT scheduling using ULTRASAT
