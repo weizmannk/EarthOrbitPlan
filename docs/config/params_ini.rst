@@ -13,7 +13,7 @@ To use this configuration file with the scheduler:
 
 .. code-block:: bash
 
-   python m4opt-scheduler.py --config params.ini
+   python m4opt_scheduler.py --config params.ini
 
 Supported Backends
 ------------------

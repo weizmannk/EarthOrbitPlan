@@ -11,13 +11,13 @@ You can run the script with:
 
 .. code-block:: bash
 
-    python m4opt-scheduler.py --config params.ini
+    python m4opt_scheduler.py --config params.ini
 
 Functions
 ---------
 
 
-.. automodapi:: workflows.m4opt-scheduler
+.. automodapi:: workflows.m4opt_scheduler
    :show-inheritance:
    :members:
    :private-members:
