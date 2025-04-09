@@ -133,17 +133,17 @@ html_css_files = [
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "M⁴OPT"
+html_title = "EarthOrbitPlan"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + "doc"
 
 # Prefixes that are ignored for sorting the Python module index
-modindex_common_prefix = ["m4opt."]
+modindex_common_prefix = ["EarthOrbitPlan."]
 
 html_theme_options.update(  # noqa: F405
     {
-        "github_url": "https://github.com/m4opt/m4opt",
+        "github_url": "https://github.com/weizmannk/EarthOrbitPlan",
         "use_edit_page_button": True,
     }
 )
@@ -152,8 +152,8 @@ html_context = {
     "default_mode": "light",
     "to_be_indexed": ["stable", "latest"],
     "is_development": dev,
-    "github_user": "m4opt",
-    "github_repo": "m4opt",
+    "github_user": "weizmannk",
+    "github_repo": "EarthOrbitPlan",
     "github_version": "main",
     "doc_path": "docs",
 }
@@ -178,7 +178,7 @@ man_pages = [("index", project.lower(), project + " Documentation", [author], 1)
 
 extensions += ["sphinx_astropy.ext.edit_on_github"]  # noqa: F405
 
-edit_on_github_project = "m4opt/m4opt"
+edit_on_github_project = "weizmannk/EarthOrbitPlan"
 edit_on_github_branch = "main"
 
 edit_on_github_source_root = ""
@@ -191,7 +191,7 @@ github_issues_url = "https://github.com/{0}/issues/".format(edit_on_github_proje
 # -- Options for linkcheck output -------------------------------------------
 linkcheck_retry = 5
 linkcheck_ignore = [
-    r"https://github\.com/m4opt/m4opt/(?:issues|pull)/\d+",
+    r"https://github\.com/EarthOrbitPlan/(?:issues|pull)/\d+",
 ]
 linkcheck_timeout = 180
 linkcheck_anchors = False
@@ -223,20 +223,20 @@ linkcheck_anchors = False
 #     nitpick_ignore.append((dtype, six.u(target)))
 
 
-# -- Options for intersphinx --------------------------------------------------
-intersphinx_mapping.update(  # noqa: F405
-    {
-        "astropy": ("https://docs.astropy.org/en/stable/", None),
-        "astropy_healpix": ("https://astropy-healpix.readthedocs.io/en/stable/", None),
-        "docplex": ("http://ibmdecisionoptimization.github.io/docplex-doc/mp/", None),
-        "dust-extinction": ("https://dust-extinction.readthedocs.io/en/latest/", None),
-        "ligo.skymap": ("https://lscsoft.docs.ligo.org/ligo.skymap/", None),
-        "pip": ("https://pip.pypa.io/en/stable/", None),
-        "regions": ("https://astropy-regions.readthedocs.io/en/stable/", None),
-        "synphot": ("https://synphot.readthedocs.io/en/stable/", None),
-        "userguide": ("https://emfollow.docs.ligo.org/userguide/", None),
-    }
-)
+# # -- Options for intersphinx --------------------------------------------------
+# intersphinx_mapping.update(  # noqa: F405
+#     {
+#         "astropy": ("https://docs.astropy.org/en/stable/", None),
+#         "astropy_healpix": ("https://astropy-healpix.readthedocs.io/en/stable/", None),
+#         "docplex": ("http://ibmdecisionoptimization.github.io/docplex-doc/mp/", None),
+#         "dust-extinction": ("https://dust-extinction.readthedocs.io/en/latest/", None),
+#         "ligo.skymap": ("https://lscsoft.docs.ligo.org/ligo.skymap/", None),
+#         "pip": ("https://pip.pypa.io/en/stable/", None),
+#         "regions": ("https://astropy-regions.readthedocs.io/en/stable/", None),
+#         "synphot": ("https://synphot.readthedocs.io/en/stable/", None),
+#         "userguide": ("https://emfollow.docs.ligo.org/userguide/", None),
+#     }
+# )
 
 # -- Options for plot_directive -----------------------------------------------
 plot_include_source = True
@@ -259,6 +259,6 @@ extensions.append("sphinx.ext.napoleon")
 autodoc_typehints = "description"
 
 
-# -- Options for the sphinxcontrib.bibtex extension ---------------------------
-extensions += ["sphinxcontrib.bibtex"]
-bibtex_bibfiles = ["refs.bib"]
+# # -- Options for the sphinxcontrib.bibtex extension ---------------------------
+# extensions += ["sphinxcontrib.bibtex"]
+# bibtex_bibfiles = ["refs.bib"]
