@@ -1,7 +1,9 @@
-wheel
+# Required for building and running the project
 sphinx>=4.0
 sphinx_rtd_theme
 graphviz
+
+# Core project requirements
 m4opt
 joblib
 astropy
