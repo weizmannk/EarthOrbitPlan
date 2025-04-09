@@ -9,7 +9,6 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    install/index
    tools/_zenodo_unpacker
