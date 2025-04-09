@@ -68,30 +68,85 @@ def parse_arguments():
         )
 
     parser.add_argument("--mission", help="Mission name", type=str, required=True)
-    parser.add_argument("--bandpass", type=str, required=True)
-    parser.add_argument("--absmag-mean", type=float, default=-12.4)
-    parser.add_argument("--absmag-stdev", type=float, default=1.3)
-    parser.add_argument("--exptime-min", type=int, default=300)
-    parser.add_argument("--exptime-max", type=int, default=300)
+    parser.add_argument(
+        "--bandpass", help="Mission bandpass, filter", type=str, required=True
+    )
+    parser.add_argument(
+        "--absmag-mean",
+        help="Fiducial kilonova AB absolute bolometric magnitude of the source",
+        type=float,
+        default=-16,
+    )
+    parser.add_argument(
+        "--absmag-stdev",
+        help="Standard deviation of AB absolute magnitude of the source",
+        type=float,
+        default=1.3,
+    )
+    parser.add_argument(
+        "--exptime-min",
+        help="Minimum per-tile exposure time in seconds",
+        type=int,
+        default=300,
+    )
+    parser.add_argument(
+        "--exptime-max",
+        help="Maximum per-tile exposure time in seconds",
+        type=int,
+        default=14400,
+    )
     parser.add_argument(
         "--snr", help="Signal-to-noise ratio threshold", type=int, default=10
     )
-    parser.add_argument("--delay", type=str, default="0h")
-    parser.add_argument("--deadline", type=str, default="6hour")
-    parser.add_argument("--timelimit", type=str, default="20min")
-    parser.add_argument("--nside", type=int, default=128)
+    parser.add_argument(
+        "--delay",
+        help="Time until the kilonova event becomes visible",
+        type=str,
+        default="0h",
+    )
+    parser.add_argument(
+        "--deadline",
+        help="Deadline for observation completion",
+        type=str,
+        default="24hour",
+    )
+    parser.add_argument("--timelimit", help="", type=str, default="2hour")
+    parser.add_argument("--nside", help="HEALPix resolution", type=int, default=128)
     parser.add_argument("--job-cpu", type=int, default=8)
-    parser.add_argument("--skymap-dir", type=str, default="data")
-    parser.add_argument("--sched-dir", type=str, default="data")
-    parser.add_argument("--log-dir", type=str, default="logs")
-    parser.add_argument("--prog-dir", type=str, default="progress")
     parser.add_argument(
-        "--event-table", type=str, default="data/observing-scenarios.ecsv"
+        "--skymap-dir", help="GW Sky map filename", type=str, default="data"
     )
     parser.add_argument(
-        "--backend", type=str, default="condor", choices=["condor", "parallel", "dask"]
+        "--sched-dir",
+        help="Output filename for generated schedule",
+        type=str,
+        default="data",
     )
-    parser.add_argument("--n-cores", type=int, default=4)
+    parser.add_argument(
+        "--log-dir", help="Track simulations process", type=str, default="logs"
+    )
+    parser.add_argument(
+        "--prog-dir",
+        help="Save a time series of the CPLEX objective value and best bound to this file",
+        type=str,
+        default="progress",
+    )
+    parser.add_argument(
+        "--event-table",
+        help="Observing scenarios parameters",
+        type=str,
+        default="data/observing-scenarios.ecsv",
+    )
+    parser.add_argument(
+        "--backend",
+        help="Selection of the type of process",
+        type=str,
+        default="condor",
+        choices=["condor", "parallel", "dask"],
+    )
+    parser.add_argument(
+        "--n-cores", help="Number of jobs for parallel processing", type=int, default=4
+    )
 
     return parser.parse_args(remaining_args)
 

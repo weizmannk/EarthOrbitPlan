@@ -16,9 +16,17 @@ You can run the script with:
 Functions
 ---------
 
+.. literalinclude:: ../.../workflow/m4opt_scheduler.py
+   :language: python
+   :caption: Full code of `m4opt_scheduler.py`
 
+
+`m4opt_scheduler`: Function to execute M4OPT scheduling.
+----------------
 .. automodapi:: workflow.m4opt_scheduler
    :show-inheritance:
    :members:
    :private-members:
    :undoc-members:
+   :special-members: __init__, __call__
+   :exclude-members: __weakref__, __dict__, __module__, __class__
