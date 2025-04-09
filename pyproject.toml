@@ -1,0 +1,106 @@
+[project]
+name = "EarthOrbitPlan"
+dynamic = ["version"]
+authors = [{name = "", email = "kiend.weizman7@gmail.com"}]
+license = {text = "BSD-3-Clause"}
+description = "Facilitating Statistical Analysis and Scheduling of Multimessenger Follow-up for GW Events"
+readme = "README.rst"
+requires-python = ">=3.11"
+dependencies = [
+    "m4opt @ git+https://github.com/m4opt/m4opt@main",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+test = [
+    "astroplan",
+    "networkx",
+    "pytest-astropy",
+]
+docs = [
+    "pysiaf",
+    "sphinx-astropy[confv2]",
+    "sphinxcontrib-bibtex",
+    "sphinxcontrib-typer",
+]
+
+[project.urls]
+homepage = "https://EarthOrbitPlan.readthedocs.io"
+"Bug Tracker" = "https://github.com/weizmannk/EarthOrbitPlan/issues"
+"Change Log" = "https://EarthOrbitPlan.readthedocs.io/en/latest/changes.html"
+"Documentation" = "https://m4opt.readthedocs.io/"
+"GitHub" = "https://github.com/weizmannk/EarthOrbitPlan"
+"Source Code" = "https://github.com/weizmannk/EarthOrbitPlan"
+
+[tool.setuptools.packages.find]
+
+[tool.setuptools.package-data]
+"*" = [
+    "py.typed",
+    "*.txt",
+    "*.ecsv",
+]
+[tool.pytest.ini_options]
+testpaths = [
+    "EarthOrbitPlan",
+    "docs",
+]
+norecursedirs = [
+    "_build",
+]
+astropy_header = true
+doctest_plus = "enabled"
+text_file_format = "rst"
+addopts = [
+    "--doctest-rst",
+    "--ignore=docs/_build",
+]
+doctest_optionflags = [
+    "FLOAT_CMP",
+    "IGNORE_EXCEPTION_DETAIL",
+]
+
+[tool.coverage.run]
+omit = [
+    "EarthOrbitPlan/*setup_package*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "except ImportError",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "def main\\(.*\\):",
+    "pragma: py{ignore_python_version}",
+    "def _ipython_key_completions_",
+]
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "EarthOrbitPlan/_version.py"
+
+[tool.mypy]
+exclude = ["^docs/"]
+ignore_missing_imports = true
+
+[tool.codespell]
+ignore-words-list = """
+    aas,
+    sav,
+    ser,
+    ToO,
+    ToOs,
+"""
