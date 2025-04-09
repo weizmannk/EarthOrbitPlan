@@ -31,3 +31,4 @@ Below is a complete parameters configuration for M4OPT scheduling using ULTRASAT
 
 .. literalinclude:: ../../params.ini
    :language: ini
+   :caption: Ultrasat parameters `params.ini`

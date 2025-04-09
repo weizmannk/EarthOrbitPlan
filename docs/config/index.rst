@@ -1,5 +1,3 @@
-.. highlight:: sh
-
 Configuration with a specific mission needed
 ============================================
 
