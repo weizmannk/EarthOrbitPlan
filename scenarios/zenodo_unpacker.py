@@ -111,7 +111,7 @@ def process_zip(
 
         tables = []
         for run in tqdm(runs, desc="Reading summary tables"):
-            in_run = f"{in_root}/{run}{detectors}/farah"
+            in_run = in_root / f"{run}{detectors}" / "farah"
             table = reduce(
                 join,
                 (
@@ -146,12 +146,14 @@ def process_zip(
 
         table = table[source_mass2 <= max_mass2]
 
-        table.write(out_root / "observing-scenarios.ecsv", overwrite=True)
+        table.write(f"{out_root}/observing-scenarios.ecsv", overwrite=True)
 
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
-            in_path = f"{in_root}/{row['run']}{detectors}/farah/allsky/{filename}"
-            out_path = f"{out_root}/{row['run']}/{filename}"
+            in_path = (
+                in_root / f"{row['run']}{detectors}" / "farah" / "allsky" / filename
+            )
+            out_path = out_root / row["run"] / filename
             with in_path.open("rb") as in_file, out_path.open("wb") as out_file:
                 copyfileobj(in_file, out_file)
 
