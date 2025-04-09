@@ -32,6 +32,12 @@ docs = [
     "sphinx-astropy[confv2]",
     "sphinxcontrib-bibtex",
     "sphinxcontrib-typer",
+    "sphinx",
+    "numpydoc",
+    "graphviz",
+    "joblib",
+    "astropy",
+    "dask",
 ]
 
 [project.urls]
