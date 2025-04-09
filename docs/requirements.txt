@@ -1,7 +1,6 @@
 sphinx>=4.0
 sphinx_rtd_theme
 graphviz
-m4opt
 joblib
 astropy
 dask
