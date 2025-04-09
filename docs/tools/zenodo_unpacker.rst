@@ -25,7 +25,7 @@ Zenodo Dataset: https://zenodo.org/records/14585837
 Full Code
 ---------
 
-.. literalinclude:: ../../zenodo_unpacker.py
+.. literalinclude:: ../../scenarios/zenodo_unpacker.py
    :language: python
    :caption: Full code of `zenodo_unpacker.py`
 
