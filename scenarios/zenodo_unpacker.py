@@ -7,6 +7,8 @@ This module automates the unpacking, filtering, and conversion of injection data
 localization files for specific observing runs (e.g., O5, O6), and outputs
 filtered ECSV tables and organized FITS files.
 
+Modified from: https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
+
 Usage
 -----
 Run from the command line:
