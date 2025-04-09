@@ -90,7 +90,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "EarthOrbitPlan/_version.py"
+write_to = "_version.py"
 
 [tool.mypy]
 exclude = ["^docs/"]
