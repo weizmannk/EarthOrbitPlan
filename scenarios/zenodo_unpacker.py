@@ -1,25 +1,25 @@
-"""
-Zenodo GW Injection Data Unpacker
-=================================
+# """
+# Zenodo GW Injection Data Unpacker
+# =================================
 
-This module automates the unpacking, filtering, and conversion of injection datasets
-(e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
-localization files for specific observing runs (e.g., O5, O6), and outputs
-filtered ECSV tables and organized FITS files.
+# This module automates the unpacking, filtering, and conversion of injection datasets
+# (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+# localization files for specific observing runs (e.g., O5, O6), and outputs
+# filtered ECSV tables and organized FITS files.
 
-Modified from: https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
+# Modified from: https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
 
-Usage
------
-Run from the command line:
+# Usage
+# -----
+# Run from the command line:
 
-    $ python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+#     $ python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
 
-Or integrate into a larger pipeline by calling `process_zip()` directly.
+# Or integrate into a larger pipeline by calling `process_zip()` directly.
 
-Source:
-    https://zenodo.org/records/14585837
-"""
+# Source:
+#     https://zenodo.org/records/14585837
+# """
 
 import argparse
 import pathlib
