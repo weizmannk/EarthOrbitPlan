@@ -11,4 +11,4 @@ This installation guide covers setting up M4OPT, dependencies, and the UVEX miss
 .. toctree::
    :maxdepth: 2
 
-   _m4opt
+   m4opt
