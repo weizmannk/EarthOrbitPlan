@@ -1,55 +1,60 @@
 .. _m4opt:
----
+
+M4OPT Setup Guide
+=================
 
 1. Setting Up M4OPT
 -------------------
 
 Create and Activate a Conda Environment
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-```bash
-conda create --name m4opt_env python=3.11
-conda activate m4opt_env
-```
+.. code-block:: bash
+
+   conda create --name m4opt_env python=3.11
+   conda activate m4opt_env
 
 Clone and Install M4OPT
--------------------
-```bash
-git clone https://github.com/m4opt/m4opt.git
-cd m4opt/
-pip install -e .
-cd ..
-```
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   git clone https://github.com/m4opt/m4opt.git
+   cd m4opt/
+   pip install -e .
+   cd ..
 
 Verify Installation
--------------------
+~~~~~~~~~~~~~~~~~~~
 
-```bash
-m4opt --help
-m4opt schedule --help
-m4opt schedule --mission ultrasat
-```
+.. code-block:: bash
+
+   m4opt --help
+   m4opt schedule --help
+   m4opt schedule --mission ultrasat
 
 2. Install CPLEX
 ----------------
 
-[Install CPLEX](https://m4opt.readthedocs.io/en/latest/install/cplex.html)
+To install CPLEX, follow the instructions at:
 
+`Install CPLEX <https://m4opt.readthedocs.io/en/latest/install/cplex.html>`_
 
 3. Installing Additional Dependencies
+-------------------------------------
 
-```bash
-pip install joblib
-pip install dask
-```
+.. code-block:: bash
 
----
+   pip install joblib
+   pip install dask
 
 4. Verifying Installation
 -------------------------
 
-```bash
-m4opt schedule --help
-```
+.. code-block:: bash
 
-For additional documentation, visit [M4OPT ReadTheDocs](https://m4opt.readthedocs.io/en/latest/install/index.html).
+   m4opt schedule --help
+
+For additional documentation, visit the official ReadTheDocs page:
+
+`M4OPT Documentation <https://m4opt.readthedocs.io/en/latest/install/index.html>`_
