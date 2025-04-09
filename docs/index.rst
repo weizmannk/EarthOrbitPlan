@@ -11,7 +11,7 @@ Table of Contents
    :maxdepth: 2
 
    install/index
-   tools/_zenodo_unpacker
+   tools/index
    config/index
    scheduler/index
 
