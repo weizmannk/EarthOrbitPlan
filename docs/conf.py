@@ -25,10 +25,8 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-import datetime
 import os
 import sys
-from importlib import import_module
 
 import tomllib
 
@@ -77,22 +75,22 @@ rst_epilog = r"""
 # This does not *have* to match the package name, but typically does
 project = project_metadata["name"]
 author = project_metadata["authors"][0]["name"]
-copyright = "{0}, {1}".format(datetime.datetime.now().year, author)
+# copyright = "{0}, {1}".format(datetime.datetime.now().year, author)
 
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
+# # The version info for the project you're documenting, acts as replacement for
+# # |version| and |release|, also used in various other places throughout the
+# # built documents.
 
-import_module(project_metadata["name"])
-package = sys.modules[project_metadata["name"]]
+# import_module(project_metadata["name"])
+# package = sys.modules[project_metadata["name"]]
 
-# The short X.Y version.
-version = package.__version__.split("-", 1)[0]
-# The full version, including alpha/beta/rc tags.
-release = package.__version__
+# # The short X.Y version.
+# version = package.__version__.split("-", 1)[0]
+# # The full version, including alpha/beta/rc tags.
+# release = package.__version__
 
-# Only include dev docs in dev version.
-dev = "dev" in release
+# # Only include dev docs in dev version.
+# dev = "dev" in release
 
 
 # -- Options for HTML output --------------------------------------------------
@@ -138,7 +136,7 @@ html_css_files = [
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "M⁴OPT"
+html_title = "EarthOrbitPlan"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + "doc"
@@ -156,7 +154,6 @@ html_theme_options.update(  # noqa: F405
 html_context = {
     "default_mode": "light",
     "to_be_indexed": ["stable", "latest"],
-    "is_development": dev,
     "github_user": "weizmank",
     "github_repo": "EarthOrbitPlan",
     "github_version": "main",
@@ -252,7 +249,7 @@ plot_html_show_formats = False
 
 
 # -- Options for the sphinx.ext.todo extension --------------------------------
-# extensions += ['sphinx.ext.todo']
+extensions += ["sphinx.ext.todo"]
 todo_include_todos = True
 
 
