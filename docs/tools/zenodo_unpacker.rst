@@ -33,6 +33,4 @@ Module Reference
 ----------------
 
 .. automodule:: zenodo_unpacker
-   :members:
-   :undoc-members:
    :show-inheritance:
