@@ -32,7 +32,7 @@ Full Code
 Module Reference
 ----------------
 
-.. automodapi:: EarthOrbitPlan.scenarios.zenodo_unpacker
+.. automodapi:: scenarios.zenodo_unpacker
    :show-inheritance:
    :members:
    :private-members:
