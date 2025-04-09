@@ -32,7 +32,7 @@ Full Code
 Module Reference
 ----------------
 
-.. automodapi:: zenodo_unpacker
+.. automodapi:: scenarios.zenodo_unpacker
    :show-inheritance:
    :members:
    :private-members:
