@@ -28,5 +28,3 @@ Functions
    :members:
    :private-members:
    :undoc-members:
-   :special-members: __init__, __call__
-   :exclude-members: __weakref__, __dict__, __module__, __class__

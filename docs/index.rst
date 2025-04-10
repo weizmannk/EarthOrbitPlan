@@ -10,10 +10,11 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
 
+   scheduler/index
    install/index
    tools/index
    config/index
-   scheduler/index
+
 
 
 Indices and Search
