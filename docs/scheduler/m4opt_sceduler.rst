@@ -16,7 +16,7 @@ You can run the script with:
 Functions
 ---------
 
-.. literalinclude:: ../.../workflow/m4opt_scheduler.py
+.. literalinclude:: ../../workflow/m4opt_scheduler.py
    :language: python
    :caption: Full code of `m4opt_scheduler.py`
 

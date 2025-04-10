@@ -1,11 +1,21 @@
 #!/usr/bin/env python
 """
-Documentation for m4opt-scheduler.py: Batch Scheduling Script
-===========================================================
+m4opt-scheduler: Batch Scheduling for Gravitational Wave Follow-up
+==================================================================
 
-This script executes M4OPT-based scheduling over a batch of gravitational wave sky maps
-using different backend methods (Condor, local parallel, or Dask). It supports command-line
-configuration and .ini-based setup.
+This script executes batch scheduling using the M4OPT framework for a list of gravitational wave sky maps.
+It supports various execution backends (HTCondor, local parallel with joblib, or Dask) and can be configured
+via command-line arguments or a configuration `.ini` file.
+
+Usage
+-----
+You can run the script either with Command-Line Interface arguments arguments:
+
+    python m4opt_scheduler.py --mission ULTRASAT --bandpass NUV ...
+
+Or with a configuration file:
+
+    python m4opt_scheduler.py --config config.ini
 """
 
 import argparse
@@ -24,13 +34,10 @@ def parse_arguments():
     """
     Parse command-line arguments or load them from a .ini configuration file.
 
-    If the --config option is provided, the function loads parameters from the specified
-    .ini file under the [params] section. Otherwise, it uses standard CLI arguments.
-
     Returns
     -------
     argparse.Namespace
-        Parsed arguments.
+        Object containing all parsed arguments from CLI or config file.
     """
     parser = argparse.ArgumentParser(
         description="Submit M4OPT scheduling jobs using HTCondor, locally, or via Dask.",
@@ -110,9 +117,16 @@ def parse_arguments():
         type=str,
         default="24hour",
     )
-    parser.add_argument("--timelimit", help="", type=str, default="2hour")
+    parser.add_argument(
+        "--timelimit",
+        help="Maximum duration allowed for each observation window (e.g., '2hour')",
+        type=str,
+        default="2hour",
+    )
     parser.add_argument("--nside", help="HEALPix resolution", type=int, default=128)
-    parser.add_argument("--job-cpu", type=int, default=8)
+    parser.add_argument(
+        "--job-cpu", help="Number of CPUs assigned per job", type=int, default=8
+    )
     parser.add_argument(
         "--skymap-dir", help="GW Sky map filename", type=str, default="data"
     )
