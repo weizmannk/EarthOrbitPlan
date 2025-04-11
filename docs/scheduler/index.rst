@@ -10,3 +10,4 @@ Automate scheduling in M4OPT
    :maxdepth: 2
 
    m4opt_scheduler
+   postprocess_schedules

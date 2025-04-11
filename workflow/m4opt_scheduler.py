@@ -15,7 +15,7 @@ You can run the script either with Command-Line Interface arguments arguments:
 
 Or with a configuration file:
 
-    python m4opt_scheduler.py --config config.ini
+    python m4opt_scheduler.py --config params.ini
 """
 
 import argparse
@@ -28,6 +28,19 @@ import sys
 from astropy.table import QTable
 from joblib import Parallel, delayed
 from tqdm.auto import tqdm
+
+
+def setup_logging(log_dir):
+    """
+    Configure logging for the script.
+    """
+    log_file = os.path.join(log_dir, "workflow.log")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
+        force=True,
+    )
 
 
 def parse_arguments():
@@ -165,14 +178,16 @@ def parse_arguments():
     return parser.parse_args(remaining_args)
 
 
-def create_wrapper(event_id, args, m4opt_path):
+def create_wrapper(run_name, event_id, args, m4opt_path):
     """
     Create a bash wrapper script for submitting an M4OPT schedule job.
 
     Parameters
     ----------
-    event_id : str or int
-        Unique identifier for the sky map event.
+    run_name : str
+        run name corresponding to the event ID.
+    event_id : int
+        event ID to process.
     args : argparse.Namespace
         Parsed command-line or config arguments.
     m4opt_path : str
@@ -183,29 +198,34 @@ def create_wrapper(event_id, args, m4opt_path):
     str
         Path to the created wrapper script.
     """
-    skymap_file = os.path.join(args.skymap_dir, f"{event_id}.fits")
-    sched_file = os.path.join(args.sched_dir, f"{event_id}.ecsv")
-    prog_file = os.path.join(args.prog_dir, f"PROGRESS_{event_id}.ecsv")
-    wrapper_script = os.path.join(args.log_dir, f"wrapper_{event_id}.sh")
+
+    os.makedirs(os.path.join(args.sched_dir, run_name), exist_ok=True)
+    os.makedirs(os.path.join(args.prog_dir, run_name), exist_ok=True)
+
+    skymap_file = os.path.join(args.skymap_dir, f"{run_name}/{event_id}.fits")
+    sched_file = os.path.join(args.sched_dir, f"{run_name}/{event_id}.ecsv")
+    prog_file = os.path.join(args.prog_dir, f"{run_name}/PROGRESS_{event_id}.ecsv")
+
+    wrapper_script = os.path.join(args.log_dir, f"wrapper_{run_name}_{event_id}.sh")
 
     wrapper_content = f"""#!/bin/bash
 {m4opt_path} schedule \
-  {skymap_file} \
-  {sched_file} \
-  --mission={args.mission} \
-  --bandpass={args.bandpass} \
-  --absmag-mean={args.absmag_mean} \
-  --absmag-stdev={args.absmag_stdev} \
-  --exptime-min='{args.exptime_min} s' \
-  --exptime-max='{args.exptime_max} s' \
-  --snr={args.snr} \
-  --delay='{args.delay}' \
-  --deadline='{args.deadline}' \
-  --timelimit='{args.timelimit}' \
-  --nside={args.nside} \
-  --write-progress {prog_file} \
-  --jobs {args.job_cpu} \
-  --cutoff=0.1
+{skymap_file} \
+{sched_file} \
+--mission={args.mission} \
+--bandpass={args.bandpass} \
+--absmag-mean={args.absmag_mean} \
+--absmag-stdev={args.absmag_stdev} \
+--exptime-min='{args.exptime_min} s' \
+--exptime-max='{args.exptime_max} s' \
+--snr={args.snr} \
+--delay='{args.delay}' \
+--deadline='{args.deadline}' \
+--timelimit='{args.timelimit}' \
+--nside={args.nside} \
+--write-progress {prog_file} \
+--jobs {args.job_cpu} \
+--cutoff=0.1
 """
     with open(wrapper_script, "w") as f:
         f.write(wrapper_content)
@@ -231,12 +251,14 @@ def run_script_locally(wrapper_script):
         logging.error(f"Error executing {wrapper_script}: {e.stderr.decode().strip()}")
 
 
-def run_parallel(event_ids, args, m4opt_path):
+def run_parallel(run_names, event_ids, args, m4opt_path):
     """
     Run M4OPT schedule jobs in parallel using joblib.
 
     Parameters
     ----------
+    run_names : list
+        List of run names corresponding to each event ID.
     event_ids : list
         List of event IDs to process.
     args : argparse.Namespace
@@ -245,7 +267,8 @@ def run_parallel(event_ids, args, m4opt_path):
         Path to the m4opt executable.
     """
     wrapper_scripts = [
-        create_wrapper(event_id, args, m4opt_path) for event_id in event_ids
+        create_wrapper(run_name, event_id, args, m4opt_path)
+        for run_name, event_id in zip(run_names, event_ids)
     ]
     Parallel(n_jobs=args.n_cores)(
         delayed(run_script_locally)(script) for script in wrapper_scripts
@@ -258,6 +281,8 @@ def run_dask(event_ids, args):
 
     Parameters
     ----------
+    run_names : list
+        List of run names corresponding to each event ID.
     event_ids : list
         List of event IDs to process.
     args : argparse.Namespace
@@ -269,9 +294,9 @@ def run_dask(event_ids, args):
     from distributed import Client, as_completed
     from m4opt._cli import app
 
-    def task(event_id):
-        skymap_file = os.path.join(args.skymap_dir, f"{event_id}.fits")
-        sched_file = os.path.join(args.sched_dir, f"{event_id}.ecsv")
+    def task(run_name, event_id):
+        skymap_file = os.path.join(args.skymap_dir, f"{run_name}/{event_id}.fits")
+        sched_file = os.path.join(args.sched_dir, f"{run_name}/{event_id}.ecsv")
         cmdline = (
             f"schedule {skymap_file} {sched_file} --mission={args.mission} --bandpass={args.bandpass} "
             f"--absmag-mean={args.absmag_mean} --absmag-stdev={args.absmag_stdev} --exptime-min={args.exptime_min}s "
@@ -288,7 +313,7 @@ def run_dask(event_ids, args):
 
     cluster = HTCondorCluster(
         cores=1,
-        memory="4GB",
+        memory="10GB",
         disk="2GB",
         job_extra={"accounting_group": "ligo.dev.o4.cbc.pe.bayestar"},
         job_script_prologue=["export OMP_NUM_THREADS=1"],
@@ -301,7 +326,7 @@ def run_dask(event_ids, args):
         future.result()
 
 
-def submit_condor_job(event_id, args, m4opt_path):
+def submit_condor_job(run_name, event_id, args, m4opt_path):
     """
     Submit an M4OPT job to HTCondor using a wrapper script.
 
@@ -314,28 +339,28 @@ def submit_condor_job(event_id, args, m4opt_path):
     m4opt_path : str
         Path to the m4opt executable.
     """
-    wrapper_script = create_wrapper(event_id, args, m4opt_path)
+    wrapper_script = create_wrapper(run_name, event_id, args, m4opt_path)
     condor_submit_script = f"""
-+MaxHours = 24
-universe = vanilla
-accounting_group = ligo.dev.o4.cbc.pe.bayestar
-envfile = {wrapper_script}
-getenv = true
-executable = {wrapper_script}
-output = {args.log_dir}/$(Cluster)_$(Process).out
-error = {args.log_dir}/$(Cluster)_$(Process).err
-log = {args.log_dir}/$(Cluster)_$(Process).log
-request_memory = 50000 MB
-request_disk = 8000 MB
-request_cpus = 1
-on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
-on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
-on_exit_hold_reason = (ExitBySignal == True \
-    ? strcat("The job exited with signal ", ExitSignal) \
-    : strcat("The job exited with code ", ExitCode))
-environment = "OMP_NUM_THREADS=1"
-queue 1
-"""
+        +MaxHours = 24
+        universe = vanilla
+        accounting_group = ligo.dev.o4.cbc.pe.bayestar
+        envfile = {wrapper_script}
+        getenv = true
+        executable = {wrapper_script}
+        output = {args.log_dir}/$(Cluster)_$(Process).out
+        error = {args.log_dir}/$(Cluster)_$(Process).err
+        log = {args.log_dir}/$(Cluster)_$(Process).log
+        request_memory = 70 GB
+        request_disk = 10 GB
+        request_cpus = 1
+        on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+        on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
+        on_exit_hold_reason = (ExitBySignal == True \
+            ? strcat("The job exited with signal ", ExitSignal) \
+            : strcat("The job exited with code ", ExitCode))
+        environment = "OMP_NUM_THREADS=1"
+        queue 1
+        """
     proc = subprocess.Popen(
         ["condor_submit"],
         text=True,
@@ -353,7 +378,10 @@ queue 1
 if __name__ == "__main__":
     args = parse_arguments()
     os.makedirs(args.log_dir, exist_ok=True)
+    setup_logging(args.log_dir)
+
     os.makedirs(args.prog_dir, exist_ok=True)
+    os.makedirs(args.sched_dir, exist_ok=True)
 
     try:
         m4opt_path = subprocess.check_output(["which", "m4opt"]).decode().strip()
@@ -364,17 +392,22 @@ if __name__ == "__main__":
         sys.exit(1)
 
     table = QTable.read(args.event_table)
-    event_ids = list(table["coinc_event_id"])
+
+    event_ids = [5081]  # table["coinc_event_id"].tolist()
+    run_names = ["O6"]  # table["run"].tolist()
 
     if args.backend == "condor":
-        for event_id in tqdm(event_ids):
-            submit_condor_job(event_id, args, m4opt_path)
+        for run_name, event_id in tqdm(zip(run_names, event_ids), total=len(event_ids)):
+            submit_condor_job(run_name, event_id, args, m4opt_path)
+
     elif args.backend == "parallel":
         print(f"Running in parallel mode with {args.n_cores} cores")
-        run_parallel(event_ids, args, m4opt_path)
+        run_parallel(run_names, event_ids, args, m4opt_path)
+
     elif args.backend == "dask":
         print("Running with Dask HTCondorCluster backend")
-        run_dask(event_ids, args)
+        run_dask(run_names, event_ids, args)
+
     else:
         print("Unknown backend: use 'condor', 'parallel', or 'dask'")
         sys.exit(1)

@@ -1,3 +1,4 @@
+
 """
 Farah GWTC-3 Distribution Processor
 ===================================
@@ -26,8 +27,167 @@ import numpy as np
 import requests
 import scipy.stats as stats
 from astropy.table import Table
-from scipy import integrate, optimize, special
 from tqdm import tqdm
+
+from rate_stats import poisson_lognormal_rate_quantiles, format_with_errorbars
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("farah_processing.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
+    force=True,
+)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Process Farah GWTC-3 distribution.")
+    parser.add_argument(
+        "-o", "--outdir", type=str, default="./scenarios",
+        help="Output directory to store processed results."
+    )
+    return parser.parse_args()
+
+
+def merger_rate(farah_file, ns_max_mass=3, quantiles=[0.05, 0.5, 0.95]):
+    """
+    Compute astrophysical merger rates from a processed Farah GWTC-3 file.
+
+    Parameters
+    ----------
+    farah_file : str
+        Path to HDF5 file containing mass1 and mass2.
+    ns_max_mass : float
+        Maximum mass to consider an object a neutron star.
+    quantiles : list
+        Quantiles to compute.
+
+    Returns
+    -------
+    astropy.table.Table
+        Table with log-normal parameters for each population.
+    tuple of str
+        Formatted rate estimates with uncertainties.
+    """
+    sim_rate = 2.712359951521142e3  # Gpc^-3 yr^-1
+    run_duration = 1.0  # years
+
+    rates_table = Table(
+        [
+            {"population": "BNS", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+            {"population": "NSBH", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+            {"population": "BBH", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+        ]
+    )
+
+    table = Table.read(farah_file)
+    m1 = table["mass1"]
+    m2 = table["mass2"]
+    rates_table["mass_fraction"] = np.array([
+        np.sum((m1 < ns_max_mass) & (m2 < ns_max_mass)),
+        np.sum((m1 >= ns_max_mass) & (m2 < ns_max_mass)),
+        np.sum((m1 >= ns_max_mass) & (m2 >= ns_max_mass)),
+    ]) / len(table)
+
+    for key in ["lower", "mid", "upper"]:
+        rates_table[key] *= rates_table["mass_fraction"]
+
+    delta = np.diff(stats.norm.interval(0.9))[0]
+    rates_table["mu"] = np.log(rates_table["mid"]) + np.log(run_duration) - np.log(sim_rate)
+    rates_table["sigma"] = (
+        np.log(rates_table["upper"]) - np.log(rates_table["lower"])
+    ) / delta
+
+    lo_n, mid_n, hi_n = poisson_lognormal_rate_quantiles(
+        quantiles, rates_table["mu"], rates_table["sigma"]
+    )
+
+    lo = lo_n * sim_rate / run_duration
+    mid = mid_n * sim_rate / run_duration
+    hi = hi_n * sim_rate / run_duration
+
+    return rates_table, format_with_errorbars(mid, lo, hi)
+
+
+def download_file(file_url, file_name):
+    if os.path.exists(file_name):
+        logging.info(f"File already exists: {file_name}")
+        return file_name
+
+    try:
+        response = requests.get(file_url, stream=True)
+        response.raise_for_status()
+        total = int(response.headers.get("content-length", 0))
+        with open(file_name, "wb") as f, tqdm(total=total, unit="B", unit_scale=True, desc="Downloading") as progress:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+                progress.update(len(chunk))
+        return file_name
+    except requests.RequestException as e:
+        logging.error(f"Error downloading the file: {e}")
+        return None
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    output_dir = os.path.abspath(args.outdir)
+    os.makedirs(output_dir, exist_ok=True)
+    farah_file = os.path.join(output_dir, "farah.h5")
+
+    if not os.path.exists(farah_file):
+        url = "https://dcc.ligo.org/LIGO-T2100512/public/O1O2O3all_mass_h_iid_mag_iid_tilt_powerlaw_redshift_maxP_events_all.h5"
+        tmp_file = download_file(url, os.path.join(output_dir, url.split("/")[-1]))
+        if tmp_file is None:
+            sys.exit("Download failed.")
+        data = Table.read(tmp_file)
+        Table({
+            "mass1": data["mass_1"],
+            "mass2": data["mass_2"],
+            "spin1z": data["a_1"] * data["cos_tilt_1"],
+            "spin2z": data["a_2"] * data["cos_tilt_2"],
+        }).write(farah_file, overwrite=True)
+        os.remove(tmp_file)
+
+    rate_table, rate_stats = merger_rate(farah_file)
+    logging.info(f"Merger rate stats: {rate_stats}")
+
+    
+    
+    
+    
+"""
+Farah GWTC-3 Distribution Processor
+===================================
+
+This script converts the Farah GWTC-3 population synthesis distribution into a format
+suitable for `bayestar-inject`, computes astrophysical merger rates, and downloads
+the required file if missing.
+
+Source:
+    LIGO-T2100512/public/ (https://dcc.ligo.org/LIGO-T2100512)
+
+Usage
+-----
+Run directly from the command line to generate a processed HDF5 file and compute merger rates.
+
+Example:
+    $ python farah_processor.py --outdir ./scenarios
+"""
+
+import argparse
+import logging
+import os
+import sys
+
+import numpy as np
+import requests
+import scipy.stats as stats
+from astropy.table import Table
+from tqdm import tqdm
+
+from rate_stats import poisson_lognormal_rate_quantiles, format_with_errorbars
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,91 +222,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def betabinom_k_n(k, n):
-    """
-    Compute the beta-binomial distribution given k and n.
-
-    Parameters
-    ----------
-    k : int
-        Number of observed successes.
-    n : int
-        Total number of trials.
-
-    Returns
-    -------
-    scipy.stats._distn_infrastructure.rv_frozen
-        A frozen beta-binomial distribution instance.
-    """
-    return stats.betabinom(n, k + 1, n - k + 1)
-
-
-@np.vectorize
-def poisson_lognormal_rate_cdf(k, mu, sigma):
-    """
-    Compute the marginal CDF of a Poisson distribution with a log-normal prior on the rate.
-
-    Parameters
-    ----------
-    k : float
-        Count value.
-    mu : float
-        Mean of the log of the Poisson rate.
-    sigma : float
-        Standard deviation of the log of the Poisson rate.
-
-    Returns
-    -------
-    float
-        The CDF evaluated at k.
-    """
-    lognorm_pdf = stats.lognorm(s=sigma, scale=np.exp(mu)).pdf
-
-    def func(lam):
-        prior = lognorm_pdf(lam)
-        # poisson_pdf = np.exp(special.xlogy(k, lam) - special.gammaln(k + 1) - lam)
-        poisson_cdf = special.gammaincc(k + 1, lam)
-        return poisson_cdf * prior
-
-    cdf, _ = integrate.quad(func, 0, np.inf, epsabs=0)
-    return cdf
-
-
-@np.vectorize
-def poisson_lognormal_rate_quantiles(p, mu, sigma):
-    """
-    Find quantiles of a Poisson distribution with a log-normal prior on the rate.
-
-    Parameters
-    ----------
-    p : float
-        Quantile level (e.g., 0.05, 0.5, 0.95).
-    mu : float
-        Mean of the log of the Poisson rate.
-    sigma : float
-        Standard deviation of the log of the Poisson rate.
-
-    Returns
-    -------
-    float
-        The event count at the specified quantile.
-
-    Notes
-    -----
-    Uses `scipy.optimize.root_scalar` to solve for quantiles.
-    """
-
-    def func(k):
-        return poisson_lognormal_rate_cdf(k, mu, sigma) - p
-
-    if func(0) >= 0:
-        return 0
-
-    result = optimize.root_scalar(func, bracket=[0, 1e6])
-    return result.root
-
-
-def merger_rate(farah_file, ns_max_mass=3, quantiles=[0.05, 0.5, 0.95]):
+def merger_rate(farah_file, ns_max_mass=3, quantiles=[0.05, 0.5, 0.95], duration_yr=1.0, rate_sim=None):
     """
     Compute astrophysical merger rates from a processed Farah GWTC-3 file.
 
@@ -158,13 +234,17 @@ def merger_rate(farah_file, ns_max_mass=3, quantiles=[0.05, 0.5, 0.95]):
         Threshold mass to define neutron stars (default is 3).
     quantiles : list of float, optional
         Quantile levels to compute (default is [0.05, 0.5, 0.95]).
+    duration_yr : float
+        Duration of the observing run in years. Default is 1.
+    rate_sim : float or None
+        Simulated effective rate in Gpc^-3 yr^-1. If provided, will convert counts to rates.
 
     Returns
     -------
     astropy.table.Table
         Table with populations (BNS, NSBH, BBH) and their log-normal parameters.
-    tuple of float
-        Lower, median, and upper rate quantiles.
+    tuple of float or tuple of str
+        Quantiles of detected counts, or converted to rates if rate_sim is given.
     """
     rates_table = Table(
         [
@@ -194,9 +274,104 @@ def merger_rate(farah_file, ns_max_mass=3, quantiles=[0.05, 0.5, 0.95]):
         np.log(rates_table["upper"]) - np.log(rates_table["lower"])
     ) / standard_90pct_interval
 
+    lo_n, mid_n, hi_n = poisson_lognormal_rate_quantiles(
+        quantiles, rates_table["mu"], rates_table["sigma"]
+    )
+
+    if rate_sim is not None:
+        lo_r = lo_n * rate_sim / duration_yr
+        mid_r = mid_n * rate_sim / duration_yr
+        hi_r = hi_n * rate_sim / duration_yr
+        return rates_table, (lo_r, mid_r, hi_r)
+
+    return rates_table, (lo_n, mid_n, hi_n)
+
+    #Compute astrophysical merger rates from a processed Farah GWTC-3 file.
+
+    Parameters
+    ----------
+    farah_file : str
+        Path to HDF5 file containing mass1 and mass2.
+    ns_max_mass : float, optional
+        Threshold mass to define neutron stars (default is 3).
+    quantiles : list of float, optional
+        Quantile levels to compute (default is [0.05, 0.5, 0.95]).
+
+     sim_rate =2.712359951521142e3 (u.Gpc**-3 * u.yr**-1)
+     run_duration = 1  # years
+
+    Returns
+    -------
+    astropy.table.Table
+        Table with populations (BNS, NSBH, BBH) and their log-normal parameters.
+    tuple of float
+        Lower, median, and upper rate quantiles.
+    """
+    # O3 R&P paper Table II row 1 last column:
+    # 5%, 50%, and 95% quantiles of the total merger rate
+    # in Gpc^-3 yr^-1.
+    # See https://doi.org/10.1103/PhysRevX.13.011048
+
+    # === Simulated BNS Merger Rates ===
+    # Use this command to retrieve comments:
+    # 1- sqlite3 events.sqlite
+    # 2- select comment from process;
+    # Simulated BNS merger rate in yr^-1 Gpc^-3 for O5 and O6-HLVK configuration (SNR = 10)
+    # From kiendrebeogo et al. 2023 the simulated rate is given by the by (yr^-1 Mpc^-3)
+    # so this need to be convert in yr^-1 Gpc^-3, before add use it here.
+    # simulation rate  sim_rate =2.712359951521142e3 (u.Gpc**-3 * u.yr**-1)
+
+
+   
+
+    rates_table = Table(
+        [
+            {"population": "BNS", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+            {"population": "NSBH", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+            {"population": "BBH", "lower": 100.0, "mid": 240.0, "upper": 510.0},
+        ]
+    )
+
+        # lo = 100
+        # mid = 240
+        # hi = 510
+
+        # (standard_90pct_interval,) = np.diff(stats.norm.interval(0.9))
+        # log_target_rate_mu = np.log(mid)
+        # log_target_rate_sigma = np.log(hi / lo) / standard_90pct_interval
+        # log_target_rate_mu, log_target_rate_sigma
+
+        # log_simulation_effective_rate_by_run = {
+        #     key: np.log(value.to_value(u.Gpc**-3 * u.yr**-1))
+        #     for key, value in main_table.meta["effective_rate"].items()
+        # }
+
+
+    table = Table.read(farah_file)
+    source_mass1 = table["mass1"]
+    source_mass2 = table["mass2"]
+    rates_table["mass_fraction"] = np.array(
+        [
+            np.sum((source_mass1 < ns_max_mass) & (source_mass2 < ns_max_mass)),
+            np.sum((source_mass1 >= ns_max_mass) & (source_mass2 < ns_max_mass)),
+            np.sum((source_mass1 >= ns_max_mass) & (source_mass2 >= ns_max_mass)),
+        ]
+    ) / len(table)
+
+    for key in ["lower", "mid", "upper"]:
+        rates_table[key] *= rates_table["mass_fraction"]
+
+    (standard_90pct_interval,) = np.diff(stats.norm.interval(0.9))
+    rates_table["mu"] = np.log(rates_table["mid"]) #+ np.log(run_duration) - np.log(sim_rate)
+    rates_table["sigma"] = (
+        np.log(rates_table["upper"]) - np.log(rates_table["lower"])
+    ) / standard_90pct_interval
+
     lo, mid, hi = poisson_lognormal_rate_quantiles(
         quantiles, rates_table["mu"], rates_table["sigma"]
     )
+    mid, lo, hi = format_with_errorbars(mid, lo, hi)
+
 
     return rates_table, (lo, mid, hi)
 
