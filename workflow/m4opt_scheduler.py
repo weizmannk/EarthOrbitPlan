@@ -73,9 +73,10 @@ def parse_arguments():
             snr=cfg.getint("snr", fallback=10),
             delay=cfg.get("delay", fallback="15min"),
             deadline=cfg.get("deadline", fallback="24hour"),
-            timelimit=cfg.get("timelimit", fallback="2hour"),
+            timelimit=cfg.get("timelimit", fallback="20min"),
+            memory=cfg.get("memory", fallback="10GiB"),
             nside=cfg.getint("nside", fallback=128),
-            job_cpu=cfg.getint("job", fallback=8),
+            jobs=cfg.getint("jobs", fallback=8),
             skymap_dir=cfg.get("skymap_dir", fallback="data"),
             sched_dir=cfg.get("sched_dir", fallback="data"),
             log_dir=cfg.get("log_dir", fallback="logs"),
@@ -132,13 +133,22 @@ def parse_arguments():
     )
     parser.add_argument(
         "--timelimit",
-        help="Maximum duration allowed for each observation window (e.g., '2hour')",
+        help=" Time limit for MILP solver (e.g., '2hour')",
         type=str,
-        default="2hour",
+        default="20min",
+    )
+    parser.add_argument(
+        "--memory",
+        help="Maximum solver memory usage before terminating (e.g., '10GiB')",
+        type=str,
+        default="10GiB",
     )
     parser.add_argument("--nside", help="HEALPix resolution", type=int, default=128)
     parser.add_argument(
-        "--job-cpu", help="Number of CPUs assigned per job", type=int, default=8
+        "--jobs",
+        help="Threads for solving one MILP (0 = all cores)",
+        type=int,
+        default=8,
     )
     parser.add_argument(
         "--skymap-dir", help="GW Sky map filename", type=str, default="data"
@@ -222,9 +232,10 @@ def create_wrapper(run_name, event_id, args, m4opt_path):
 --delay='{args.delay}' \
 --deadline='{args.deadline}' \
 --timelimit='{args.timelimit}' \
+--memory='{args.memory}' \
 --nside={args.nside} \
 --write-progress {prog_file} \
---jobs {args.job_cpu} \
+--jobs {args.jobs} \
 --cutoff=0.1
 """
     with open(wrapper_script, "w") as f:
@@ -301,7 +312,7 @@ def run_dask(event_ids, args):
             f"schedule {skymap_file} {sched_file} --mission={args.mission} --bandpass={args.bandpass} "
             f"--absmag-mean={args.absmag_mean} --absmag-stdev={args.absmag_stdev} --exptime-min={args.exptime_min}s "
             f"--exptime-max={args.exptime_max}s --snr={args.snr} --delay='{args.delay}' --deadline='{args.deadline}' "
-            f"--timelimit='{args.timelimit}' --nside={args.nside} --cutoff=0.1 --jobs={args.job_cpu}"
+            f"--timelimit='{args.timelimit}' --nside={args.nside} --cutoff=0.1 --jobs={args.jobs}"
         )
         try:
             app(shlex.split(cmdline))
@@ -393,8 +404,8 @@ if __name__ == "__main__":
 
     table = QTable.read(args.event_table)
 
-    event_ids = [5081]  # table["coinc_event_id"].tolist()
-    run_names = ["O6"]  # table["run"].tolist()
+    event_ids = table["coinc_event_id"].tolist()  # [5081]
+    run_names = table["run"].tolist()  # ["O6"]
 
     if args.backend == "condor":
         for run_name, event_id in tqdm(zip(run_names, event_ids), total=len(event_ids)):

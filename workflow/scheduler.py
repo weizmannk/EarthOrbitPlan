@@ -85,9 +85,10 @@ def parse_arguments():
             snr=cfg.getint("snr", fallback=10),
             delay=cfg.get("delay", fallback="15min"),
             deadline=cfg.get("deadline", fallback="24hour"),
-            timelimit=cfg.get("timelimit", fallback="2hour"),
+            timelimit=cfg.get("timelimit", fallback="20min"),
+            memory=cfg.get("memory", fallback="10GiB"),
             nside=cfg.getint("nside", fallback=128),
-            job_cpu=cfg.getint("job_cpu", fallback=8),
+            jobs=cfg.getint("jobs", fallback=0),
             skymap_dir=cfg.get("skymap_dir", fallback="data"),
             sched_dir=cfg.get("sched_dir", fallback="data"),
             log_dir=cfg.get("log_dir", fallback="logs"),
@@ -119,12 +120,23 @@ def parse_arguments():
         "--deadline", type=str, default="24hour", help="Observation deadline"
     )
     parser.add_argument(
-        "--timelimit", type=str, default="2hour", help="Observation time limit"
+        "--timelimit", type=str, default="20min", help="Time limit for MILP solver"
+    )
+    parser.add_argument(
+        "--memory",
+        type=str,
+        default="10GiB",
+        help="Maximum solver memory usage before terminating",
     )
     parser.add_argument(
         "--nside", type=int, default=128, help="HEALPix nside resolution"
     )
-    parser.add_argument("--job-cpu", type=int, default=8, help="CPUs per job")
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=0,
+        help="Threads for solving one MILP (0 = all cores)",
+    )
     parser.add_argument(
         "--skymap-dir", type=str, default="data", help="Input sky map directory"
     )
@@ -184,7 +196,7 @@ def create_wrapper(run_name, event_id, args, m4opt_executable):
 --timelimit='{args.timelimit}' \
 --nside={args.nside} \
 --write-progress {prog_file} \
---jobs {args.job_cpu} \
+--jobs {args.jobs} \
 --cutoff=0.1
 """
     with open(wrapper_script, "w") as f:

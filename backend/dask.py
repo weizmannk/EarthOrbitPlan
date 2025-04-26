@@ -28,7 +28,7 @@ def run_dask(event_ids, args):
             f"schedule {skymap_file} {sched_file} --mission={args.mission} --bandpass={args.bandpass} "
             f"--absmag-mean={args.absmag_mean} --absmag-stdev={args.absmag_stdev} --exptime-min={args.exptime_min}s "
             f"--exptime-max={args.exptime_max}s --snr={args.snr} --delay='{args.delay}' --deadline='{args.deadline}' "
-            f"--timelimit='{args.timelimit}' --nside={args.nside} --cutoff=0.1 --jobs={args.job_cpu}"
+            f"--timelimit='{args.timelimit}' --memory='{args.memory}' --nside={args.nside} --cutoff=0.1 --jobs={args.jobs}"
         )
         try:
             app(shlex.split(cmdline))
