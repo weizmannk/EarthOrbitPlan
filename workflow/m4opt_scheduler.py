@@ -350,7 +350,7 @@ def submit_condor_job(run_name, event_id, args, m4opt_path):
         output = {args.log_dir}/$(Cluster)_$(Process).out
         error = {args.log_dir}/$(Cluster)_$(Process).err
         log = {args.log_dir}/$(Cluster)_$(Process).log
-        request_memory = 70 GB
+        request_memory = 80 GB
         request_disk = 10 GB
         request_cpus = 1
         on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
