@@ -18,7 +18,7 @@ Or with a configuration file:
     python workscheduler.py --config params.ini
 
 In the root directory of the project:
-    python -m workflow.scheduler --config params.ini
+    python -m workflow/scheduler.py --config params.ini
 
 """
 
@@ -32,22 +32,11 @@ import sys
 from astropy.table import QTable
 from tqdm.auto import tqdm
 
-try:
-    # Try relative imports (if running as part of a package)
-    from ..backend.condor import submit_condor_job
-    from ..backend.dask import run_dask
-    from ..backend.parallel import run_parallel
-except (ImportError, ValueError) as e:
-    logging.warning(
-        f"Relative import failed ({e}). "
-        "Falling back to absolute import. "
-        "Tip: To use relative imports properly, run with 'python -m workflow.scheduler' from the project root."
-    )
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from backend.condor import submit_condor_job
-
-    # from backend.dask import run_dask
-    from backend.parallel import run_parallel
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from backend.condor import submit_condor_job
+from backend.dask import run_dask
+from backend.parallel import run_parallel
+from backend.slurm import submit_slurm_job
 
 
 def setup_logging(log_dir):
@@ -240,6 +229,13 @@ if __name__ == "__main__":
     elif args.backend == "dask":
         print("Running with Dask HTCondorCluster backend")
         run_dask(run_names, event_ids, args)
+
+    elif args.backend == "slurm":
+        wrapper_scripts = [
+            create_wrapper(run_name, event_id, args, m4opt_executable)
+            for run_name, event_id in zip(run_names, event_ids)
+        ]
+        submit_slurm_job(wrapper_scripts, args.log_dir)
 
     else:
         print("Unknown backend: use 'condor', 'parallel', or 'dask'")
