@@ -1,27 +1,37 @@
-# """
-# Zenodo GW Injection Data Unpacker
-# =================================
+"""
+Zenodo GW Injection Data Unpacker
+=================================
 
-# This module automates the unpacking, filtering, and conversion of injection datasets
-# (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
-# localization files for specific observing runs (e.g., O5, O6), and outputs
-# filtered ECSV tables and organized FITS files.
+This module automates the unpacking, filtering, and conversion of gravitational-wave injection datasets
+(e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+localization files for specific observing runs (e.g., O5, O6), and outputs
+filtered ECSV tables and organized FITS localization files.
 
-# Modified from: https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
+This tool is adapted from:
+    https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
 
-# Usage
-# -----
-# Run from the command line:
+Usage
+-----
 
-#     $ python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+Run directly from the command line by specifying parameters manually:
 
-# Or integrate into a larger pipeline by calling `process_zip()` directly.
+    $ python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data  --outfile observing-scenarios.ecsv --mass-threshold 3
 
-# Source:
-#     https://zenodo.org/records/14585837
-# """
+Or run using a configuration file:
+
+    $ python zenodo_unpacker.py --config params.ini
+
+Or integrate into a larger Python pipeline by calling the `process_zip()` function directly.
+
+Source
+------
+
+Injection datasets are available at:
+    https://zenodo.org/records/14585837
+"""
 
 import argparse
+import configparser
 import pathlib
 import sqlite3
 import zipfile
@@ -37,17 +47,29 @@ from tqdm.auto import tqdm
 
 
 def parse_arguments():
-    """
-    Parse command-line arguments.
-
-    Returns
-    -------
-    argparse.Namespace
-        Parsed arguments.
-    """
     parser = argparse.ArgumentParser(
-        description="Unpack and process GW injection ZIP data."
+        description="Unpack and process GW injection ZIP data.",
+        allow_abbrev=False,
     )
+    parser.add_argument("--config", type=str, help="Path to .ini config file")
+    args, remaining_args = parser.parse_known_args()
+
+    if args.config:
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        cfg = config["params"]
+
+        return argparse.Namespace(
+            zip=cfg.get("zip"),
+            subdir=cfg.get("subdir", fallback="runs_SNR-10"),
+            runs=cfg.get("runs", fallback="O5 O6").split(),
+            detectors=cfg.get("detectors", fallback="HLVK"),
+            outdir=cfg.get("outdir", fallback="data"),
+            outfile=cfg.get("outfile", fallback="observing-scenarios.ecsv"),
+            mass_threshold=cfg.getfloat("mass_threshold", fallback=3.0),
+        )
+
+    # If no config file, define arguments normally
     parser.add_argument(
         "--zip", type=str, required=True, help="Path to the ZIP archive."
     )
@@ -70,16 +92,29 @@ def parse_arguments():
         "--outdir", type=str, default="data", help="Directory to store output."
     )
     parser.add_argument(
+        "--outfile",
+        type=str,
+        default="observing-scenarios.ecsv",
+        help="Name of the output ECSV summary table.",
+    )
+    parser.add_argument(
         "--mass-threshold",
         type=float,
         default=3.0,
         help="Maximum secondary mass for filtering.",
     )
-    return parser.parse_args()
+
+    return parser.parse_args(remaining_args)
 
 
 def process_zip(
-    zip_path, runs, outdir, max_mass2=3.0, subdir="runs_SNR-10", detectors="HLVK"
+    zip_path,
+    runs,
+    outdir,
+    outfile,
+    max_mass2=3.0,
+    subdir="runs_SNR-10",
+    detectors="HLVK",
 ):
     """
     Extract and filter GW injection tables from a Zenodo-style ZIP archive.
@@ -148,7 +183,7 @@ def process_zip(
 
         table = table[source_mass2 <= max_mass2]
 
-        table.write(f"{out_root}/observing-scenarios.ecsv", overwrite=True)
+        table.write(f"{out_root}/{outfile}", overwrite=True)
 
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
@@ -166,6 +201,7 @@ if __name__ == "__main__":
         zip_path=args.zip,
         runs=args.runs,
         outdir=args.outdir,
+        outfile=args.outfile,
         max_mass2=args.mass_threshold,
         subdir=args.subdir,
         detectors=args.detectors,
