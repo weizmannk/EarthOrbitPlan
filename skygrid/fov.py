@@ -5,18 +5,18 @@ from astropy import units as u
 from astropy.coordinates import ICRS, SkyCoord
 from astropy_healpix import HEALPix
 from m4opt.fov import footprint_healpix
-from m4opt.missions import ultrasat, uvex  # lsst, ztf
+from m4opt.missions import lsst, ultrasat, uvex  # , ztf
 from matplotlib import pyplot as plt
 
 # Map of available missions
 mission_map = {
     "ultrasat": ultrasat,
     "uvex": uvex,
-    # "lsst": lsst,
+    "lsst": lsst,
     # "ztf": ztf,
 }
 
-mission_name = "ultrasat"
+mission_name = "lsst"
 mission = mission_map[mission_name]
 
 
@@ -47,10 +47,10 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"][1] = plt.rcParams["figure.figsize"][0]
 
     center = SkyCoord(0 * u.deg, 0 * u.deg)
-    hpx = HEALPix(nside=128, frame=ICRS())
+    hpx = HEALPix(nside=1024, frame=ICRS())
 
     fig = plt.figure(tight_layout=True)
-    ax = fig.add_subplot(projection="astro zoom", center=center, radius=8 * u.deg)
+    ax = fig.add_subplot(projection="astro zoom", center=center, radius=2.5 * u.deg)
     ax.coords.frame.set_color("none")
     transform = ax.get_transform("world")
 
@@ -85,12 +85,12 @@ if __name__ == "__main__":
     # Optionally overlay the FOV shape as a Matplotlib artist
     fov_mission = mission.fov
     # For LSST
-    # for sub_fov in  fov_mission:
-    ax.add_artist(
-        fov_mission.to_pixel(ax.wcs).as_artist(
-            edgecolor="black", linewidth=plt.rcParams["axes.linewidth"]
+    for sub_fov in fov_mission:
+        ax.add_artist(
+            sub_fov.to_pixel(ax.wcs).as_artist(
+                edgecolor="black", linewidth=plt.rcParams["axes.linewidth"]
+            )
         )
-    )
 
     # Remove axis labels and ticks
     for coord in ax.coords:
@@ -99,5 +99,5 @@ if __name__ == "__main__":
         coord.set_ticklabel_visible(False)
 
     # Save the figure
-    fig.savefig(f"fov_{mission_name}_204.pdf")
+    fig.savefig(f"fov_{mission_name}_new.pdf")
     plt.show()
