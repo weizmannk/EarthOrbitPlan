@@ -12,11 +12,11 @@ Usage
 -----
 From the command line:
 
-    python process_detection_results.py --data-dir data
+    python postprocess_schedules.py  --data-dir data
 
 Or using a config file:
 
-    python process_detection_results.py --config config.ini
+    python postprocess_schedules.py --config params.ini
 """
 
 import argparse
@@ -33,7 +33,6 @@ from ligo.skymap.util.progress import progress_map
 def parse_arguments():
     """
     Parse command-line arguments or load them from a .ini configuration file.
-
     Returns
     -------
     argparse.Namespace
@@ -42,7 +41,6 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Post-process M4OPT ECSV plans.")
     parser.add_argument("--config", type=str, help="Path to .ini configuration file")
 
-    # Minimal parse to detect config
     args, remaining_args = parser.parse_known_args()
 
     if args.config:
@@ -51,22 +49,26 @@ def parse_arguments():
         cfg = config["params"]
         return argparse.Namespace(
             data_dir=cfg.get("data_dir", fallback="data"),
-            input_file=cfg.get("input_file", fallback="observing-scenarios.ecsv"),
+            event_table=cfg.get("event_table", fallback="observing-scenarios.ecsv"),
             output_file=cfg.get("output_file", fallback="events.ecsv"),
+            sched_dir=cfg.get("sched_dir", fallback="schedules"),
         )
 
-    # Full CLI parsing if no config
+    # CLI parsing if no config
     parser.add_argument(
         "--data-dir", type=str, default="data", help="Directory containing ECSV files"
     )
     parser.add_argument(
-        "--input-file",
+        "--event-table",
         type=str,
         default="observing-scenarios.ecsv",
         help="Input summary table",
     )
     parser.add_argument(
         "--output-file", type=str, default="events.ecsv", help="Output filename"
+    )
+    parser.add_argument(
+        "--sched-dir", type=str, default="schedules", help="Schedule directory"
     )
 
     return parser.parse_args(remaining_args)
@@ -81,10 +83,15 @@ def setup_logging():
     )
 
 
-def process(row, base_path):
+def process(row, sched_path):
     run = row["run"]
     event_id = row["coinc_event_id"]
-    plan_file = base_path / run / f"{event_id}.ecsv"
+    plan_file = sched_path / run / f"{event_id}.ecsv"
+
+    if not plan_file.exists():
+        logging.warning(f"Missing schedule file: {plan_file}")
+        # return (np.nan, np.nan, np.nan, None, np.nan, np.nan)
+
     plan = QTable.read(plan_file)
     plan_args = {**plan.meta["args"]}
     plan_args.pop("skymap", None)
@@ -103,7 +110,8 @@ def main():
     setup_logging()
 
     base_path = Path(args.data_dir)
-    input_path = base_path / args.input_file
+    input_path = base_path / args.event_table
+    sched_path = base_path / args.sched_dir
     output_path = base_path / args.output_file
 
     logging.info(f"Reading input table from {input_path}")
@@ -117,7 +125,7 @@ def main():
         table["solution_status"],
         table["solution_time"],
         table["num_fields"],
-    ) = zip(*progress_map(lambda row: process(row, base_path), table))
+    ) = zip(*progress_map(lambda row: process(row, sched_path), table))
 
     logging.info(f"Writing results to {output_path}")
     table.write(output_path, overwrite=True)

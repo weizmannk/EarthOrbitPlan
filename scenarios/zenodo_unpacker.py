@@ -1,27 +1,41 @@
-# """
-# Zenodo GW Injection Data Unpacker
-# =================================
+"""
+Zenodo GW Injection Data Unpacker
+=================================
 
-# This module automates the unpacking, filtering, and conversion of injection datasets
-# (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
-# localization files for specific observing runs (e.g., O5, O6), and outputs
-# filtered ECSV tables and organized FITS files.
+This module automates the unpacking, filtering, and conversion of injection datasets
+(e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+localization files for specific observing runs (e.g., O5, O6), and outputs
+filtered ECSV tables and organized FITS files.
 
-# Modified from: https://github.com/m4opt/m4opt-paper/blob/main/scripts/unpack-observing-scenarios.py
+Usage
+-----
+Run from the command line:
 
-# Usage
-# -----
-# Run from the command line:
+    python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
-#     $ python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+Or use a config file:
 
-# Or integrate into a larger pipeline by calling `process_zip()` directly.
+    python scenarios/zenodo_unpacker.py --config params.
 
-# Source:
-#     https://zenodo.org/records/14585837
-# """
+Or import and call `process_zip()` in your Python code.
+
+Config file example (`params.ini`)
+----------------------------------
+[params]
+zip = runs_SNR-10.zip
+subdir = runs_SNR-10
+runs = O5 O6
+detectors = HLVK
+data_dir = data
+skymap_dir = skymaps
+mass_threshold = 3.0
+
+Source data:
+    https://zenodo.org/records/14585837
+"""
 
 import argparse
+import configparser
 import pathlib
 import sqlite3
 import zipfile
@@ -38,7 +52,7 @@ from tqdm.auto import tqdm
 
 def parse_arguments():
     """
-    Parse command-line arguments.
+    Parse command-line arguments or ini config file.
 
     Returns
     -------
@@ -46,8 +60,27 @@ def parse_arguments():
         Parsed arguments.
     """
     parser = argparse.ArgumentParser(
-        description="Unpack and process GW injection ZIP data."
+        description="Unpack and process GW injection ZIP data.",
+        allow_abbrev=False,
     )
+    parser.add_argument("--config", type=str, help="Path to .ini config file")
+    args, remaining_args = parser.parse_known_args()
+
+    if args.config:
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        cfg = config["params"]
+
+        return argparse.Namespace(
+            zip=cfg.get("zip"),
+            subdir=cfg.get("subdir", fallback="runs_SNR-10"),
+            runs=cfg.get("runs", fallback="O5 O6").split(),
+            detectors=cfg.get("detectors", fallback="HLVK"),
+            data_dir=cfg.get("data_dir", fallback="data"),
+            skymap_dir=cfg.get("skymap_dir", fallback="skymaps"),
+            mass_threshold=cfg.getfloat("mass_threshold", fallback=3.0),
+        )
+
     parser.add_argument(
         "--zip", type=str, required=True, help="Path to the ZIP archive."
     )
@@ -67,7 +100,10 @@ def parse_arguments():
         help="Detector combination tag (e.g., HLVK).",
     )
     parser.add_argument(
-        "--outdir", type=str, default="data", help="Directory to store output."
+        "--data-dir", type=str, default="data", help="Directory to store output."
+    )
+    parser.add_argument(
+        "--skymap-dir", type=str, default="skymaps", help="Directory to store output."
     )
     parser.add_argument(
         "--mass-threshold",
@@ -75,11 +111,17 @@ def parse_arguments():
         default=3.0,
         help="Maximum secondary mass for filtering.",
     )
-    return parser.parse_args()
+    return parser.parse_args(remaining_args)
 
 
 def process_zip(
-    zip_path, runs, outdir, max_mass2=3.0, subdir="runs_SNR-10", detectors="HLVK"
+    zip_path,
+    runs,
+    outdir,
+    skymap_dir,
+    max_mass2=3.0,
+    subdir="runs_SNR-10",
+    detectors="HLVK",
 ):
     """
     Extract and filter GW injection tables from a Zenodo-style ZIP archive.
@@ -92,21 +134,25 @@ def process_zip(
         Observing run labels to extract (e.g., ["O5", "O6"]).
     outdir : str or Path
         Destination directory for output files.
-    max_mass2 : float
+    skymap_dir : str or Path
+        Directory for output skymap FITS files.
+    max_mass2 : float, optional
         Maximum mass for secondary object (used to filter BNS/NSBH).
-    subdir : str
+    subdir : str, optional
         Name of the root folder inside the ZIP archive.
-    detectors : str
+    detectors : str, optional
         Detector label used in file path construction (e.g., HLVK).
 
     Outputs
     -------
     - ECSV summary table at <outdir>/observing-scenarios.ecsv
-    - FITS localization files under <outdir>/<run>/ directories
+    - FITS localization files under <outdir>/<skymap_dir>/<run>/ directories
     """
+
     out_root = pathlib.Path(outdir)
+    skymap_root = out_root / skymap_dir
     for run in runs:
-        (out_root / run).mkdir(parents=True, exist_ok=True)
+        (skymap_root / run).mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(zip_path) as archive:
         in_root = zipfile.Path(archive) / subdir
@@ -142,6 +188,7 @@ def process_zip(
         table = vstack(tables)
         del tables
 
+        # filter the BNS and NSBH event with NS max of 3 Sun mass
         z = z_at_value(cosmo.luminosity_distance, table["distance"] * u.Mpc).to_value()
         zp1 = 1 + z
         source_mass2 = table["mass2"] / zp1
@@ -150,12 +197,13 @@ def process_zip(
 
         table.write(f"{out_root}/observing-scenarios.ecsv", overwrite=True)
 
+        # Copy FITS skymaps
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
             in_path = (
                 in_root / f"{row['run']}{detectors}" / "farah" / "allsky" / filename
             )
-            out_path = out_root / row["run"] / filename
+            out_path = skymap_root / row["run"] / filename
             with in_path.open("rb") as in_file, out_path.open("wb") as out_file:
                 copyfileobj(in_file, out_file)
 
@@ -165,7 +213,8 @@ if __name__ == "__main__":
     process_zip(
         zip_path=args.zip,
         runs=args.runs,
-        outdir=args.outdir,
+        outdir=args.data_dir,
+        skymap_dir=args.skymap_dir,
         max_mass2=args.mass_threshold,
         subdir=args.subdir,
         detectors=args.detectors,

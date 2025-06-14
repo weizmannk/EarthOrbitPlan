@@ -15,7 +15,7 @@ You can run the script either with Command-Line Interface arguments:
 
 Or with a configuration file:
 
-    python workscheduler.py --config params.ini
+    python workflow/scheduler.py --config params.ini
 
 In the root directory of the project:
     python -m workflow.scheduler --config params.ini
@@ -28,6 +28,7 @@ import logging
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from astropy.table import QTable
 from tqdm.auto import tqdm
@@ -77,6 +78,7 @@ def parse_arguments():
         cfg = config["params"]
         return argparse.Namespace(
             mission=cfg.get("mission"),
+            skygrid=cfg.get("skygrid", fallback=None),
             bandpass=cfg.get("bandpass"),
             absmag_mean=cfg.getfloat("absmag_mean", fallback=-16),
             absmag_stdev=cfg.getfloat("absmag_stdev", fallback=1.3),
@@ -89,18 +91,23 @@ def parse_arguments():
             memory=cfg.get("memory", fallback="10GiB"),
             nside=cfg.getint("nside", fallback=128),
             jobs=cfg.getint("jobs", fallback=0),
-            skymap_dir=cfg.get("skymap_dir", fallback="data"),
-            sched_dir=cfg.get("sched_dir", fallback="data"),
+            data_dir=cfg.get("data_dir", fallback="data"),
+            skymap_dir=cfg.get("skymap_dir", fallback="skymaps"),
+            sched_dir=cfg.get("sched_dir", fallback="schedules"),
             log_dir=cfg.get("log_dir", fallback="logs"),
             prog_dir=cfg.get("prog_dir", fallback="progress"),
-            event_table=cfg.get(
-                "event_table", fallback="data/observing-scenarios.ecsv"
-            ),
+            event_table=cfg.get("event_table", fallback="observing-scenarios.ecsv"),
             backend=cfg.get("backend", fallback="condor"),
             n_cores=cfg.getint("n_cores", fallback=4),
         )
 
     parser.add_argument("--mission", type=str, required=True, help="Mission name")
+    parser.add_argument(
+        "--skygrid",
+        type=str,
+        default=None,
+        help="Name of sky grid to use, if the mission supports multiple sky grids",
+    )
     parser.add_argument("--bandpass", type=str, required=True, help="Bandpass filter")
     parser.add_argument(
         "--absmag-mean", type=float, default=-16, help="Fiducial AB magnitude mean"
@@ -137,11 +144,13 @@ def parse_arguments():
         default=0,
         help="Threads for solving one MILP (0 = all cores)",
     )
+
+    parser.add_argument("--data-dir", type=str, default="data", help="Data directory")
     parser.add_argument(
-        "--skymap-dir", type=str, default="data", help="Input sky map directory"
+        "--skymap-dir", type=str, default="skymaps", help="Input sky map directory"
     )
     parser.add_argument(
-        "--sched-dir", type=str, default="data", help="Output schedule directory"
+        "--sched-dir", type=str, default="schedules", help="Output schedule directory"
     )
     parser.add_argument("--log-dir", type=str, default="logs", help="Logging directory")
     parser.add_argument(
@@ -150,7 +159,7 @@ def parse_arguments():
     parser.add_argument(
         "--event-table",
         type=str,
-        default="data/observing-scenarios.ecsv",
+        default="observing-scenarios.ecsv",
         help="Event parameters file",
     )
     parser.add_argument(
@@ -170,47 +179,78 @@ def parse_arguments():
     return parser.parse_args(remaining_args)
 
 
-def create_wrapper(run_name, event_id, args, m4opt_executable):
-    os.makedirs(os.path.join(args.sched_dir, run_name), exist_ok=True)
-    os.makedirs(os.path.join(args.prog_dir, run_name), exist_ok=True)
+def create_wrapper(run_name, event_id, base_path, args, m4opt_executable):
+    # Build directories from base_path and args
+    sched_dir = base_path / args.sched_dir
+    prog_dir = base_path / args.prog_dir
+    log_dir = base_path / args.log_dir
+    skymap_dir = base_path / args.skymap_dir
 
-    skymap_file = os.path.join(args.skymap_dir, f"{run_name}/{event_id}.fits")
-    sched_file = os.path.join(args.sched_dir, f"{run_name}/{event_id}.ecsv")
-    prog_file = os.path.join(args.prog_dir, f"{run_name}/PROGRESS_{event_id}.ecsv")
+    # File paths
+    skymap_file = skymap_dir / run_name / f"{event_id}.fits"
+    sched_file = sched_dir / run_name / f"{event_id}.ecsv"
+    prog_file = prog_dir / run_name / f"PROGRESS_{event_id}.ecsv"
+    wrapper_script = log_dir / f"wrapper_{run_name}_{event_id}.sh"
 
-    wrapper_script = os.path.join(args.log_dir, f"wrapper_{run_name}_{event_id}.sh")
+    wrapper_content = (
+        f"#!/bin/bash\n"
+        f"\n{m4opt_executable} "
+        f"schedule "
+        f"{skymap_file} "
+        f"{sched_file} "
+        f"--mission={args.mission} "
+        f"--skygrid={args.skygrid} "
+        f"--bandpass={args.bandpass} "
+        f"--absmag-mean={args.absmag_mean} "
+        f"--absmag-stdev={args.absmag_stdev} "
+        f"--exptime-min='{args.exptime_min} s' "
+        f"--exptime-max='{args.exptime_max} s' "
+        f"--snr={args.snr} "
+        f"--delay='{args.delay}' "
+        f"--deadline='{args.deadline}' "
+        f"--timelimit='{args.timelimit}' "
+        f"--nside={args.nside} "
+        f"--write-progress {prog_file} "
+        f"--jobs {args.jobs} "
+        f"--cutoff=0.1 "
+    )
 
-    wrapper_content = f"""#!/bin/bash
-{m4opt_executable} schedule \
-{skymap_file} \
-{sched_file} \
---mission={args.mission} \
---bandpass={args.bandpass} \
---absmag-mean={args.absmag_mean} \
---absmag-stdev={args.absmag_stdev} \
---exptime-min='{args.exptime_min} s' \
---exptime-max='{args.exptime_max} s' \
---snr={args.snr} \
---delay='{args.delay}' \
---deadline='{args.deadline}' \
---timelimit='{args.timelimit}' \
---nside={args.nside} \
---write-progress {prog_file} \
---jobs {args.jobs} \
---cutoff=0.1
-"""
-    with open(wrapper_script, "w") as f:
-        f.write(wrapper_content)
-    os.chmod(wrapper_script, 0o755)
-    return wrapper_script
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+        with open(wrapper_script, "w") as f:
+            f.write(wrapper_content)
+        os.chmod(wrapper_script, 0o755)
+        return wrapper_script
+    except Exception as e:
+        logging.error(f"Failed to create wrapper script for event {event_id}: {e}")
+        return None
 
 
 if __name__ == "__main__":
     args = parse_arguments()
-    os.makedirs(args.log_dir, exist_ok=True)
-    setup_logging(args.log_dir)
-    os.makedirs(args.prog_dir, exist_ok=True)
-    os.makedirs(args.sched_dir, exist_ok=True)
+
+    # Set up main data directory
+    base_path = Path(args.data_dir)
+    base_path.mkdir(exist_ok=True)
+
+    # Create necessary subdirectories
+    log_dir = base_path / args.log_dir
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    prog_dir = base_path / args.prog_dir
+    prog_dir.mkdir(parents=True, exist_ok=True)
+
+    sched_dir = base_path / args.sched_dir
+    sched_dir.mkdir(parents=True, exist_ok=True)
+
+    skymap_dir = base_path / args.skymap_dir
+    skymap_dir.mkdir(parents=True, exist_ok=True)
+
+    # Input event table path
+    event_table_path = base_path / args.event_table
+
+    # Initialize logging
+    setup_logging(str(log_dir))
 
     try:
         m4opt_executable = subprocess.check_output(["which", "m4opt"]).decode().strip()
@@ -220,19 +260,44 @@ if __name__ == "__main__":
         logging.error("m4opt executable not found in PATH.")
         sys.exit(1)
 
-    table = QTable.read(args.event_table)
+    try:
+        table = QTable.read(event_table_path)
+    except Exception as e:
+        logging.error(f"Failed to read event table {event_table_path}: {e}")
+        sys.exit(1)
 
     event_ids = table["coinc_event_id"].tolist()
     run_names = table["run"].tolist()
 
+    # Run HTCondor process
     if args.backend == "condor":
         for run_name, event_id in tqdm(zip(run_names, event_ids), total=len(event_ids)):
-            wrapper_script = create_wrapper(run_name, event_id, args, m4opt_executable)
-            submit_condor_job(run_name, event_id, args, wrapper_script)
+            # Create run subdirectories if needed
+            (sched_dir / run_name).mkdir(parents=True, exist_ok=True)
+            (prog_dir / run_name).mkdir(parents=True, exist_ok=True)
 
+            skymap_file = skymap_dir / run_name / f"{event_id}.fits"
+            if not skymap_file.exists():
+                logging.warning(
+                    f"Missing skymap: {skymap_file}. Skipping event {event_id}."
+                )
+                continue
+
+            wrapper_script = create_wrapper(
+                run_name, event_id, base_path, args, m4opt_executable
+            )
+            if wrapper_script is None:
+                logging.error(
+                    f"Failed to create wrapper script for event {event_id}, skipping submission."
+                )
+                continue
+
+            submit_condor_job(run_name, event_id, log_dir, wrapper_script)
+
+    # Parallel backend
     elif args.backend == "parallel":
         wrapper_scripts = [
-            create_wrapper(run_name, event_id, args, m4opt_executable)
+            create_wrapper(run_name, event_id, base_path, args, m4opt_executable)
             for run_name, event_id in zip(run_names, event_ids)
         ]
         run_parallel(args, wrapper_scripts)

@@ -2,19 +2,18 @@ import logging
 import subprocess
 
 
-def submit_condor_job(run_name, event_id, args, wrapper_script):
+def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
     condor_submit_script = f"""
         +MaxHours = 24
         universe = vanilla
         accounting_group = ligo.dev.o4.cbc.pe.bayestar
-        envfile = {wrapper_script}
         getenv = true
         executable = {wrapper_script}
-        output = {args.log_dir}/$(Cluster)_$(Process).out
-        error = {args.log_dir}/$(Cluster)_$(Process).err
-        log = {args.log_dir}/$(Cluster)_$(Process).log
-        request_memory = 100000 MB
-        request_disk = 10000 MB
+        output = {log_dir}/$(Cluster)_$(Process).out
+        error = {log_dir}/$(Cluster)_$(Process).err
+        log = {log_dir}/$(Cluster)_$(Process).log
+        request_memory = 80000 MB
+        request_disk = 8000 MB
         request_cpus = 1
         on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
         on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
@@ -24,6 +23,7 @@ def submit_condor_job(run_name, event_id, args, wrapper_script):
         environment = "OMP_NUM_THREADS=1"
         queue 1
         """
+
     proc = subprocess.Popen(
         ["condor_submit"],
         text=True,
