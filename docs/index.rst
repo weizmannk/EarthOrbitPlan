@@ -23,3 +23,16 @@ Indices and Search
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+
+
+***********
+How to Cite
+***********
+
+To cite **tilepy** in your research, please cite this ::footcite:`Seglar-Arroyo_2024`
+
+References
+----------
+.. footbibliography::

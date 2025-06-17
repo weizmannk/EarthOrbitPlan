@@ -57,6 +57,35 @@ def get_detection_probability_known_position(plan, event_row, plan_args):
 
 
 def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
+    """
+    Estimate the detection probability of a transient with an uncertain sky position,
+    described by a gravitational-wave probability skymap.
+
+    This function computes the overall detection probability by integrating over all
+    possible sky positions and distances from the skymap. For each sky location, it
+    considers the total exposure from the observation plan, computes the limiting
+    magnitude, and estimates the chance that a transient with an assumed absolute
+    magnitude distribution would be detectable at that distance. The final probability
+    is the sum of the detection probabilities weighted by the skymap's localization
+    probabilities.
+
+    Parameters
+    ----------
+    plan : astropy.table.Table
+        Table of scheduled observations, including pointing coordinates, times, and durations.
+    skymap_moc :
+        Gravitational-wave localization skymap, encoding the sky probability
+        and distance estimates per pixel.
+    plan_args : dict
+        Dictionary of observation and mission parameters (e.g., nside, mission name, SNR threshold,
+        bandpass, mean and standard deviation of absolute magnitude).
+
+    Returns
+    -------
+    probability : float
+        Integrated probability that the transient would be detected by the observation plan,
+        marginalized over the skymap localization.
+    """
     if len(plan) == 0:
         return 0
 

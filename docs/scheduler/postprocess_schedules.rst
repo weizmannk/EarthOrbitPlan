@@ -9,7 +9,7 @@ It computes detection probability at known position and extracts optimization
 metrics suc
 h as objective value, best bound, and number of observed fields.
 
-.. automodule:: workflow.postprocess_schedules
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   .. automodapi:: workflow.postprocess_schedules
+   .. :members:
+   .. :undoc-members:
+   .. :show-inheritance:

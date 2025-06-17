@@ -24,7 +24,7 @@ Functions
 `m4opt_scheduler`: Function to execute M4OPT scheduling.
 ----------------
 .. automodapi:: workflow.m4opt_scheduler
-   :show-inheritance:
-   :members:
-   :private-members:
-   :undoc-members:
+   .. :show-inheritance:
+   .. :members:
+   .. :private-members:
+   .. :undoc-members:
