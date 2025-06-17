@@ -65,10 +65,8 @@ exclude_patterns.append("_templates")  # noqa: F405
 
 rst_epilog = r"""
 .. |EarthOrbitPlan| replace:: *EarthOrbitPlan*
-.. |m4opt| replace:: `m4opt <https://github.com/m4opt/m4opt>`__
+.. |M4OPT| replace:: `M\ :sup:`4`\ OPT <https://github.com/m4opt/m4opt>`__
 """
-
-# noqa: F405
 
 # -- Project information ------------------------------------------------------
 

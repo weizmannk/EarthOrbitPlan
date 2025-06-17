@@ -82,9 +82,7 @@ You need to provide the main parameters, including the mission name, skygrid con
    Missions like ULTRASAT support multiple skygrid models; use ``--skygrid`` to select (non-overlap and allsky).
    Other missions (e.g., ZTF, UVEX, Rubin) support only a single skygrid and do not need this option.
 
-See the full list of parameters in the :ref:`CLI guide <m4opt-schedule>`.
-
-.. <https://m4opt.readthedocs.io/en/latest/guide/cli.html#m4opt-schedule>`_.
+See the full list of parameters in the :ref:`CLI guide <https://m4opt.readthedocs.io/en/latest/guide/cli.html#m4opt-schedule>`_.
 
 
 2. Understanding the Output
@@ -119,6 +117,21 @@ This produces:
 
 This workflow lets you quickly simulate and visualize follow-up plans for your favorite mission.
 For more details and advanced options, check out the `full documentation <https://m4opt.readthedocs.io/en/latest/>`_.
+
+**Explanation of the animation:**
+
+- The pink regions show the scheduled observation pointings (the “footprints”).
+- The green outline marks the 90% credible region of the GW localization.
+- The deep blue areas are always outside the telescope’s Field of Regard; the light blue areas are temporarily out of view.
+- The lower panel shows how the detection probability and covered sky area accumulate over time, with different colors indicating 
+  the number of times a region has been observed.
+
+*Note:*  
+This is a projection of the sky, **not a direct image of the Earth or the Moon**. The features shown correspond to sky coordinates, 
+not to physical locations on Earth or lunar positions.
+
+For more details and marker conventions, 
+see the `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker>`_.
 
 
 4. ECSV file inspection
