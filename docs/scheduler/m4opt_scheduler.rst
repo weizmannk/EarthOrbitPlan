@@ -11,19 +11,25 @@ You can run the script with:
 
 .. code-block:: bash
 
-    python m4opt_scheduler.py --config params.ini
+    python scheduler.py --config params.ini
+
+
+Qucik Start
+-----------
+Here we show an example how to run your first test in M4OPT with ULTRASAT mission
+
 
 Functions
 ---------
 
-.. literalinclude:: ../../workflow/m4opt_scheduler.py
+.. literalinclude:: ../../workflow/scheduler.py
    :language: python
-   :caption: Full code of `m4opt_scheduler.py`
+   :caption: Full code of `scheduler.py`
 
 
 `m4opt_scheduler`: Function to execute M4OPT scheduling.
 ----------------
-.. automodapi:: workflow.m4opt_scheduler
+.. automodapi:: workflow.scheduler
    .. :show-inheritance:
    .. :members:
    .. :private-members:
