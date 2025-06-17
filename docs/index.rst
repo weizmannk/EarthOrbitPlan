@@ -13,6 +13,7 @@ Table of Contents
    install/index
    tools/index
    config/index
+   quickly/index
    scheduler/index
 
 
