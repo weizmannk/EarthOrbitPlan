@@ -1,10 +1,7 @@
 .. highlight:: sh
 
-
-***********
 Quick Start
-***********
-
+===========
 
 .. toctree::
    :maxdepth: 2
