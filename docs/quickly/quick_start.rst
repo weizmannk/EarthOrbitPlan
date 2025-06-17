@@ -38,7 +38,7 @@ Detection probabilities are computed using synthetic photometry models, taking i
 instrument sensitivity, and the distribution of possible source magnitudes (for example, a Gaussian for kilonova absolute magnitudes).
 This modeling ensures realistic and robust predictions for observation planning.
 
-Quick Start
+Run process
 ===========
 
 Here is how you can run your first test with |M4OPT| using the ULTRASAT mission.
