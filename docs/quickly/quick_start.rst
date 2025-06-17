@@ -136,8 +136,8 @@ You can load and inspect a schedule file using Astropy:
    >>> display["dec"] = obs["target_coord"].dec
    >>> display.round({'duration': 1, 'ra': 2, 'dec': 2})
    >>> print(display)
-        start_time       duration   ra    dec
-                            s      deg    deg
+        start_time          duration   ra    dec
+                               s       deg   deg
     ----------------------- -------- ------ -----
     2012-07-14 16:04:59.480   1080.0 221.14 58.26
     2012-07-14 17:17:11.127   1080.0 221.14 58.26
