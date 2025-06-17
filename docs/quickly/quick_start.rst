@@ -122,7 +122,7 @@ For more details and advanced options, check out the `full documentation <https:
 
 
 4. ECSV file inspection
-=======================
+-----------------------
 
 You can load and inspect a schedule file using Astropy:
 
@@ -146,7 +146,7 @@ You can load and inspect a schedule file using Astropy:
 
 
 5. ECSV Metadata Extraction
-===========================
+---------------------------
 
 Load a schedule, extract key metadata and visit counts:
 
