@@ -13,18 +13,12 @@ You can run the script with:
 
     python scheduler.py --config params.ini
 
+.. Functions
+.. ---------
 
-Qucik Start
------------
-Here we show an example how to run your first test in M4OPT with ULTRASAT mission
-
-
-Functions
----------
-
-.. literalinclude:: ../../workflow/scheduler.py
-   :language: python
-   :caption: Full code of `scheduler.py`
+.. .. literalinclude:: ../../workflow/scheduler.py
+..    :language: python
+..    :caption: Full code of `scheduler.py`
 
 
 `m4opt_scheduler`: Function to execute M4OPT scheduling.

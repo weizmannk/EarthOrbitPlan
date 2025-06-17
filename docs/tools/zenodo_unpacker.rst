@@ -25,17 +25,17 @@ Zenodo Dataset: https://zenodo.org/records/14585837
 Full Code
 ---------
 
-.. literalinclude:: ../../scenarios/zenodo_unpacker.py
-   :language: python
-   :caption: Full code of `zenodo_unpacker.py`
+.. .. literalinclude:: ../../scenarios/zenodo_unpacker.py
+..    :language: python
+..    :caption: Full code of `zenodo_unpacker.py`
 
 Module Reference
 ----------------
 
 .. automodapi:: scenarios.zenodo_unpacker
-   :show-inheritance:
-   :members:
-   :private-members:
-   :undoc-members:
-   :special-members: __init__, __call__
-   :exclude-members: __weakref__, __dict__, __module__, __class__
+   .. :show-inheritance:
+   .. :members:
+   .. :private-members:
+   .. :undoc-members:
+   .. :special-members: __init__, __call__
+   .. :exclude-members: __weakref__, __dict__, __module__, __class__

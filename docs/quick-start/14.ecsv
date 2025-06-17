@@ -1,0 +1,134 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: action, datatype: string, description: Action for the spacecraft}
+# - {name: start_time, datatype: string, description: Start time of segment}
+# - {name: duration, unit: s, datatype: float64, description: Duration of segment}
+# - {name: observer_location.x, unit: km, datatype: float64, description: Position of the spacecraft}
+# - {name: observer_location.y, unit: km, datatype: float64, description: Position of the spacecraft}
+# - {name: observer_location.z, unit: km, datatype: float64, description: Position of the spacecraft}
+# - {name: target_coord.ra, unit: deg, datatype: float64}
+# - {name: target_coord.dec, unit: deg, datatype: float64}
+# - {name: roll, unit: deg, datatype: float64, description: Position angle of the FOV}
+# meta: !!omap
+# - {command: 14.fits 14.ecsv
+#     --mission=ultrasat --skygrid=non-overlap --bandpass=NUV --absmag-mean=-16.0 --absmag-stdev=1.3 '--exptime-min=300 s' '--exptime-max=14400
+#     s' --snr=10 --delay=15min --deadline=24hour --timelimit=2hour --nside=128 --write-progress PROGRESS_14.ecsv --jobs
+#     0 --cutoff=0.1}
+# - {version: 2.0.2.dev3+g6f50024}
+# - args:
+#     absmag_mean: -16.0
+#     absmag_stdev: 1.3
+#     bandpass: NUV
+#     cutoff: 0.1
+#     deadline: !astropy.units.Quantity
+#       unit: !astropy.units.Unit {unit: h}
+#       value: 24.0
+#     delay: !astropy.units.Quantity
+#       unit: &id002 !astropy.units.Unit {unit: min}
+#       value: 15.0
+#     exptime_max: !astropy.units.Quantity
+#       unit: &id001 !astropy.units.Unit {unit: s}
+#       value: 14400.0
+#     exptime_min: !astropy.units.Quantity
+#       unit: *id001
+#       value: 300.0
+#     mission: ultrasat
+#     nside: 128
+#     skygrid: non-overlap
+#     skymap: data/skymaps/O5/14.fits
+#     snr: 10.0
+#     time_step: !astropy.units.Quantity
+#       unit: *id002
+#       value: 1.0
+#     visits: 2
+# - {objective_value: 0.948297551904112}
+# - {best_bound: 0.948297551904112}
+# - {solution_status: integer optimal solution}
+# - solution_time: !astropy.units.Quantity
+#     unit: *id001
+#     value: 29.20644998550415
+# - total_time:
+#     observe: !astropy.units.Quantity
+#       unit: *id001
+#       value: 9732.679465352416
+#     slack: !astropy.units.Quantity
+#       unit: *id001
+#       value: 75718.96812881914
+#     slew: !astropy.units.Quantity
+#       unit: *id001
+#       value: 48.35240582845614
+# - __serialized_columns__:
+#     duration:
+#       __class__: astropy.units.quantity.Quantity
+#       unit: !astropy.units.Unit {unit: s}
+#       value: !astropy.table.SerializedColumn {name: duration}
+#     observer_location:
+#       __class__: astropy.coordinates.earth.EarthLocation
+#       __info__: {description: Position of the spacecraft}
+#       ellipsoid: WGS84
+#       x: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__: {description: Position of the spacecraft}
+#         unit: &id003 !astropy.units.Unit {unit: km}
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.x}
+#       y: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__: {description: Position of the spacecraft}
+#         unit: *id003
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.y}
+#       z: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__: {description: Position of the spacecraft}
+#         unit: *id003
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.z}
+#     roll:
+#       __class__: astropy.units.quantity.Quantity
+#       __info__: {description: Position angle of the FOV}
+#       unit: &id004 !astropy.units.Unit {unit: deg}
+#       value: !astropy.table.SerializedColumn
+#         __class__: astropy.utils.masked.core.MaskedNDArray
+#         data: !astropy.table.SerializedColumn {name: roll}
+#     start_time:
+#       __class__: astropy.time.core.Time
+#       format: iso
+#       in_subfmt: '*'
+#       out_subfmt: '*'
+#       precision: 3
+#       scale: utc
+#       value: !astropy.table.SerializedColumn {name: start_time}
+#     target_coord:
+#       __class__: astropy.coordinates.sky_coordinate.SkyCoord
+#       __info__: {description: Coordinates of the center of the FOV}
+#       dec: !astropy.table.SerializedColumn
+#         __class__: astropy.coordinates.angles.core.Latitude
+#         unit: *id004
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: target_coord.dec}
+#       frame: icrs
+#       ra: !astropy.table.SerializedColumn
+#         __class__: astropy.coordinates.angles.core.Longitude
+#         unit: *id004
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: target_coord.ra}
+#         wrap_angle: !astropy.coordinates.Angle
+#           unit: *id004
+#           value: 360.0
+#       representation_type: spherical
+# schema: astropy-2.0
+action start_time duration observer_location.x observer_location.y observer_location.z target_coord.ra target_coord.dec roll
+observe "2012-07-14 16:04:59.480" 1079.9999999999818 -11636.463333178752 -40337.587515135565 -3954.430601457132 221.14 58.26 115.56632192994456
+slew "2012-07-14 16:22:59.480" 0.0 "" "" "" "" "" ""
+observe "2012-07-14 17:17:11.127" 1079.9999999999818 -11733.373279176318 -40433.20637940734 -2304.7670718328563 221.14 58.26 115.56632192994456
+slew "2012-07-14 17:35:11.127" 48.35240582845614 "" "" "" "" "" ""
+observe "2012-07-14 17:35:59.480" 3786.339732676226 -11766.84193581829 -40446.63274974214 -1830.353782343129 218.06 43.89 114.99606491512772
+slew "2012-07-14 18:39:05.819" 0.0 "" "" "" "" "" ""
+observe "2012-07-14 19:09:05.819" 3786.339732676226 -11939.310592749205 -40427.28331901641 636.16255495719 218.06 43.89 114.99606491512772
