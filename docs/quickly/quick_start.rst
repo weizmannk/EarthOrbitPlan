@@ -118,13 +118,13 @@ This produces:
 This workflow lets you quickly simulate and visualize follow-up plans for your favorite mission.
 For more details and advanced options, check out the `full documentation <https://m4opt.readthedocs.io/en/latest/>`_.
 
-- The pink regions show the scheduled observation pointings (the `footprints <https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html/> `-).
+- The pink regions show the scheduled observation pointings the `footprints <<https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html/>`_.
 - The green outline marks the 90% credible region of the GW localization.
 - The deep blue areas are always outside the telescope’s Field of Regard; the light blue areas are temporarily out of view.
 - The lower panel shows how the detection probability and covered sky area accumulate over time, with different colors indicating
   the number of times a region has been observed.
-- **The circle with a “+” symbol ($\oplus$) shows the direction of the center of the Earth (sub-Earth point) projected onto the sky.**
-- **The circle with a dot symbol ($\odot$) shows the direction of the Sun (sub-solar point) on the sky.**
+- The circle with a cross symbol (“:math:`\oplus`”) shows the direction of the center of the Earth (sub-Earth point) projected onto the sky.
+- The circle with a dot symbol (“:math:`\odot`”) shows the direction of the Sun (sub-solar point) on the sky.
 
 *Note:*
 This is a projection of the sky, **not a direct image of the Earth or the Moon**. The features shown correspond to sky coordinates,
