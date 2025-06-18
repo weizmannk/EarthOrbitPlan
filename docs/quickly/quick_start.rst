@@ -120,7 +120,7 @@ For more details and advanced options, check out the `full documentation <https:
 
 **Explanation of the animation:**
 
-- The pink regions show the scheduled observation pointings the  :ref:`footprints <<https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html/>`_.
+- The pink regions show the scheduled observation pointings the :ref:`footprints <https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html#footprint>`_.
 - The green outline marks the 90% credible region of the GW localization.
 - The deep blue areas are always outside the telescope’s Field of Regard; the light blue areas are temporarily out of view.
 - The lower panel shows how the detection probability and covered sky area accumulate over time, with different colors indicating
@@ -128,12 +128,13 @@ For more details and advanced options, check out the `full documentation <https:
 - The symbol :math:`\oplus` shows the direction of the center of the Earth (sub-Earth point) projected onto the sky.
 - The symbol :math:`\odot` shows the direction of the Sun (sub-solar point) on the sky.
 
+For more details of marker conventions,
+see the `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_.
+
 .. note::
+
    This is a projection of the sky, **not a direct image of the Earth or the Moon**. The features shown correspond to sky coordinates,
    not to physical locations on Earth or lunar positions.
-
-   For more details and marker conventions,
-   see the `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_.
 
 
 4. ECSV file inspection
