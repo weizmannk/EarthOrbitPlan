@@ -5,7 +5,7 @@ Scientific Rationale
 
 The emergence of all-sky surveys and the increasing number of real-time gravitational wave (GW) alerts have created a pressing need for reliable scheduling frameworks.
 These frameworks must efficiently coordinate follow-up observations across a range of telescopes and missions, both on the ground and in space.
-To meet this need, we developed |M4OPT|: an open-source toolkit designed to optimize the scheduling of follow-up campaigns.
+To meet this need, we developed `|M4OPT| <https://m4opt.readthedocs.io/en/latest/>`_ : an open-source toolkit designed to optimize the scheduling of follow-up campaigns.
 
 Why is scheduling so challenging?
 ---------------------------------
@@ -120,7 +120,7 @@ For more details and advanced options, check out the `full documentation <https:
 
 **Explanation of the animation:**
 
-- The pink regions show the scheduled observation pointings the :ref:`footprints <https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html#footprint>`_.
+- The pink regions show the scheduled observation pointings the :ref:`footprints <footprint>`..
 - The green outline marks the 90% credible region of the GW localization.
 - The deep blue areas are always outside the telescope’s Field of Regard; the light blue areas are temporarily out of view.
 - The lower panel shows how the detection probability and covered sky area accumulate over time, with different colors indicating

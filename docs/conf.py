@@ -65,8 +65,8 @@ exclude_patterns.append("_templates")  # noqa: F405
 
 rst_epilog = r"""
 .. |EarthOrbitPlan| replace:: *EarthOrbitPlan*
-.. |M4OPT| replace:: `M\ :sup:`4`\ OPT <https://github.com/m4opt/m4opt>`_
-"""
+.. |M4OPT| replace:: M\ :sup:`4`\ OPT
+"""  # noqa: F405
 # -- Project information ------------------------------------------------------
 
 # This does not *have* to match the package name, but typically does
