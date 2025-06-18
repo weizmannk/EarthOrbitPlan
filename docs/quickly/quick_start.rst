@@ -118,6 +118,8 @@ This produces:
 This workflow lets you quickly simulate and visualize follow-up plans for your favorite mission.
 For more details and advanced options, check out the `full documentation <https://m4opt.readthedocs.io/en/latest/>`_.
 
+**Explanation of the animation:**
+
 - The pink regions show the scheduled observation pointings the `footprints <<https://m4opt.readthedocs.io/en/latest/api/m4opt.fov.footprint.html/>`_.
 - The green outline marks the 90% credible region of the GW localization.
 - The deep blue areas are always outside the telescope’s Field of Regard; the light blue areas are temporarily out of view.
