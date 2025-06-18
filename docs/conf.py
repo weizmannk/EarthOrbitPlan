@@ -260,6 +260,7 @@ extensions.remove("numpydoc")
 extensions.append("sphinx.ext.napoleon")
 autodoc_typehints = "description"
 
+extensions.append("sphinx.ext.mathjax")
 
 # -- Options for the sphinxcontrib.bibtex extension ---------------------------
 extensions += ["sphinxcontrib.bibtex"]
