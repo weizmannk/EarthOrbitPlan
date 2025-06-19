@@ -1,38 +1,38 @@
-"""
-Zenodo GW Injection Data Unpacker
-=================================
+# """
+# Zenodo GW Injection Data Unpacker
+# =================================
 
-This module automates the unpacking, filtering, and conversion of injection datasets
-(e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
-localization files for specific observing runs (e.g., O5, O6), and outputs
-filtered ECSV tables and organized FITS files.
+# This module automates the unpacking, filtering, and conversion of injection datasets
+# (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+# localization files for specific observing runs (e.g., O5, O6), and outputs
+# filtered ECSV tables and organized FITS files.
 
-Usage
------
-Run from the command line:
+# Usage
+# -----
+# Run from the command line:
 
-    python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+#     python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
-Or use a config file:
+# Or use a config file:
 
-    python scenarios/zenodo_unpacker.py --config params.
+#     python scenarios/zenodo_unpacker.py --config params.
 
-Or import and call `process_zip()` in your Python code.
+# Or import and call `process_zip()` in your Python code.
 
-Config file example (`params.ini`)
-----------------------------------
-[params]
-zip = runs_SNR-10.zip
-subdir = runs_SNR-10
-runs = O5 O6
-detectors = HLVK
-data_dir = data
-skymap_dir = skymaps
-mass_threshold = 3.0
+# Config file example (`params.ini`)
+# ----------------------------------
+# [params]
+# zip = runs_SNR-10.zip
+# subdir = runs_SNR-10
+# runs = O5 O6
+# detectors = HLVK
+# data_dir = data
+# skymap_dir = skymaps
+# mass_threshold = 3.0
 
-Source data:
-    https://zenodo.org/records/14585837
-"""
+# Source data:
+#     https://zenodo.org/records/14585837
+# """
 
 import argparse
 import configparser
