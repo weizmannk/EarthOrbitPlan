@@ -11,7 +11,7 @@ Table of Contents
    :maxdepth: 2
 
    install/index
-   tools/index
+   scenarios/index
    config/index
    quickly/index
    scheduler/index
