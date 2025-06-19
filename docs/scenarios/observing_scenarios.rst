@@ -22,7 +22,7 @@ This modeling has the following features:
 - **Pairing function**: Primary and secondary masses for each system are drawn from the distribution and paired via a law depending on the mass ratio,
     favoring realistic binary formation.
 - **Spin distribution**: Spin magnitudes are drawn uniformly, and their directions are assumed isotropic.
-    Ranges differ depending on the mass of the objects (see paper for details).
+    Ranges differ depending on the mass of the objects (see :footcite:`2016A&A...594A..13P` for details).
 
 PDB Mass Distribution
 =====================
@@ -36,9 +36,9 @@ The figure below shows the 1D Power Law + Dip + Break (PDB) mass distribution...
    :figclass: align-center
 
    The 1D PDB mass distribution $p(m|\lambda)$ in the range $[1, 100]\,\, {M}_\odot$, for a representative set of hyperparameters $\lambda$.
-   See Table~\ref{tab:hyperpe-vals} in Appendix~\ref{App:Values_of_Hyperparam} in :cite:`2023ApJ...958..158K` for the full parameter values.
+   See Table~\ref{tab:hyperpe-vals} in Appendix~\ref{App:Values_of_Hyperparam} in :footcite:`2023ApJ...958..158K` for the full parameter values.
 
-The model is based on :cite:`2022ApJ...931..108F`, applied to the GWTC-3 distribution :cite:`2023PhRvX..13a1048A`, and implemented in our simulations as described in :cite:`2023ApJ...958..158K`.
+The model is based on :footcite:`2022ApJ...931..108F`, applied to the GWTC-3 distribution :footcite:`2023PhRvX..13a1048A`, and implemented in our simulations as described in :footcite:`2023ApJ...958..158K`.
 
 
 Observation Scenario Simulation
@@ -64,28 +64,28 @@ The simulation pipeline follows these steps:
    - Instrumental noise is simulated from the published `sensitivity curves (PSD) for each detector <https://dcc.ligo.org/T2200043-v3/public>`_.
    - Detector duty cycles are realistically accounted for.
 3. **Source localization**:
-   - Events passing the SNR threshold are localized on the sky using the `ligo.skymap` toolchain (e.g., `bayestar_localize_coincs`), producing a sky probability map and distance estimate for each event.
+   - Events passing the SNR threshold are localized on the sky using the `ligo.skymap` toolchain (e.g., :doc:`bayestar_localize_coincs <ligo.skymap:tool/bayestar_inject.html>`), producing a sky probability map and distance estimate for each event.
    - Credible regions (e.g., 90%) and the comoving distance distribution are extracted for each simulated event.
 4. **Observation scenario preparation**:
    - The properties of the simulated events (localization, distance, etc.) serve as the basis for defining various electromagnetic (EM) observation scenarios, according to the capabilities of the planned follow-up instruments.
    - This pipeline allows evaluation, for each instrumental configuration, of the probability of covering the EM counterpart of a given gravitational-wave event.
 
-The results of these simulations are used to update the `userguide`
+The results of these simulations are used to update the :doc:`Observing Capabilities <userguide:capabilities>`
 
 
 Tools and Resources
 ====================
 
-- The simulation pipeline primarily relies on the `ligo.skymap` software suite (https://lscsoft.docs.ligo.org/ligo.skymap/).
+- The simulation pipeline primarily relies on the :doc:`ligo.skymap <ligo.skymap>` software suite.
 - The scripts used to reproduce the entire population generation and simulation process are publicly available on GitHub (cf. https://github.com/lpsinger/observing-scenarios-simulations).
 - Sensitivity curves and other configuration parameters are drawn from official IGWN consortium publications.
 
 .. note::
 
     This page only describes the methodology for population generation and the simulation pipeline. For results and quantitative analysis,
-    srefer to the corresponding section :cite:`2023ApJ...958..158K`.
+    srefer to the corresponding section :footcite:`2023ApJ...958..158K`.
 
-
+==========================
 Zenodo Injection Unpacker
 ==========================
 
@@ -109,9 +109,6 @@ Source
 
 Zenodo Dataset: https://zenodo.org/records/14585837
 
-Full Code
----------
-
 .. .. literalinclude:: ../../scenarios/zenodo_unpacker.py
 ..    :language: python
 ..    :caption: Full code of `zenodo_unpacker.py`
@@ -126,3 +123,11 @@ Module Reference
    .. :undoc-members:
    .. :special-members: __init__, __call__
    .. :exclude-members: __weakref__, __dict__, __module__, __class__
+
+
+
+==========
+References
+==========
+
+.. footbibliography::
