@@ -44,6 +44,7 @@ For general use, installing M4OPT is sufficient to run all simulations and test 
 If you wish to explore additional GW–only scenarios, please refer to the `observing-scenarios`_
 repository for more details. Alternatively, you can install it manually using the following steps:
 
+
 Observing Scenarios Setup
 -------------------------
 
