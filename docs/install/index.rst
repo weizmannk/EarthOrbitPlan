@@ -4,13 +4,13 @@ Setup Guide
 ===========
 
 This guide explains how to install the required components to run EarthOrbitPlan. The pipeline is built around
-the |M4OPT| toolkit and also makes use of `observing-scenarios` to generate realistic gravitational wave follow-up situations.
-
-It is recommended to use a virtual environment (e.g. via conda or venv) to avoid conflicts between dependencies.
+the  :doc:`|M4OPT| toolkit <m4opt:docs/index>`  and also makes use of `observing-scenarios`_  to generate realistic
+gravitational wave follow-up situations. It is recommended to use a virtual environment (e.g. via conda or venv)
+to avoid conflicts between dependencies.
 
 .. note::
 
-   EarthOrbitPlan is designed for educational use and builds directly on M4OPT.
+   EarthOrbitPlan is designed for educational use and builds directly on |M4OPT|.
    It provides a guided way to run simulations based on skymaps from GW detectors and
    schedule follow-up facilities with  such as UVEX, ULTRASAT, ZTF, and Rubin.
 
@@ -20,7 +20,7 @@ Dependencies
 You will need the following:
 
 - Python >= 3.11
-- |M4OPT|
+- |M4OPT| doc:m4opt
 - `observing-scenarios`_
 
 
@@ -64,7 +64,7 @@ Clone and install observing-scenarios
 
 .. note::
 
-   The `observing-scenarios` package is optional, but useful for testing standalone GW follow-up strategies without electromagnetic scheduling.
+   The `observing-scenarios`_ package is optional, but useful for testing standalone GW follow-up strategies without electromagnetic scheduling.
    It provides realistic skymaps and scenarios commonly used in follow-up campaigns.
 
 

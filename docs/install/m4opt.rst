@@ -1,13 +1,13 @@
 .. _m4opt:
 
 |M4OPT| Setup
--------------
+=============
 
 1. Setting Up |M4OPT|
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Clone and install |M4OPT|
-^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The recommended way to install |M4OPT| is using pip:
 
@@ -26,7 +26,7 @@ Alternatively, you can clone the repository and install it in editable mode
    cd ..
 
 Verify Installation
-^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -35,14 +35,14 @@ Verify Installation
    m4opt schedule --mission ultrasat
 
 2. Install CPLEX
-~~~~~~~~~~~~~~~~
+----------------
 
 To install CPLEX, follow the instructions at:
 
 `Install CPLEX <https://m4opt.readthedocs.io/en/latest/install/cplex.html>`_
 
 3. Installing Additional Dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 .. code-block:: bash
 
@@ -50,7 +50,7 @@ To install CPLEX, follow the instructions at:
    pip install dask
 
 4. Verifying Installation
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 .. code-block:: bash
 
