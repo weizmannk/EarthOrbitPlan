@@ -1,21 +1,22 @@
 .. _m4opt:
 
-M4OPT Setup Guide
-=================
+|M4OPT| Setup
+-------------
 
-1. Setting Up M4OPT
--------------------
+1. Setting Up |M4OPT|
+~~~~~~~~~~~~~~~~~~~~~
 
-Create and Activate a Conda Environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Clone and install |M4OPT|
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The recommended way to install |M4OPT| is using pip:
 
 .. code-block:: bash
 
-   conda create --name m4opt_env python=3.11
-   conda activate m4opt_env
+   pip install m4opt
 
-Clone and Install M4OPT
-~~~~~~~~~~~~~~~~~~~~~~~
+Alternatively, you can clone the repository and install it in editable mode
+(if you want to explore or modify the source code):
 
 .. code-block:: bash
 
@@ -25,7 +26,7 @@ Clone and Install M4OPT
    cd ..
 
 Verify Installation
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -34,14 +35,14 @@ Verify Installation
    m4opt schedule --mission ultrasat
 
 2. Install CPLEX
-----------------
+~~~~~~~~~~~~~~~~
 
 To install CPLEX, follow the instructions at:
 
 `Install CPLEX <https://m4opt.readthedocs.io/en/latest/install/cplex.html>`_
 
 3. Installing Additional Dependencies
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -49,7 +50,7 @@ To install CPLEX, follow the instructions at:
    pip install dask
 
 4. Verifying Installation
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 

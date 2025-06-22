@@ -1,7 +1,10 @@
-Welcome to EarthOrbitPlan's documentation
-=========================================
+EarthOrbitPlan: An Educational Framework for Multimessenger Observing Scenarios
+===============================================================================
 
-EarthOrbitPlan is a scheduling and analysis pipeline that leverages the M4OPT toolkit to plan electromagnetic follow-up observations of gravitational wave events.
+EarthOrbitPlan is an educational framework that introduces students and researchers to an end-to-end workflow for simulating compact binary
+coalescences (CBCs), from their detection by the international gravitational-wave network (IGWN) to the preparation of electromagnetic follow-up
+observation plans using the M4OPT toolkit. These follow-up campaigns span a wide range of facilities, from Far-UV instruments such as UVEX,
+to Near-UV missions like UVEX and ULTRASAT, and optical surveys including ZTF and Rubin.
 
 *****************
 Table of Contents
@@ -15,7 +18,6 @@ Table of Contents
    config/index
    quickly/index
    scheduler/index
-
 
 
 Indices and Search
