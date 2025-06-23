@@ -3,10 +3,10 @@
 .. ..:math:`\mathrm{M^4OPT}` Setup
 .. =============
 
-1. Setting Up :math:`\mathrm{M^4OPT}`
+1. Setting Up |M4OPT|
 ---------------------
 
-Clone and install :math:`\mathrm{M^4OPT}`
+Clone and install |M4OPT|
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The recommended way to install `M⁴OPT <https://m4opt.readthedocs.io/en/latest/install/index.html>`_ is using pip:
@@ -58,4 +58,4 @@ To install CPLEX, follow the instructions at:
 
 For additional documentation:
 
-`M4OPT Documentation <https://m4opt.readthedocs.io/en/latest/install/index.html>`_
+`M4OPTocumentation <https://m4opt.readthedocs.io/en/latest/install/index.html>`_
