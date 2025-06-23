@@ -30,8 +30,7 @@ import os
 import sys
 
 import tomllib
-
-from ..utils import short_alpha  # noqa: F401
+from utils import short_alpha  # noqa: F401
 
 try:
     from sphinx_astropy.conf.v2 import *  # noqa
