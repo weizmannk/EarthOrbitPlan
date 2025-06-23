@@ -44,6 +44,7 @@ Environment setup (using conda)
 
 
 .. note::
+
    For general use, installing M4OPT is sufficient to run all simulations and test cases provided by EarthOrbitPlan.
 
    If you wish to explore additional GW–only scenarios, please refer to the `observing-scenarios`_
