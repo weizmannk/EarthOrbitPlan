@@ -34,6 +34,9 @@ Environment setup (using conda)
    conda activate earthorbitplan
 
 
+|M4OPT| Setup
+-------------
+
 .. toctree::
    :maxdepth: 2
 

@@ -25,10 +25,13 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
+import datetime
 import os
 import sys
 
 import tomllib
+
+from ..utils import short_alpha  # noqa: F401
 
 try:
     from sphinx_astropy.conf.v2 import *  # noqa
@@ -48,12 +51,55 @@ with open(os.path.join(os.path.dirname(__file__), "..", "pyproject.toml"), "rb")
 # By default, highlight as Python 3.
 highlight_language = "python3"
 
-# If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.2'
 
-# To perform a Sphinx version check that needs to be more specific than
-# major.minor, call `check_sphinx_version("X.Y.Z")` here.
-# check_sphinx_version("1.2.1")
+# --- Additional/local Sphinx extensions ---
+# Add only those extensions that are NOT already included in sphinx_astropy.conf.v2
+
+try:
+    extensions  # noqa: F405
+except NameError:
+    extensions = [
+        "sphinx.ext.autodoc",  # Automatic documentation for Python objects (functions, classes, etc.)
+        "sphinx.ext.napoleon",  # Support for Google-style and NumPy-style docstrings
+        "sphinx.ext.intersphinx",  # Cross-references to the docs of other projects
+        "sphinx.ext.todo",  # Use .. todo:: directives in your docs
+        "sphinx.ext.viewcode",  # Add links to highlighted source code in the API docs
+        "sphinxcontrib.bibtex",  # Scientific references (for citations)
+        "sphinx.ext.autosummary",  # Automatically generate summaries for modules, functions, classes, etc.
+        "sphinx.ext.extlinks",  # Create custom external links (e.g., to GitHub issues or web pages)
+        "sphinx.ext.coverage",  # Display code coverage information in the documentation
+        "sphinx.ext.inheritance_diagram",  # Generate inheritance diagrams for classes
+        "sphinx.ext.graphviz",  # Integrate Graphviz diagrams and graphs into the documentation
+        "sphinx_automodapi.automodapi",
+        "sphinxcontrib.jquery",
+        "sphinx_copybutton",
+        "sphinx_astropy.ext.intersphinx_toggle",
+        "sphinx_automodapi.smart_resolver",
+        "pytest_doctestplus.sphinx.doctestplus",
+        "matplotlib.sphinxext.plot_directive",
+        "sphinx_astropy.ext.generate_config",
+        "sphinx_astropy.ext.missing_static",
+        "sphinx_astropy.ext.changelog_links",
+        # other extensions...
+    ]
+
+# Remove 'numpydoc' if present (we want to use 'napoleon' instead)
+if "numpydoc" in extensions:
+    extensions.remove("numpydoc")
+
+additional_extensions = [
+    "sphinx.ext.napoleon",
+    "sphinxcontrib.typer",
+    "sphinxcontrib.bibtex",
+    "sphinx_astropy.ext.edit_on_github",
+    "sphinx.ext.mathjax",
+]
+for ext in additional_extensions:
+    if ext not in extensions:
+        extensions.append(ext)
+
+# Activate TODO
+todo_include_todos = True
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -67,69 +113,18 @@ rst_epilog = r"""
 .. |EarthOrbitPlan| replace:: *EarthOrbitPlan*
 .. |M4OPT| replace:: M\ :sup:`4`\ OPT
 """  # noqa: F405
+
 # -- Project information ------------------------------------------------------
 
 # This does not *have* to match the package name, but typically does
 project = project_metadata["name"]
 author = project_metadata["authors"][0]["name"]
-# copyright = "{0}, {1}".format(datetime.datetime.now().year, author)
-
-# # The version info for the project you're documenting, acts as replacement for
-# # |version| and |release|, also used in various other places throughout the
-# # built documents.
-
-# import_module(project_metadata["name"])
-# package = sys.modules[project_metadata["name"]]
-
-# # The short X.Y version.
-# version = package.__version__.split("-", 1)[0]
-# # The full version, including alpha/beta/rc tags.
-# release = package.__version__
-
-# # Only include dev docs in dev version.
-# dev = "dev" in release
+copyright = "{0}, {1}".format(datetime.datetime.now().year, author)
 
 
 # -- Options for HTML output --------------------------------------------------
 
-# A NOTE ON HTML THEMES
-# The global astropy configuration uses a custom theme, 'bootstrap-astropy',
-# which is installed along with astropy. A different theme can be used or
-# the options for this theme can be modified by overriding some of the
-# variables set in the global configuration. The variables set in the
-# global configuration are listed below, commented out.
-
-
-# Add any paths that contain custom themes here, relative to this directory.
-# To use a different custom theme, add the directory containing the theme.
-# html_theme_path = []
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes. To override the custom theme, set this to the
-# name of a builtin theme or the name of a custom theme in html_theme_path.
-# html_theme = None
-
 html_static_path = ["_static"]
-html_css_files = [
-    "css/risk_table.css",
-]
-
-
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
-
-# The name of an image file (relative to this directory) to place at the top
-# of the sidebar.
-# html_logo = ''
-
-# The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
-# pixels large.
-# html_favicon = ''
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = ''
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -158,9 +153,7 @@ html_context = {
 }
 
 # -- Options for LaTeX output -------------------------------------------------
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
+# If we want to use latex format
 latex_documents = [
     ("index", project + ".tex", project + " Documentation", author, "manual")
 ]
@@ -175,51 +168,27 @@ man_pages = [("index", project.lower(), project + " Documentation", [author], 1)
 
 # -- Options for the edit_on_github extension ---------------------------------
 
-extensions += ["sphinx_astropy.ext.edit_on_github"]  # noqa: F405
-
-edit_on_github_project = "EarthOrbitPlan"
+edit_on_github_project = "weizmannk/EarthOrbitPlan"
 edit_on_github_branch = "main"
 
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
 
+
+# Generate the URL for editing on GitHub
+edit_on_github_url = f"https://github.com/{edit_on_github_project}/edit/{edit_on_github_branch}/"  # Link to GitHub editor
+
 # -- Resolving issue number to links in changelog -----------------------------
 github_issues_url = "https://github.com/{0}/issues/".format(edit_on_github_project)
 
-
 # -- Options for linkcheck output -------------------------------------------
-linkcheck_retry = 5
+# Ignore issue/PR links; set retries/timeouts for external link checking
 linkcheck_ignore = [
-    r"https://github\.com/weizmannk/EarthOrbitPlan/(?:issues|pull)/\d+",
+    r"https://github\.com/astro-transients/tilepy/(?:issues|pull)/\d+",
 ]
+linkcheck_retry = 5
 linkcheck_timeout = 180
 linkcheck_anchors = False
-
-# -- Turn on nitpicky mode for sphinx (to warn about references not found) ----
-#
-# nitpicky = True
-# nitpick_ignore = []
-#
-# Some warnings are impossible to suppress, and you can list specific references
-# that should be ignored in a nitpick-exceptions file which should be inside
-# the docs/ directory. The format of the file should be:
-#
-# <type> <class>
-#
-# for example:
-#
-# py:class astropy.io.votable.tree.Element
-# py:class astropy.io.votable.tree.SimpleElement
-# py:class astropy.io.votable.tree.SimpleElementWithContent
-#
-# Uncomment the following lines to enable the exceptions:
-#
-# for line in open('nitpick-exceptions'):
-#     if line.strip() == "" or line.startswith("#"):
-#         continue
-#     dtype, target = line.split(None, 1)
-#     target = target.strip()
-#     nitpick_ignore.append((dtype, six.u(target)))
 
 
 # -- Options for intersphinx --------------------------------------------------
@@ -246,21 +215,13 @@ plot_html_show_formats = False
 
 
 # -- Options for the sphinx.ext.todo extension --------------------------------
-extensions += ["sphinx.ext.todo"]
+# extensions += ["sphinx.ext.todo"]
 todo_include_todos = True
 
+# -- API documentation options -----------------------------------------------
+autodoc_typehints = "description"  # Show type hints in the API documentation (optional)
 
-# -- Options for the sphinxcontrib.typer extension ----------------------------
-extensions += ["sphinxcontrib.typer"]
 
-
-# -- Merge type annotations with numpydoc parameter docstrings ----------------
-extensions.remove("numpydoc")
-extensions.append("sphinx.ext.napoleon")
-autodoc_typehints = "description"
-
-extensions.append("sphinx.ext.mathjax")
-
-# -- Options for the sphinxcontrib.bibtex extension ---------------------------
-extensions += ["sphinxcontrib.bibtex"]
+# -# -- BibTeX for scientific references ----------------------------------------
 bibtex_bibfiles = ["refs.bib"]
+bibtex_default_style = "short_alpha"
