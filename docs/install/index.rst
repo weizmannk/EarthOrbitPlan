@@ -11,7 +11,7 @@ to avoid conflicts between dependencies.
 
 .. note::
 
-   EarthOrbitPlan is designed for educational use and builds directly on |M4OPT|.
+   EarthOrbitPlan is designed for educational use and builds directly on :math:`\mathrm{M^4OPT}`.
    It provides a guided way to run simulations based on skymaps from GW detectors and
    schedule follow-up facilities with  such as UVEX, ULTRASAT, ZTF, and Rubin.
 
@@ -34,8 +34,8 @@ Environment setup (using conda)
    conda activate earthorbitplan
 
 
-|M4OPT| Setup
--------------
+:math:`\mathrm{M^4OPT}` Setup
+-----------------------------
 
 .. toctree::
    :maxdepth: 2

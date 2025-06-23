@@ -13,7 +13,7 @@ GW alerts often have large localization uncertainties—sometimes hundreds of sq
 (looking at as much area as possible) versus *depth* (spending enough time on each field to detect faint signals).
 Moreover, electromagnetic (EM) counterparts to GW events can evolve rapidly, so observation plans must be generated quickly and efficiently.
 
-|M4OPT| addresses this by formulating the scheduling task as a **Mixed Integer Linear Programming (MILP)** problem.
+:math:`\mathrm{M^4OPT}` addresses this by formulating the scheduling task as a **Mixed Integer Linear Programming (MILP)** problem.
 This approach dynamically allocates observation time across fields and optimizes the exposure time for each one, maximizing the overall
 probability of detection. Unlike fixed or manually tuned schedules, this method adapts to the conditions of each field, such as:
 
@@ -23,7 +23,7 @@ probability of detection. Unlike fixed or manually tuned schedules, this method 
 - instrumental sensitivity.
 
 
-In addition, |M4OPT| takes into account practical telescope constraints, such as Sun and Moon exclusion zones, dynamic field-of-view, and slewing time between fields.
+In addition, :math:`\mathrm{M^4OPT}` takes into account practical telescope constraints, such as Sun and Moon exclusion zones, dynamic field-of-view, and slewing time between fields.
 
 This leads to a much more efficient use of telescope time and increases the chances of detecting faint or distant transients.
 
@@ -43,7 +43,7 @@ This modeling ensures realistic and robust predictions for observation planning.
 Run process
 ===========
 
-Here is how you can run your first test with |M4OPT| using the ULTRASAT mission.
+Here is how you can run your first test with :math:`\mathrm{M^4OPT}` using the ULTRASAT mission.
 
 1. Running a Scheduling Simulation
 ---------------------------------

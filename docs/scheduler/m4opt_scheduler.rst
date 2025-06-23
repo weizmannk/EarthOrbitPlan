@@ -3,7 +3,7 @@
 Documentation for m4opt-scheduler.py: Batch Scheduling Script
 ===========================================================
 
-This script executes |M4OPT|-based scheduling over a batch of gravitational wave sky maps
+This script executes :math:`\mathrm{M^4OPT}`-based scheduling over a batch of gravitational wave sky maps
 using different backend methods (Condor, local parallel, or Dask). It supports command-line
 configuration and .ini-based setup.
 
