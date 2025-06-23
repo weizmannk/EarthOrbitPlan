@@ -4,7 +4,8 @@ Setup Guide
 ===========
 
 This guide explains how to install the required components to run EarthOrbitPlan. The pipeline is built around
-the  :doc:`|M4OPT| toolkit <m4opt:docs/index>`  and also makes use of `observing-scenarios`_  to generate realistic
+the :math:`\mathrm{M^4OPT}` `toolkit <https://m4opt.readthedocs.io/en/latest/>`_
+and also makes use of `observing-scenarios`_  to generate realistic
 gravitational wave follow-up situations. It is recommended to use a virtual environment (e.g. via conda or venv)
 to avoid conflicts between dependencies.
 
@@ -20,7 +21,7 @@ Dependencies
 You will need the following:
 
 - Python >= 3.11
-- |M4OPT| doc:m4opt
+- `M⁴OPT <https://m4opt.readthedocs.io/en/latest/>`_
 - `observing-scenarios`_
 
 
@@ -69,3 +70,5 @@ Clone and install observing-scenarios
 
 
 .. _observing-scenarios: https://github.com/lpsinger/observing-scenarios-simulations
+
+.. _m4opt: https://m4opt.readthedocs.io/en/latest/

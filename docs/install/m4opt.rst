@@ -9,7 +9,7 @@
 Clone and install |M4OPT|
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The recommended way to install |M4OPT| is using pip:
+The recommended way to install `|M⁴OPT| <https://m4opt.readthedocs.io/en/latest/install/index.html>`_ is using pip:
 
 .. code-block:: bash
 

@@ -5,7 +5,7 @@ Scientific Rationale
 
 The emergence of all-sky surveys and the increasing number of real-time gravitational wave (GW) alerts have created a pressing need for reliable scheduling frameworks.
 These frameworks must efficiently coordinate follow-up observations across a range of telescopes and missions, both on the ground and in space.
-To meet this need, we developed `|M4OPT| <https://m4opt.readthedocs.io/en/latest/>`_ : an open-source toolkit designed to optimize the scheduling of follow-up campaigns.
+To meet this need, we developed `|M⁴OPT| <https://m4opt.readthedocs.io/en/latest/>`_ : an open-source toolkit designed to optimize the scheduling of follow-up campaigns.
 
 Why is scheduling so challenging?
 ---------------------------------
