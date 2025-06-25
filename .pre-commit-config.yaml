@@ -33,6 +33,7 @@ repos:
       # Run the linter.
       - id: ruff
         args: ["--extend-select", "I", "--fix"]
+        exclude: ^scenarios/psds\.xml$
       # Run the formatter.
       - id: ruff-format
   - repo: https://github.com/codespell-project/codespell

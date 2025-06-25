@@ -92,6 +92,7 @@ additional_extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_astropy.ext.edit_on_github",
     "sphinx.ext.mathjax",
+    "sphinx_gallery.gen_gallery",
 ]
 for ext in additional_extensions:
     if ext not in extensions:
@@ -99,6 +100,10 @@ for ext in additional_extensions:
 
 # Activate TODO
 todo_include_todos = True
+
+nbsphinx_gallery_conf = {
+    "gallery_directories": ["notebooks"],  # Folder(s) with the jupyter  notebooks
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

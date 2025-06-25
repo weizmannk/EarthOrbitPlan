@@ -32,6 +32,8 @@ docs = [
     "sphinx-astropy[confv2]",
     "sphinxcontrib-bibtex",
     "sphinxcontrib-typer",
+    "nbsphinx",
+    "nbsphinx-gallery",
     "sphinx",
     "numpydoc",
     "graphviz",
