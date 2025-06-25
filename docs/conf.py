@@ -118,6 +118,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": gallery_dirs,
     "capture_repr": ("_repr_html_", "__repr__"),
 }
+# nbsphinx_allow_errors = True
 
 # nbsphinx_gallery_conf = {
 #      "examples_dirs": "../tutorials",  # Folder(s) with the jupyter  notebooks
