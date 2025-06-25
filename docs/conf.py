@@ -29,8 +29,13 @@ import datetime
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath(".."))
 import tomllib
-from utils import short_alpha  # noqa: F401
+from sphinx_gallery.sorting import FileNameSortKey  # noqa: F401
+
+# docs/_pybtex_style/short_alpha.py:
+sys.path.insert(0, os.path.abspath("_pybtex_style"))
+import short_alpha  # noqa: F401
 
 try:
     from sphinx_astropy.conf.v2 import *  # noqa
@@ -102,11 +107,33 @@ for ext in additional_extensions:
 # Activate TODO
 todo_include_todos = True
 
-nbsphinx_gallery_conf = {
-    "gallery_directories": "./notebooks",  # Folder(s) with the jupyter  notebooks
-    # ["./notebooks", "./autre_dossier"]  # for other folders
-    "gallery_dirs": "auto_examples",
+
+# -- Options for nbsphinx -----------------------------------------------------
+
+examples_dirs = ["./tutorials"]
+gallery_dirs = ["auto_tutorials"]
+
+sphinx_gallery_conf = {
+    "examples_dirs": examples_dirs,
+    "gallery_dirs": gallery_dirs,
+    "capture_repr": ("_repr_html_", "__repr__"),
 }
+
+# nbsphinx_gallery_conf = {
+#      "examples_dirs": "../tutorials",  # Folder(s) with the jupyter  notebooks
+#     # ["./notebooks", "./autre_dossier"]  # for other folders
+#     "gallery_dirs": "auto_tutorials",  # Folder where to save the generated gallery
+#     'capture_repr': ('_repr_html_', '__repr__'),
+#     # # path to where to save gallery generated output
+#     # 'gallery_dirs': ['auto_gallery-1', 'auto_gallery-2'],
+#     # # specify that examples should be ordered according to filename
+#     # 'within_subsection_order': FileNameSortKey,
+#     # # directory where function granular galleries are stored
+#     # 'backreferences_dir': 'gen_modules/backreferences',
+#     # # Modules for which function level galleries are created.  In
+#     # # this case sphinx_gallery and numpy in a tuple of strings.
+#     # 'doc_module': ('SampleModule'),
+# }
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -232,3 +259,4 @@ autodoc_typehints = "description"  # Show type hints in the API documentation (o
 # -# -- BibTeX for scientific references ----------------------------------------
 bibtex_bibfiles = ["refs.bib"]
 bibtex_default_style = "short_alpha"
+# bibtex_author_limit = 3

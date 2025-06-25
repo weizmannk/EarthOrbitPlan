@@ -4,7 +4,7 @@ Observing Scenario Simulation
 =============================
 
 Introduction
-~~~~~~~~~~~~
+------------
 
 A robust understanding of the sensitivity, detection efficiency, and localization capabilities of the global gravitational wave detector network
 is essential for optimizing observational strategies and guiding the development of future telescopes and missions.
@@ -13,7 +13,7 @@ provide realistic forecasts of network performance during key science runs, nota
 
 Recent scenario studies :footcite:`2022ApJ...924...54P` have been carefully calibrated using public alerts from O3, improving the accuracy of localization by incorporating
 realistic signal-to-noise ratio (SNR) thresholds and single-detector search strategies.
-These efforts have advanced our ability to explore compact object populations, r-process nucleosynthesis, and cosmological measurements :footcite:`kiend2024,2013ApJ...767..124N,2017ApJ...848L..12A`.
+These efforts have advanced our ability to explore compact object populations, r-process nucleosynthesis, and cosmological measurements :footcite:`kiendrebeogo:tel-04796327,2013ApJ...767..124N,2017ApJ...848L..12A`.
 
 The O4 observing run began with both LIGO Hanford (LHO) and LIGO Livingston (LLO) in operation, achieving a binary neutron star (BNS) range of 140–165 Mpc.
 After a commissioning break, Virgo rejoined the network in March 2024 with a BNS range of 55 Mpc, followed later by KAGRA. O4 is scheduled to continue until October 7, 2025,
@@ -22,14 +22,14 @@ For up-to-date information on detector status and sensitivity, see the `real-tim
 
 To model these capabilities, we simulate realistic astrophysical distributions of mass, spin, and sky locations for compact binary coalescences (CBCs).
 The GWTC-3 distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A` (Power Law + Dip + Break, PDB) serves as the foundation for population generation
-in these simulations :footcite:`kiend2024,2023ApJ...958..158K`.
+in these simulations :footcite:`kiendrebeogo:tel-04796327,2023ApJ...958..158K`.
 
 This section details the procedure for generating CBC populations from the GWTC-3 distribution and describes the simulation pipeline used to
 reproduce observing scenarios for the O4, O5 and O6 campaigns of the LIGO-Virgo-KAGRA (LVK) network.
 
 
 Population Modeling: GWTC-3 (PDB) Distribution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The so-called GWTC-3 distribution  provides an empirical description of the compact object population based on the GWTC-3 catalog data.
 This modeling has the following features:
@@ -41,18 +41,16 @@ This modeling has the following features:
 - **Spin distribution**: Spin magnitudes are drawn uniformly, and their directions are assumed isotropic. Ranges differ depending on the mass of the objects (see :footcite:`2016A&A...594A..13P` for details).
 
 Mass Distribution and the Mass Gap
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The figure below shows the 1D Power Law + Dip + Break (PDB) mass distribution...
-The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\,\, {M}_\odot`,
-for a representative set of hyperparameters :math:`\lambda`.(See the  Table 7 in Appendix A.1 of :footcite:`2023ApJ...958..158K` for the full parameter values).
+The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\,\, {M}_\odot`.
 
 .. plot::
-   :caption: |
-      Population model for the primary mass distribution.
-      The blue shaded region and dashed lines highlight the "mass gap" between neutron stars and black holes.
-   :include-source: False
-   :scale: 0.43
+   :caption: Population model for the primary mass distribution.
+            The blue shaded region and dashed lines highlight the "mass gap" between neutron stars and black holes.
+   :include-source: True
+   :scale: 43
 
    import numpy as np
    import matplotlib.pyplot as plt
@@ -97,7 +95,7 @@ for a representative set of hyperparameters :math:`\lambda`.(See the  Table 7 in
    ax.plot(m, m * mass_distribution_1d(m), color='navy', linewidth=2, label='Mass distribution')
 
    ax.set_xlim(1, 100)
-   ax.set_ylim(0, 99.99)
+   ax.set_ylim(1e-2, 99.99)
    ax.set_xlabel(r"mass, $m$ [$M_\odot$]")
    ax.set_ylabel(r"$m\,p(m|\lambda)$")
 
@@ -129,18 +127,65 @@ for a representative set of hyperparameters :math:`\lambda`.(See the  Table 7 in
    plt.close()
 
 The model is based on :footcite:`2022ApJ...931..108F`, applied to the GWTC-3 distribution :footcite:`2023PhRvX..13a1048A`, and implemented
-in our simulations as described in :footcite:`2023ApJ...958..158K`.
+in our simulations as described in :footcite:`2023ApJ...958..158K`. The table below provides a detailed description of all population model hyperparameters.
+
+.. table:: ** The full  set of hyperparameters :math:`\lambda`.**
+
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | **Parameter**        | **Description**                                                   |         | **Value**              |
+    +======================+===================================================================+=========+========================+
+    | :math:`\alpha_1`     | Spectral index for the power law of the mass distribution at      |         | -2.16                  |
+    |                      | low mass.                                                         |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\alpha_2`     | Spectral index for the power law of the mass distribution at      |         | -1.46                  |
+    |                      | high mass.                                                        |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`A`            | Lower-mass gap depth.                                             |         | 0.97                   |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`M^{\mathrm{gap}}_{\rm low}`  | Location of lower end of the mass gap.             |         | :math:`2.72\,M_\odot`  |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`M^{\mathrm{gap}}_{\rm high}` | Location of upper end of the mass gap.             |         | :math:`6.13\,M_\odot`  |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\eta_{\rm low}`              | Parameter controlling how the rate tapers          |         | 50                     |
+    |                                     | at the low end of the mass gap.                    |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\eta_{\rm high}`             | Parameter controlling how the rate tapers          |         | 50                     |
+    |                                     | at the high end of the mass gap.                   |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\eta_{\text{min}}`           | Parameter controlling tapering of the power        |         | 50                     |
+    |                                     | law at low mass.                                   |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\eta_{\text{max}}`           | Parameter controlling tapering of the power        |         | 4.91                   |
+    |                                     | law at high mass.                                  |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`\beta`        | Spectral index for the power-law-in-mass-ratio pairing function.  |         | 1.89                   |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`M_{\rm min}`  | Minimum mass of the mass distribution.                            |         | :math:`1.16\,M_\odot`  |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`M_{\rm max}`  | Onset location of high-mass tapering.                             |         | :math:`54.38\,M_\odot` |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`a_{\mathrm{max, NS}}`        | Maximum allowed component spin for objects         |         | 0.4                    |
+    |                                     | with mass  < :math:`2.5\,M_\odot`.                 |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+    | :math:`a_{\mathrm{max, BH}}`        | Maximum allowed component spin for objects         |         | 1                      |
+    |                                     | with mass ≥ :math:`2.5\,M_\odot`.                  |         |                        |
+    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+
+.. note::
+
+   See :footcite:`2022ApJ...931..108F,2023ApJ...958..158K` for full definitions and details.
+
 
 
 .. plot::
-   :caption: |
+   :caption:
         Gaussian kernel density estimator analysis of the PDB/GWTC-3 distribution, showing comparative mass and spin distributions across CBC categories.
-      **Left:** Logarithmic 2D distribution of primary vs. secondary masses for the first 1,000 PDB/GWTC-3 CBC events,
+      **Left:** Logarithmic 2D distribution of primary vs. secondary masses for the first 100,000 PDB/GWTC-3 CBC events,
        based on Gaussian kernel density estimation.
       **Right:** Spin distribution of the same events, showing component spin correlations.
       Color scale indicates the event density per pixel.
    :include-source: False
-   :scale: 0.43
+   :scale: 43
 
    import os
    from astropy.table import Table
@@ -151,7 +196,7 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`.
    data_dir = '../../scenarios/farah.h5'
    outdir = '.'
 
-   Farah = Table.read(data_dir)[:1000]
+   Farah = Table.read(data_dir)[:10000]
    Farah.sort('mass1')
    ns_max_mass = 3.0
 
@@ -189,7 +234,7 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`.
 
 .. note::
 
-   This example uses only the first 1,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
+   This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
    For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
    The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
 
@@ -199,14 +244,14 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`.
 
 
 Simulation process
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Our simulations explore multiple detector configurations and signal-to-noise (SNR) thresholds to estimate GW detection rates under realistic observing conditions:
 
 a. **SNR threshold of 8**
 
-- The **HL configuration**, deployed during the O4a observing run, the simulations data are available at `Zenodo <https://doi.org/10.5281/zenodo.10078926>`_.
-- The **HLVK configuration**, planned for O4 and O5,  results are in `Zenodo <https://doi.org/10.5281/zenodo.7026209>`_.
+- The **HL configuration**, deployed during the O4a observing run, the simulations data are available at `HL-config <https://doi.org/10.5281/zenodo.10078926>`_.
+- The **HLVK configuration**, planned for O4 and O5,  results are in `HLVK-config <https://doi.org/10.5281/zenodo.7026209>`_.
 - We also simulate **HLV and HV configurations** for O5 to assess the effect of detector configurations, including scenarios where only one LIGO detector is operating, the simulation data are located in `zenodo <https://zenodo.org/records/15617982>`_.
 
 b. **SNR threshold of 10**
@@ -236,14 +281,14 @@ A large number of binary systems (e.g., :math:`10^6`) are generated by drawing t
 
 The results of these simulations are used to update the :doc:`Observing Capabilities <userguide:capabilities>`
 
+
 .. toctree::
-   :maxdepth: 1
+   :hidden:
 
-   ../notebooks/compute_GW_detection_rate
-
+   auto_tutorials/index
 
 Tools and Resources
-====================
+-------------------
 
 - The simulation pipeline primarily relies on the `ligo.skymap <https://lscsoft.docs.ligo.org/ligo.skymap>`_ software suite.
 - The scripts used to reproduce the entire population generation and simulation process are publicly available on GitHub (cf. https://github.com/lpsinger/observing-scenarios-simulations).
@@ -256,7 +301,6 @@ Tools and Resources
 
 
 
-=================================
 Zenodo GW Injection Data Unpacker
 =================================
 
@@ -301,6 +345,8 @@ Source
 
 Zenodo Dataset: https://zenodo.org/records/14585837
 
+
+
 .. .. literalinclude:: ../../scenarios/zenodo_unpacker.py
 ..    :language: python
 ..    :caption: Full code of `zenodo_unpacker.py`
@@ -310,16 +356,8 @@ Module Reference
 ----------------
 
 .. automodapi:: scenarios.zenodo_unpacker
-   .. :show-inheritance:
-   .. :members:
-   .. :private-members:
-   .. :undoc-members:
-   .. :special-members: __init__, __call__
-   .. :exclude-members: __weakref__, __dict__, __module__, __class__
+    :no-inheritance-diagram:
 
-
-
-==========
 References
 ==========
 

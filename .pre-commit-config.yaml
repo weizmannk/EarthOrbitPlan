@@ -41,5 +41,20 @@ repos:
     hooks:
       - id: codespell
         args: ["--write-changes"]
+        exclude: ^docs/refs\.bib$
         additional_dependencies:
           - tomli
+
+
+  # Black is the uncompromising Python code formatter.
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black-jupyter
+        types: [jupyter]
+
+  # strip output from Jupyter and IPython notebooks
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
