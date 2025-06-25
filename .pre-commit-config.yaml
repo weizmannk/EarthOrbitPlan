@@ -23,8 +23,10 @@ repos:
         # Checks for the existence of private keys.
       - id: end-of-file-fixer
         # Makes sure files end in a newline and only a newline.
+        exclude: ^scenarios/psds\.xml$
       - id: trailing-whitespace
         # Trims trailing whitespace.
+        exclude: ^scenarios/psds\.xml$
         exclude_types: [python] # Covered by Ruff W291.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -44,7 +46,6 @@ repos:
         exclude: ^docs/refs\.bib$
         additional_dependencies:
           - tomli
-
 
   # Black is the uncompromising Python code formatter.
   - repo: https://github.com/psf/black
