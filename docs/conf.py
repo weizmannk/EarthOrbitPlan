@@ -92,6 +92,7 @@ additional_extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_astropy.ext.edit_on_github",
     "sphinx.ext.mathjax",
+    "nbsphinx",
     "sphinx_gallery.gen_gallery",
 ]
 for ext in additional_extensions:
@@ -102,7 +103,9 @@ for ext in additional_extensions:
 todo_include_todos = True
 
 nbsphinx_gallery_conf = {
-    "gallery_directories": ["notebooks"],  # Folder(s) with the jupyter  notebooks
+    "gallery_directories": "./notebooks",  # Folder(s) with the jupyter  notebooks
+    # ["./notebooks", "./autre_dossier"]  # for other folders
+    "gallery_dirs": "auto_examples",
 }
 
 # List of patterns, relative to source directory, that match files and
