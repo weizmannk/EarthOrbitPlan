@@ -3,12 +3,14 @@ name = "EarthOrbitPlan"
 dynamic = ["version"]
 authors = [{name = "", email = "kiend.weizman7@gmail.com"}]
 license = {text = "BSD-3-Clause"}
-description = "Facilitating Statistical Analysis and Scheduling of Multimessenger Follow-up for GW Events"
+description = "Educational Framework for Multimessenger Observing Scenarios"
 readme = "README.rst"
 requires-python = ">=3.11"
 dependencies = [
     "m4opt @ git+https://github.com/m4opt/m4opt@main",
+    "pandas",
 ]
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
@@ -17,7 +19,7 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.11",
-    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Educational :: Astronomy",
     "Typing :: Typed",
 ]
 
@@ -40,18 +42,17 @@ docs = [
     "numpydoc",
     "graphviz",
     "joblib",
-    "astropy",
-    "pandas",
     "dask",
+    "ligo.skymap >= 2.4.0",
+    "python-ligo-lw",
 ]
 
 [project.urls]
-homepage = "https://EarthOrbitPlan.readthedocs.io"
+Homepage  = "https://EarthOrbitPlan.readthedocs.io"
 "Bug Tracker" = "https://github.com/weizmannk/EarthOrbitPlan/issues"
 "Change Log" = "https://EarthOrbitPlan.readthedocs.io/en/latest/changes.html"
-"Documentation" = "https://m4opt.readthedocs.io/"
+"Documentation" = "https://EarthOrbitPlan.readthedocs.io/"
 "GitHub" = "https://github.com/weizmannk/EarthOrbitPlan"
-"Source Code" = "https://github.com/weizmannk/EarthOrbitPlan"
 
 [tool.setuptools.packages.find]
 
@@ -84,17 +85,26 @@ doctest_optionflags = [
 [tool.coverage.run]
 omit = [
     "EarthOrbitPlan/*setup_package*",
+    "*/EarthOrbitPlan/*setup_package*",
+    "*/EarthOrbitPlan/extern/*",
+    "*/EarthOrbitPlan/_version*",
 ]
 
 [tool.coverage.report]
 exclude_also = [
+    # Don't complain about packages we have installed
     "except ImportError",
+    # Don't complain if tests don't hit assertions
     "raise AssertionError",
     "raise NotImplementedError",
+    # Don't complain about script hooks
     "def main\\(.*\\):",
+    # Ignore branches that don't pertain to this version of Python
     "pragma: py{ignore_python_version}",
+    # Don't complain about IPython completion helper
     "def _ipython_key_completions_",
 ]
+
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8"]
