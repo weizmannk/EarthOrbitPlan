@@ -94,7 +94,7 @@ The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\
    ax.plot(m, m * mass_distribution_1d(m), color='navy', linewidth=2, label='Mass distribution')
 
    ax.set_xlim(1, 100)
-   ax.set_ylim(1e-2, 99.99)
+   ax.set_ylim(0, 100)
    ax.set_xlabel(r"mass, $m$ [$M_\odot$]")
    ax.set_ylabel(r"$m\,p(m|\lambda)$")
 
@@ -121,12 +121,12 @@ The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\
        ]
    )
    ax2.grid(axis="x")
-
+   fig.tight_layout()
    fig.show()
 
-distribution parameters.
+
 The model is based on :footcite:`2022ApJ...931..108F`, applied to the GWTC-3 distribution :footcite:`2023PhRvX..13a1048A`, and implemented
-in our simulations as described in :footcite:`2023ApJ...958..158K`. The following table summarizes the full set of hyperparameters :math:`\lambda`.  
+in our simulations as described in :footcite:`2023ApJ...958..158K`. The following table summarizes the full set of hyperparameters :math:`\lambda`.
 The first several entries describe the rate and mass distribution parameters,  and the last two entries describe the spin distribution parameters.
 
 
@@ -169,52 +169,62 @@ See :footcite:`2022ApJ...931..108F,2023ApJ...958..158K` for details, and :doc:`O
 
 
 .. plot::
-   :caption:
-        Gaussian kernel density estimator analysis of the PDB/GWTC-3 distribution, showing comparative mass and spin distributions across CBC categories.
-      **Left:** Logarithmic 2D distribution of primary vs. secondary masses for the first 100,000 PDB/GWTC-3 CBC events,
-       based on Gaussian kernel density estimation.
-      **Right:** Spin distribution of the same events, showing component spin correlations.
-      Color scale indicates the event density per pixel.
+   :caption: Gaussian kernel density estimator analysis of the PDB/GWTC-3 distribution, showing comparative mass and spin distributions across CBC categories.
+             **Left:** Logarithmic 2D distribution of primary vs. secondary masses for the first 10,000 PDB/GWTC-3 CBC events, based on Gaussian kernel density estimation.
+             **Right:** Spin distribution of the same events, showing component spin correlations. Color scale indicates the event density per pixel.
    :include-source: False
- 
-   import os
-   from astropy.table import Table
-   import numpy as np
-   from scipy.stats import gaussian_kde
-   import matplotlib.pyplot as plt
 
-   data_dir = '../../scenarios/farah.h5'
+    import os
+    from astropy.table import Table
+    import numpy as np
+    from scipy.stats import gaussian_kde
+    import matplotlib.pyplot as plt
 
-   Farah = Table.read(data_dir)[:10000]
-   Farah.sort('mass1')
-   ns_max_mass = 3.0
+    # Load and process data
+    data_dir = '../../scenarios/farah.h5'
+    Farah = Table.read(data_dir)[:10000]
+    Farah.sort('mass1')
 
-   plt.clf()
-   fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    # Create subplots
+    fig, axs = plt.subplots(1, 2)
 
-   # Mass distribution (log scale)
-   mass1 = np.log10(Farah['mass1'])
-   mass2 = np.log10(Farah['mass2'])
-   xy_mass = np.vstack([mass1, mass2])
-   z_mass = gaussian_kde(xy_mass)(xy_mass)
-   idx_mass = z_mass.argsort()
-   mass1, mass2, z_mass = mass1[idx_mass], mass2[idx_mass], z_mass[idx_mass]
-   msc = axs[0].scatter(mass1, mass2, c=z_mass, s=5)
-   axs[0].set_xlabel(r'$\log_{10}(m_1)\ [M_\odot]$')
-   axs[0].set_ylabel(r'$\log_{10}(m_2)\ [M_\odot]$')
-   fig.colorbar(msc, ax=axs[0], label="Event density")
+    # increase the font size of the axes
+    for ax in axs:
+        for tick in ax.get_xticklabels() + ax.get_yticklabels():
+            tick.set_fontname("Times New Roman")
+            tick.set_fontsize(14)
 
-   # Spin distribution
-   spin1z = Farah['spin1z']
-   spin2z = Farah['spin2z']
-   xy_spin = np.vstack([spin1z, spin2z])
-   z_spin = gaussian_kde(xy_spin)(xy_spin)
-   idx_spin = z_spin.argsort()
-   spin1z, spin2z, z_spin = spin1z[idx_spin], spin2z[idx_spin], z_spin[idx_spin]
-   ssc = axs[1].scatter(spin1z, spin2z, c=z_spin, s=5)
-   axs[1].set_xlabel(r'$\mathrm{spin}_1$')
-   axs[1].set_ylabel(r'$\mathrm{spin}_2$')
-   fig.colorbar(ssc, ax=axs[1], label="Event density")
+    # Mass distribution (log scale)
+    mass1 = np.log10(Farah['mass1'])
+    mass2 = np.log10(Farah['mass2'])
+    xy_mass = np.vstack([mass1, mass2])
+    z_mass = gaussian_kde(xy_mass)(xy_mass)
+    idx_mass = z_mass.argsort()
+    mass1, mass2, z_mass = mass1[idx_mass], mass2[idx_mass], z_mass[idx_mass]
+    msc = axs[0].scatter(mass1, mass2, c=z_mass, s=5)
+    axs[0].set_xlabel(r'$\log_{10}(m_1)\ [M_\odot]$',  fontname="Times New Roman", size=16, fontweight="bold")
+    axs[0].set_ylabel(r'$\log_{10}(m_2)\ [M_\odot]$', fontname="Times New Roman", size=16, fontweight="bold")
+    cbar1 = fig.colorbar(msc, ax=axs[0])
+    cbar1.set_label("Event density", fontname="Times New Roman", size=18)
+
+
+    # Spin distribution
+    spin1z = Farah['spin1z']
+    spin2z = Farah['spin2z']
+    xy_spin = np.vstack([spin1z, spin2z])
+    z_spin = gaussian_kde(xy_spin)(xy_spin)
+    idx_spin = z_spin.argsort()
+    spin1z, spin2z, z_spin = spin1z[idx_spin], spin2z[idx_spin], z_spin[idx_spin]
+    ssc = axs[1].scatter(spin1z, spin2z, c=z_spin, s=5)
+    axs[1].set_xlabel(r'$\mathrm{spin}_1$', fontname="Times New Roman", size=16, fontweight="bold")
+    axs[1].set_ylabel(r'$\mathrm{spin}_2$', fontname="Times New Roman", size=16, fontweight="bold")
+    cbar2 = fig.colorbar(ssc, ax=axs[1])
+    cbar2.set_label("Event density", fontname="Times New Roman", size=18)
+
+    # Adjust layout and figure size
+    fig.set_size_inches(14, 6)
+    plt.tight_layout()
+    plt.show()
 
 
 .. note::
