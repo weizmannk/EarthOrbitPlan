@@ -173,7 +173,7 @@ modindex_common_prefix = ["EarthOrbitPlan."]
 
 html_theme_options.update(  # noqa: F405
     {
-        "github_url": "https://github.com/weizmank/EarthOrbitPlan",
+        "github_url": "https://github.com/weizmannk/EarthOrbitPlan",
         "use_edit_page_button": True,
     }
 )
@@ -211,7 +211,7 @@ edit_on_github_doc_root = "docs"
 
 
 # Generate the URL for editing on GitHub
-edit_on_github_url = f"https://github.com/{edit_on_github_project}/edit/{edit_on_github_branch}/"  # Link to GitHub editor
+# edit_on_github_url = f"https://github.com/{edit_on_github_project}/edit/{edit_on_github_branch}/"  # Link to GitHub editor
 
 # -- Resolving issue number to links in changelog -----------------------------
 github_issues_url = "https://github.com/{0}/issues/".format(edit_on_github_project)
