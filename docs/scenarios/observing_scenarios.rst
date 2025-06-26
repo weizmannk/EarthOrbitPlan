@@ -49,8 +49,7 @@ The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\
 .. plot::
    :caption: Population model for the primary mass distribution.
             The blue shaded region and dashed lines highlight the "mass gap" between neutron stars and black holes.
-   :include-source: True
-   :scale: 43
+   :include-source: False
 
    import numpy as np
    import matplotlib.pyplot as plt
@@ -122,59 +121,51 @@ The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\
        ]
    )
    ax2.grid(axis="x")
-   fig.tight_layout()
-   plt.show()
-   plt.close()
 
+   fig.show()
+
+distribution parameters.
 The model is based on :footcite:`2022ApJ...931..108F`, applied to the GWTC-3 distribution :footcite:`2023PhRvX..13a1048A`, and implemented
-in our simulations as described in :footcite:`2023ApJ...958..158K`. The table below provides a detailed description of all population model hyperparameters.
+in our simulations as described in :footcite:`2023ApJ...958..158K`. The following table summarizes the full set of hyperparameters :math:`\lambda`.  
+The first several entries describe the rate and mass distribution parameters,  and the last two entries describe the spin distribution parameters.
 
-.. table:: ** The full  set of hyperparameters :math:`\lambda`.**
 
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | **Parameter**        | **Description**                                                   |         | **Value**              |
-    +======================+===================================================================+=========+========================+
-    | :math:`\alpha_1`     | Spectral index for the power law of the mass distribution at      |         | -2.16                  |
-    |                      | low mass.                                                         |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\alpha_2`     | Spectral index for the power law of the mass distribution at      |         | -1.46                  |
-    |                      | high mass.                                                        |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`A`            | Lower-mass gap depth.                                             |         | 0.97                   |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`M^{\mathrm{gap}}_{\rm low}`  | Location of lower end of the mass gap.             |         | :math:`2.72\,M_\odot`  |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`M^{\mathrm{gap}}_{\rm high}` | Location of upper end of the mass gap.             |         | :math:`6.13\,M_\odot`  |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\eta_{\rm low}`              | Parameter controlling how the rate tapers          |         | 50                     |
-    |                                     | at the low end of the mass gap.                    |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\eta_{\rm high}`             | Parameter controlling how the rate tapers          |         | 50                     |
-    |                                     | at the high end of the mass gap.                   |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\eta_{\text{min}}`           | Parameter controlling tapering of the power        |         | 50                     |
-    |                                     | law at low mass.                                   |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\eta_{\text{max}}`           | Parameter controlling tapering of the power        |         | 4.91                   |
-    |                                     | law at high mass.                                  |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`\beta`        | Spectral index for the power-law-in-mass-ratio pairing function.  |         | 1.89                   |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`M_{\rm min}`  | Minimum mass of the mass distribution.                            |         | :math:`1.16\,M_\odot`  |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`M_{\rm max}`  | Onset location of high-mass tapering.                             |         | :math:`54.38\,M_\odot` |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`a_{\mathrm{max, NS}}`        | Maximum allowed component spin for objects         |         | 0.4                    |
-    |                                     | with mass  < :math:`2.5\,M_\odot`.                 |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
-    | :math:`a_{\mathrm{max, BH}}`        | Maximum allowed component spin for objects         |         | 1                      |
-    |                                     | with mass ≥ :math:`2.5\,M_\odot`.                  |         |                        |
-    +----------------------+-------------------------------------------------------------------+---------+------------------------+
+.. table::  Hyperparameters used in the population model
 
-.. note::
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | Parameter                            | Description                                                                       | Value                 |
+    +======================================+===================================================================================+=======================+
+    | :math:`\alpha_1`                     | Spectral index for the power law of the mass distribution at low mass             | -2.16                 |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\alpha_2`                     | Spectral index for the power law of the mass distribution at high mass            | -1.46                 |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\mathrm{A}`                   | Lower mass gap depth                                                              | 0.97                  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`M^\mathrm{gap}_\mathrm{low}`  | Location of lower end of the mass gap                                             | 2.72 :math:`M_\odot`  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`M^\mathrm{gap}_\mathrm{high}` | Location of upper end of the mass gap                                             | 6.13 :math:`M_\odot`  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\eta_\mathrm{low}`            | Parameter controlling how the rate tapers at the low end of the mass gap          | 50                    |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\eta_\mathrm{high}`           | Parameter controlling how the rate tapers at the low end of the mass gap          | 50                    |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\eta_\mathrm{min}`            | Parameter controlling tapering the power law at low mass                          | 50                    |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\eta_\mathrm{max}`            | Parameter controlling tapering the power law at high mass                         | 4.91                  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`\beta`                        | Spectral index for the power law-in-mass-ratio pairing function                   | 1.89                  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`M_{\rm min}`                  | Onset location of low-mass tapering                                               | 1.16 :math:`M_\odot`  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`M_{\rm max}`                  | Onset location of high-mass tapering                                              | 54.38 :math:`M_\odot` |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`a_{\mathrm{max, NS}}`         | Maximum allowed component spin for objects with mass :math:`< 2.5\, M_\odot`      | 0.4                   |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
+    | :math:`a_{\mathrm{max, BH}}`         | Maximum allowed component spin for objects with mass :math:`\geq 2.5\, M_\odot`   | 1                     |
+    +--------------------------------------+-----------------------------------------------------------------------------------+-----------------------+
 
-   See :footcite:`2022ApJ...931..108F,2023ApJ...958..158K` for full definitions and details.
 
+See :footcite:`2022ApJ...931..108F,2023ApJ...958..158K` for details, and :doc:`Observing Capabilities <userguide:capabilities>` for practical applications of the PDB distribution in network simulations.
 
 
 .. plot::
@@ -185,8 +176,7 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`. The table be
       **Right:** Spin distribution of the same events, showing component spin correlations.
       Color scale indicates the event density per pixel.
    :include-source: False
-   :scale: 43
-
+ 
    import os
    from astropy.table import Table
    import numpy as np
@@ -194,7 +184,6 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`. The table be
    import matplotlib.pyplot as plt
 
    data_dir = '../../scenarios/farah.h5'
-   outdir = '.'
 
    Farah = Table.read(data_dir)[:10000]
    Farah.sort('mass1')
@@ -226,10 +215,6 @@ in our simulations as described in :footcite:`2023ApJ...958..158K`. The table be
    axs[1].set_xlabel(r'$\mathrm{spin}_1$')
    axs[1].set_ylabel(r'$\mathrm{spin}_2$')
    fig.colorbar(ssc, ax=axs[1], label="Event density")
-
-   plt.tight_layout()
-   plt.show()
-   plt.close()
 
 
 .. note::
