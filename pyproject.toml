@@ -45,6 +45,7 @@ docs = [
     "dask",
     "ligo.skymap >= 2.4.0",
     "python-ligo-lw",
+    "igwn-ligolw",
 ]
 
 [project.urls]
