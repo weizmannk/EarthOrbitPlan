@@ -40,7 +40,7 @@ docs = [
     "numpydoc",
     "graphviz",
     "joblib",
-    "astropy",
+    "astropy<5",
     "dask",
 ]
 
