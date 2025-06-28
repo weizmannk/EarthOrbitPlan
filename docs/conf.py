@@ -181,7 +181,7 @@ html_theme_options.update(  # noqa: F405
 html_context = {
     "default_mode": "light",
     "to_be_indexed": ["stable", "latest"],
-    "github_user": "weizmank",
+    "github_user": "weizmannk",
     "github_repo": "EarthOrbitPlan",
     "github_version": "main",
     "doc_path": "docs",
