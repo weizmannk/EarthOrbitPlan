@@ -281,6 +281,7 @@ The results of these simulations are used to update the :doc:`Observing Capabili
     :maxdepth: 1
 
     auto_tutorials/index
+    tutorials/compute_GW_detection_rate.ipynb
 
 Tools and Resources
 -------------------
