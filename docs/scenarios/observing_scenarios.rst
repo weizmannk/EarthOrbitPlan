@@ -104,8 +104,8 @@ The 1D PDB mass distribution :math:`p(m|\lambda)` in the range  :math:`[1, 100]\
    ax.axvline(x=1.9, color="blue", linestyle="--", alpha=0.7)
    ax.axvline(x=2.9, color="blue", linestyle="--", alpha=0.7)
    ax.text(
-       2.4, y_min * 1.5, r"$2.4^{+0.5}_{-0.5}$",
-       ha="center", va="bottom", fontsize=10, fontweight="bold", color="red"
+       2.4, y_min-0.01, r"$2.4^{+0.5}_{-0.5}$",
+       ha="center", va="bottom", fontsize=11, fontweight="bold", color="blue"
    )
 
    ax2 = ax.twiny()
@@ -281,7 +281,7 @@ The results of these simulations are used to update the :doc:`Observing Capabili
     :maxdepth: 1
 
     auto_tutorials/index
-    tutorials/compute_GW_detection_rate.ipynb
+    ../tutorials/compute_GW_detection_rate.ipynb
 
 Tools and Resources
 -------------------
