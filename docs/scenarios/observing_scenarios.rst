@@ -278,7 +278,7 @@ The results of these simulations are used to update the :doc:`Observing Capabili
 
 
 .. toctree::
-   :hidden:
+    :maxdepth: 1
 
    auto_tutorials/index
 
