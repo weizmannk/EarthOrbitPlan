@@ -48,7 +48,7 @@ docs = [
     "joblib",
     "dask",
     "ligo.skymap >= 2.4.0",
-    "python-ligo-lw",
+    "python-ligo-lw < 2.2.0",
     "igwn-ligolw",
 ]
 
