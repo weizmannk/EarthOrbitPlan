@@ -23,14 +23,14 @@ to avoid conflicts between dependencies.
 
 .. dropdown:: Environment setup
 
-   .. tab-item::
+   .. tab-set::
 
       .. tab-item:: Conda
 
          .. code-block:: bash
 
-         conda create -n earthorbitplan_env python=3.11
-         conda activate earthorbitplan_env
+             conda create -n earthorbitplan_env python=3.11
+             conda activate earthorbitplan_env
 
       .. tab-item:: Python venv
 
@@ -43,7 +43,7 @@ to avoid conflicts between dependencies.
 
 .. dropdown:: Install EarthOrbitPlan
 
-   .. tab-item::
+   .. tab-set::
 
       .. tab-item:: PyPI
 

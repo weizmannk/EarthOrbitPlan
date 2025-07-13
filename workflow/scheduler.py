@@ -88,7 +88,7 @@ def parse_arguments():
             delay=cfg.get("delay", fallback="15min"),
             deadline=cfg.get("deadline", fallback="24hour"),
             timelimit=cfg.get("timelimit", fallback="20min"),
-            memory=cfg.get("memory", fallback="inf u.GiB"),
+            memory=cfg.get("memory", fallback=""),
             nside=cfg.getint("nside", fallback=128),
             jobs=cfg.getint("jobs", fallback=0),
             data_dir=cfg.get("data_dir", fallback="data"),
@@ -132,7 +132,7 @@ def parse_arguments():
     parser.add_argument(
         "--memory",
         type=str,
-        default="inf GiB",
+        default="",
         help="Maximum solver memory usage before terminating",
     )
     parser.add_argument(
