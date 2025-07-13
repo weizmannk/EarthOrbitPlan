@@ -1,8 +1,4 @@
-.. highlight:: sh
-
-===========
-Setup Guide
-===========
+.. _install:
 
 This guide explains how to install the required components to run EarthOrbitPlan. The pipeline is built around
 the ` M⁴OPT toolkit <https://m4opt.readthedocs.io/en/latest/>`_
@@ -16,96 +12,86 @@ to avoid conflicts between dependencies.
    It provides a guided way to run simulations based on skymaps from GW detectors and
    schedule follow-up facilities with  such as UVEX, ULTRASAT, ZTF, and Rubin.
 
-Requirements
-------------
+.. dropdown:: Requirements
 
-You will need the following:
+   You will need the following:
 
-- Python >= 3.11
-- `M⁴OPT <https://m4opt.readthedocs.io/en/latest/>`_
-- `observing-scenarios`_
-
-
-Environment setup
------------------
-
-:::tabs
-
-@tab Conda
-
-    .. code-block:: bash
-
-        conda create -n earthorbitplan_env python=3.11
-        conda activate earthorbitplan_env
-
-@tab Python venv
-
-    .. code-block:: bash
-
-        python3.11 -m venv earthorbitplan-env
-        source earthorbitplan-env/bin/activate
-        pip install --upgrade pip
-
-:::
+   - Python >= 3.11
+   - `M⁴OPT <https://m4opt.readthedocs.io/en/latest/>`_
+   - `observing-scenarios`_
 
 
-Install EarthOrbitPlan
-----------------------
+.. dropdown:: Environment setup
 
-.. tabs::
+   .. tab-item::
 
-   .. tab:: PyPI
+      .. tab-item:: Conda
 
-      The recommended way to install EarthOrbitPlan is using pip:
+         .. code-block:: bash
 
-      .. code-block:: bash
+         conda create -n earthorbitplan_env python=3.11
+         conda activate earthorbitplan_env
 
-         pip install earthorbitplan
+      .. tab-item:: Python venv
 
+         .. code-block:: bash
 
-   .. tab:: From source (editable)
-
-      Alternatively, you can clone the repository and install it in editable (development) mode:
-
-      .. code-block:: bash
-
-         git clone https://github.com/weizmannk/EarthOrbitPlan.git
-         cd EarthOrbitPlan/
-         pip install -e .
-         cd ..
+               python3.11 -m venv earthorbitplan-env
+               source earthorbitplan-env/bin/activate
+               pip install --upgrade pip
 
 
-Install CPLEX
--------------
+.. dropdown:: Install EarthOrbitPlan
 
-CPLEX is required for optimization.
-See the official instructions:
-https://m4opt.readthedocs.io/en/latest/install/cplex.html
+   .. tab-item::
 
+      .. tab-item:: PyPI
 
-Check your installation
------------------------
+         The recommended way to install EarthOrbitPlan is using pip:
 
-.. code-block:: bash
+         .. code-block:: bash
 
-   m4opt --help
-   m4opt schedule --help
+            pip install earthorbitplan
+
+      .. tab-item:: From source (editable)
+
+          Alternatively, you can clone the repository and install it in editable (development) mode:
+
+         .. code-block:: bash
+
+            git clone https://github.com/weizmannk/EarthOrbitPlan.git
+            cd EarthOrbitPlan/
+            pip install -e .
+            cd ..
+
+.. dropdown:: Install CPLEX
+
+    CPLEX is required for optimization.
+    See the official instructions:
+    https://m4opt.readthedocs.io/en/latest/install/cplex.html
+
+.. dropdown:: Check your installation
+
+   .. code-block:: bash
+
+      m4opt --help
+      m4opt schedule --help
 
 .. note::
 
    For most EarthOrbitPlan use cases, installing :math:`\mathrm{M^4OPT}` and its dependencies is sufficient.
    If you wish to simulate additional GW-only scenarios, consider installing the `observing-scenarios` package as below.
 
-Optional: Observing Scenarios
------------------------------
 
-.. code-block:: bash
+.. dropdown:: Optional: Observing Scenarios
 
-   curl -sSL https://install.python-poetry.org | python3 -
-   git clone https://github.com/lpsinger/observing-scenarios-simulations.git
-   cd observing-scenarios-simulations
-   poetry install
-   poetry shell
+   .. code-block:: bash
+
+      curl -sSL https://install.python-poetry.org | python3 -
+      git clone https://github.com/lpsinger/observing-scenarios-simulations.git
+      cd observing-scenarios-simulations
+      poetry install
+      poetry shell
 
 .. note::
 

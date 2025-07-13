@@ -1,8 +1,5 @@
 .. _observing_scenarios:
 
-Observing Scenario Simulation
-=============================
-
 Introduction
 ------------
 
