@@ -20,9 +20,9 @@ Table of Contents
    scenarios/index
    config/index
    quickly/index
-   scheduler/index
    glossary/index
 
+   .. scheduler/index
 
 Indices and Search
 ==================
