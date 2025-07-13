@@ -4,29 +4,77 @@
                                     ABOUT
 @author         : Ramodgwendé Weizmann KIENDREBEOGO
 @email          : kiend.weizman7@gmail.com / weizmann.kiendrebeogo@oca.eu
-@repo           : https://github.com/weizmannk/ultrasat-gw-followup.git
-@createdOn      : December 2023
+@repo           : https://github.com/weizmannk/EarthOrbitPlan.git
+@createdOn      : December 2025
+@license        : MIT (or specify your license)
+@python         : 3.8+
 @description    : A tool for interacting with the Zenodo API, facilitating the download of files based on DOI.
-                This class provides functionality to retrieve the latest version DOI associated with a provided
-                permanent DOI, and subsequently download the corresponding file from Zenodo.
+                  This class provides functionality to retrieve the latest version DOI associated with a provided
+                  permanent DOI, and subsequently download the corresponding file from Zenodo.
 
-                You can easily download another dataset from Zenodo by replacing the permanent_doi
+                  You can easily download another dataset from Zenodo by replacing the permanent_doi
                   with a new one.
 
 Usage:
-    python3 zenodo_downloader.py
+    python3 scenarios/zenodo_downloader.py --permanent-doi 14142969 --file-name runs_SNR-10.zip
+
+    # OR
+
+    python3 scenarios/zenodo_downloader.py --config  params_ultrasat.ini
 ---------------------------------------------------------------------------------------------------
 """
 
+import argparse
+import configparser
+import logging
 import os
+import sys
 
 import requests
 from tqdm.auto import tqdm
 
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
 # If the link to the data is required manually, it can be accessed at : https://doi.org/10.5281/zenodo.14142969
 
-permanent_doi = "14142969"
-file_name = "runs_SNR-10.zip"
+
+def parse_arguments():
+    """
+    Parse command-line arguments or ini config file (only permanent_doi and file_name).
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments with .permanent_doi and .file_name
+    """
+    parser = argparse.ArgumentParser(
+        description="Download scenario from Zenodo.",
+        allow_abbrev=False,
+    )
+    parser.add_argument("--config", type=str, help="Path to .ini config file")
+    args, remaining_args = parser.parse_known_args()
+
+    if args.config:
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        cfg = config["params"]
+        return argparse.Namespace(
+            permanent_doi=cfg.get("permanent_doi"), file_name=cfg.get("file_name")
+        )
+
+    parser.add_argument(
+        "--permanent-doi",
+        type=str,
+        required=True,
+        help="Permanent Zenodo DOI (digits only, e.g., 14142969)",
+    )
+    parser.add_argument(
+        "--file-name",
+        type=str,
+        required=True,
+        help="File name to download from Zenodo.",
+    )
+    return parser.parse_args(remaining_args)
 
 
 class ZenodoDownloader:
@@ -57,6 +105,7 @@ class ZenodoDownloader:
 
     def get_latest_zenodo_doi(self):
         """Retrieves the latest version DOI using the Zenodo API."""
+
         url = f"https://zenodo.org/api/records/{self.permanent_doi}"
         r = requests.get(url, headers=self.headers)
 
@@ -68,14 +117,16 @@ class ZenodoDownloader:
         # Check if "doi" exists in the response
         latest_doi = record_data.get("doi")
         if not latest_doi:
-            return self.permanent_doi  # Default to original DOI if not found
+            logging.warning("No latest DOI found, using permanent DOI.")
+            return self.permanent_doi
 
         latest_doi_number = latest_doi.split("10.5281/zenodo.")[-1]
-        print(f"Latest DOI N° : {latest_doi_number}")
+        logging.info(f"Latest DOI N°: {latest_doi_number}")
         return latest_doi_number
 
     def download_zenodo_data(self):
         """Downloads the file from Zenodo based on the provided DOI and file name."""
+
         try:
             r = requests.get(
                 f"https://zenodo.org/api/records/{self.latest_doi}",
@@ -85,6 +136,10 @@ class ZenodoDownloader:
 
             record_data = r.json()
             files = record_data["files"]
+
+            if not files:
+                logging.error("No files found for this Zenodo record.")
+                return
 
             file_to_download = next(
                 (f for f in files if f["key"] == self.file_name), files[0]
@@ -123,10 +178,18 @@ class ZenodoDownloader:
                         file.write(chunk)
                         progress.update(len(chunk))
 
-            print(f"File downloaded successfully to {self.file_name}.")
+            logging.info(f"File downloaded successfully to {self.file_name}.")
         except requests.RequestException as e:
-            print(f"Error: {e}")
+            logging.error(f"Error: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error: {e}")
 
 
-zenodo_downloader = ZenodoDownloader(permanent_doi, file_name)
-zenodo_downloader.download_zenodo_data()
+if __name__ == "__main__":
+    try:
+        args = parse_arguments()
+        zenodo_downloader = ZenodoDownloader(args.permanent_doi, args.file_name)
+        zenodo_downloader.download_zenodo_data()
+    except Exception as e:
+        logging.error(str(e))
+        sys.exit(1)

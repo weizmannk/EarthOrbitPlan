@@ -26,6 +26,15 @@ docs/api
 docs/_build
 docs/guide/roman_wfi.ds9
 
+# Exclude folders
+
+# Ignore all zip files
+*.zip
+
+# Ignore data directory and everything inside it
+data/
+
+
 # Eclipse editor project files
 .project
 .pydevproject

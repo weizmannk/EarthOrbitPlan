@@ -15,10 +15,10 @@ You can run the script either with Command-Line Interface arguments:
 
 Or with a configuration file:
 
-    python workflow/scheduler.py --config params.ini
+    python workflow/scheduler.py --config params_ultrasat.ini
 
 In the root directory of the project:
-    python -m workflow.scheduler --config params.ini
+    python -m workflow.scheduler --config params_ultrasat.ini
 
 """
 

@@ -15,20 +15,9 @@
 
 # Or use a config file:
 
-#     python scenarios/zenodo_unpacker.py --config params.
+#     python scenarios/zenodo_unpacker.py --config  params_ultrasat.ini
 
 # Or import and call `process_zip()` in your Python code.
-
-# Config file example (`params.ini`)
-# ----------------------------------
-# [params]
-# zip = runs_SNR-10.zip
-# subdir = runs_SNR-10
-# runs = O5 O6
-# detectors = HLVK
-# data_dir = data
-# skymap_dir = skymaps
-# mass_threshold = 3.0
 
 # Source data:
 #     https://zenodo.org/records/14585837
