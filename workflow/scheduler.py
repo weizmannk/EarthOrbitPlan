@@ -88,7 +88,7 @@ def parse_arguments():
             delay=cfg.get("delay", fallback="15min"),
             deadline=cfg.get("deadline", fallback="24hour"),
             timelimit=cfg.get("timelimit", fallback="20min"),
-            memory=cfg.get("memory", fallback="10GiB"),
+            memory=cfg.get("memory", fallback="np.inf * u.GiB"),
             nside=cfg.getint("nside", fallback=128),
             jobs=cfg.getint("jobs", fallback=0),
             data_dir=cfg.get("data_dir", fallback="data"),
@@ -132,7 +132,7 @@ def parse_arguments():
     parser.add_argument(
         "--memory",
         type=str,
-        default="10GiB",
+        default="np.inf * u.GiB",
         help="Maximum solver memory usage before terminating",
     )
     parser.add_argument(
@@ -209,6 +209,7 @@ def create_wrapper(run_name, event_id, base_path, args, m4opt_executable):
         f"--delay='{args.delay}' "
         f"--deadline='{args.deadline}' "
         f"--timelimit='{args.timelimit}' "
+        f"--memory='{args.memory}' "
         f"--nside={args.nside} "
         f"--write-progress {prog_file} "
         f"--jobs {args.jobs} "

@@ -29,22 +29,24 @@ You will need the following:
 Environment setup
 -----------------
 
-.. tabs::
+:::tabs
 
-   .. tab:: Conda
+@tab Conda
 
-      .. code-block:: bash
+    .. code-block:: bash
 
-         conda create -n earthorbitplan_env python=3.11
-         conda activate earthorbitplan_env
+        conda create -n earthorbitplan_env python=3.11
+        conda activate earthorbitplan_env
 
-   .. tab:: Python venv
+@tab Python venv
 
-      .. code-block:: bash
+    .. code-block:: bash
 
-         python3.11 -m venv earthorbitplan-env
-         source earthorbitplan-env/bin/activate
-         pip install --upgrade pip
+        python3.11 -m venv earthorbitplan-env
+        source earthorbitplan-env/bin/activate
+        pip install --upgrade pip
+
+:::
 
 
 Install EarthOrbitPlan

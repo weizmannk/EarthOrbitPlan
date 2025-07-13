@@ -2,7 +2,10 @@ import logging
 import subprocess
 import textwrap
 
+from memory_profiler import profile
 
+
+@profile
 def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
     condor_submit_script = textwrap.dedent(f"""\
         +MaxHours = 24
@@ -13,8 +16,8 @@ def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
         output = {log_dir}/$(Cluster)_$(Process).out
         error = {log_dir}/$(Cluster)_$(Process).err
         log = {log_dir}/$(Cluster)_$(Process).log
-        request_memory = 50000 MB
-        request_disk = 8000 MB
+        request_memory = 80000 MB
+        request_disk = 10000 MB
         request_cpus = 1
         on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
         on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)

@@ -99,6 +99,7 @@ additional_extensions = [
     "sphinx.ext.mathjax",
     "nbsphinx",
     "sphinx_gallery.gen_gallery",
+    "sphinx_design",
 ]
 for ext in additional_extensions:
     if ext not in extensions:
