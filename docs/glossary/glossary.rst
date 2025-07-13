@@ -20,3 +20,9 @@ Glossary
       Field of Regard; the portion of the sky a telescope can observe at a given time.
    IGWN
       International Gravitational-Wave Network; the network of collaborating gravitational-wave detectors and observatories around the world.
+   LHO
+      LIGO Hanford
+   LLO
+      LIGO Livingston
+   GW
+      Gravitational Wave

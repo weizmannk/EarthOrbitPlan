@@ -11,7 +11,7 @@ You can run the script with:
 
 .. code-block:: bash
 
-    python scheduler.py --config params.ini
+    python scheduler.py --config params_ultrasat.ini
 
 .. Functions
 .. ---------

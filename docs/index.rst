@@ -18,7 +18,6 @@ Table of Contents
 
    install/index
    scenarios/index
-   config/index
    quickly/index
    glossary/index
 

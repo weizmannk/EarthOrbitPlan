@@ -16,7 +16,7 @@ From the command line:
 
 Or using a config file:
 
-    python postprocess_schedules.py --config params.ini
+    python postprocess_schedules.py --config params_ultrasat.ini
 """
 
 import argparse

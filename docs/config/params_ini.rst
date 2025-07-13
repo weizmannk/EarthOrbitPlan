@@ -3,7 +3,7 @@
 Configuration File Reference
 =============================
 
-The `params.ini` file defines all user-configurable parameters for the `scheduler.py` script
+The `params_ultrasat.ini` file defines all user-configurable parameters for the `scheduler.py` script
 and for the `zenodo_unpacker.py` script.
 These scripts allow you to run M4OPT scheduling on a batch of gravitational wave skymaps
 and to process injection datasets from Zenodo archives, respectively.
@@ -15,13 +15,13 @@ To use this configuration file with the scheduler:
 
 .. code-block:: bash
 
-   python scheduler.py --config params.ini
+   python scheduler.py --config params_ultrasat.ini
 
 To use this configuration file with the unpacker:
 
 .. code-block:: bash
 
-   python zenodo_unpacker.py --config params.ini
+   python zenodo_unpacker.py --config params_ultrasat.ini
 
 Supported Backends
 ------------------
@@ -37,6 +37,6 @@ Example Configuration
 
 Below is a complete configuration example for M4OPT scheduling using ULTRASAT parameters.
 
-.. literalinclude:: ../../params.ini
+.. literalinclude:: ../../params_ultrasat.ini
    :language: ini
-   :caption: Example `params.ini` for ULTRASAT scheduling
+   :caption: Example `params_ultrasat.ini` for ULTRASAT scheduling

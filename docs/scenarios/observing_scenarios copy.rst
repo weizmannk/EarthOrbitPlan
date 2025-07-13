@@ -4,59 +4,40 @@
 Observing Scenarios
 ===================
 
-.. admonition:: Overview
-   :class: tip
+.. dropdown:: Introduction
 
-   Observing scenarios are used to generate quantitative forecasts of gravitational wave (:term:`GW`) network performance by simulating the detection
-   and localization of :term:`GW` events during key science runs :footcite:`2023ApJ...958..158K,2014ApJ...795..105S,2018LRR....21....3A` (e.g., O4, O5).
-   These simulations inform the optimization of observational strategies and the development of future instrumentation, based on population synthesis models and published detector sensitivity data.
+    A robust understanding of the sensitivity, detection efficiency, and localization capabilities of the global gravitational wave detector network
+    is essential for optimizing observational strategies and guiding the development of future telescopes and missions.
+    To this end, **observing scenarios**, which simulate the detection and localization of :term:`GW` events,
+    provide realistic forecasts of network performance during key science runs, notably O4 and O5 :footcite:`2023ApJ...958..158K,2014ApJ...795..105S,2018LRR....21....3A`.
 
+    Recent scenario studies :footcite:`2022ApJ...924...54P` have been carefully calibrated using public alerts from O3, improving the accuracy of localization by incorporating
+    realistic :term:`SNR` thresholds and single detector search strategies.
+    These efforts have advanced our ability to explore compact object populations, r-process nucleosynthesis, and cosmological measurements :footcite:`kiendrebeogo:tel-04796327,2013ApJ...767..124N,2017ApJ...848L..12A`.
 
-.. dropdown:: Why Observing Scenarios Matter?
+    The O4 observing run began with both LIGO Hanford (:term:`LHO`) and LIGO Livingston (:term:`LLO`) in operation, achieving a binary neutron star (BNS) range of 140–165 Mpc.
+    After a commissioning break, Virgo rejoined the network in March 2024 with a BNS range of 55 Mpc, followed later by KAGRA. O4 is scheduled to continue until October 7, 2025,
+    marking the first period with all four detectors operating together. This will significantly enhance both detection rates and localization accuracy for GW events.
+    For up-to-date information on detector status and sensitivity, see the `real-time detector status and range page <https://online.ligo.org>`_.
 
-    .. admonition:: Main Purposes
-       :class: important
+    To model these capabilities, we simulate realistic astrophysical distributions of mass, spin, and sky locations for :term:`CBC`.
+    The GWTC-3 distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A` (Power Law + Dip + Break, PDB) serves as the foundation for population generation
+    in these simulations :footcite:`kiendrebeogo:tel-04796327,2023ApJ...958..158K`.
 
-        - Quantitative estimation of detection rates and sky localization accuracy for various detector network configurations and observing runs.
-
-        - Optimization of electromagnetic (EM) follow-up strategies.
-
-        - Assessment of requirements and trade-offs for future instrumentation and network design.
-
-    Recent studies :footcite:`2022ApJ...924...54P,2023ApJ...958..158K` have calibrated these simulations using actual public alerts :footcite:`2023PhRvX..13a1048A`,
-    thereby improving the reliability of forecasts through realistic :term:`SNR` thresholds and advanced search methodologies.
-    These developments have enabled population studies, r-process nucleosynthesis analysis, and cosmological parameter inference :footcite:`kiendrebeogo:tel-04796327,2013ApJ...767..124N, 2023ApJ...958..158K`.
-
-
-.. dropdown:: Current GW Network and Run Status
-
-    .. admonition:: Current Network Status
-       :class: info
-
-       The O4 observing run began with both LIGO Hanford (:term:`LHO`) and LIGO Livingston (:term:`LLO`) in operation, achieving a :term:`BNS` range of 140–165 Mpc.
-       After a commissioning break, Virgo rejoined the network in March 2024 with a BNS range of 55 Mpc, followed later by KAGRA. O4 is scheduled to continue until October 7, 2025,
-       marking the first period with all four detectors operating together. This configuration significantly enhances both detection rates and localization accuracy for GW events.
-       For up-to-date information on detector status and sensitivity, see the `real-time detector status and range page <https://online.ligo.org>`_.
+    This section details the procedure for generating CBC populations from the GWTC-3 distribution and describes the simulation pipeline used to
+    reproduce observing scenarios for the O4, O5 and O6 campaigns of the LIGO-Virgo-KAGRA (LVK) network.
 
 
 .. dropdown:: Population Modeling
 
-    All simulated populations are generated using the GWTC-3 "Power Law + Dip + Break" (PDB) mass distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A`, which empirically describes the properties of compact binaries detected by the LVK network.
+    The so-called GWTC-3 distribution  provides an empirical description of the compact object population based on the GWTC-3 catalog data.
+    This modeling has the following features:
 
-    **Key characteristics:**
-
-    - **Unified mass function:** Describes all CBC systems (:term:`BNS`, :term:`NSBH`, :term:`BBH`) continuously, without explicit subclass boundaries.
-
-    - **Broken power law with dip:** Incorporates a broken power law and a "dip" to represent the observed mass gap between neutron stars and black holes.
-
-    - **Tapering:** Cutoff functions at low and high masses reproduce observed behavior at distribution edges.
-
-    - **Pairing law:** Component masses are paired according to a mass-ratio-dependent prescription, producing physically plausible binaries.
-
-    - **Spin properties:** Spin magnitudes are drawn from uniform distributions with isotropic orientations, and mass-dependent maximum values (see :footcite:`2016A&A...594A..13P`).
-
-    This modeling framework is used to generate realistic populations of component masses, spins, and sky locations for all scenario simulations.
-
+    - **Components**: All CBC systems (:term:`BNS`, :term:`NSBH`, :term:`BBH`) are described by a continuous mass distribution, without prior separation.
+    - **Distribution shape**: The mass function follows a broken power law, with the possibility of a “dip” in the intermediate region to model a potential mass gap between neutron stars and black holes.
+    - **Tapering**: Cutoff functions are applied at low and high masses to reproduce the observed behavior at the ends of the distribution.
+    - **Pairing function**: Primary and secondary masses for each system are drawn from the distribution and paired via a law depending on the mass ratio, favoring realistic binary formation.
+    - **Spin distribution**: Spin magnitudes are drawn uniformly, and their directions are assumed isotropic. Ranges differ depending on the mass of the objects (see :footcite:`2016A&A...594A..13P` for details).
 
 
 .. dropdown:: Mass Distribution and the Mass Gap
@@ -250,43 +231,139 @@ Observing Scenarios
                     plt.tight_layout()
                     plt.show()
 
+
     .. note::
 
-        This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
-        For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
-        The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
+    This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
+    For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
+    The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
 
     .. warning::
 
-        Using large samples (100,000+ events) may require significant computing resources.
+    Using large samples (100,000+ events) may require significant computing resources.
 
 
-.. dropdown:: Simulation Pipeline
+.. dropdown:: Simulation process
 
-   Our workflow consists of:
+   .. tab-set::
 
-   1. **Population sampling**: Draw binaries from the PDB distribution, including mass, spin, orientation, and location.
-   2. **Detection simulation**: Apply :term:`SNR` thresholds using each network’s published sensitivity curves and duty cycles.
-   3. **Localization**: Use `ligo.skymap <https://lscsoft.docs.ligo.org/ligo.skymap>`_  tools to estimate sky position and distance for detected events.
-   4. **Scenario preparation**: Characterize each event for EM follow-up planning.
+        .. tab-item:: Overview
 
-    .. seealso::
-        :doc: Results are continually updated, see `Observing Capabilities <userguide:capabilities>` for the latest.
+            Our simulations explore multiple detector configurations and :terme: `SNR` thresholds to estimate GW detection rates under realistic observing conditions:
 
-.. dropdown:: Notebooks & Resources
+            a. **SNR threshold of 8**
 
-   - Run the full analysis in interactive Jupyter notebooks:
-     - :doc:`Tutorials <auto_tutorials/index>`
-     - :doc:`Detection rate computation <../tutorials/compute_GW_detection_rate.ipynb>`
+            - The **HL configuration**, deployed during the O4a observing run, the simulations data are available at `HL-config <https://doi.org/10.5281/zenodo.10078926>`_.
+            - The **HLVK configuration**, planned for O4 and O5,  results are in `HLVK-config <https://doi.org/10.5281/zenodo.7026209>`_.
+            - We also simulate **HLV and HV configurations** for O5 to assess the effect of detector configurations, including scenarios where only one LIGO detector is operating, the simulation data are located in `zenodo <https://zenodo.org/records/15617982>`_.
 
-   - All simulation scripts are available on [GitHub](https://github.com/lpsinger/observing-scenarios-simulations).
+            b. **SNR threshold of 10**
 
-   .. note::
-      This section covers only the simulation methodology.
-      For results and quantitative comparisons, see :footcite:`2023ApJ...958..158K`.
+            - The **HLVK configuration** for the upcoming O5 and O6 runs is used to estimate detection rates based on a more conservative detectability threshold, reflecting planned pipeline improvements and noise rejection strategies.
 
-.. dropdown:: Working With Zenodo Data
+            The simulation pipeline follows these steps:
 
-   .. note::
-      This example demonstrates unpacking, filtering, and converting GW injection datasets (e.g., GWTC-3) from Zenodo archives.
-      Outputs include ECSV tables and organized FITS files for O5/O6 runs.
+            1. **Population sampling**
+            A large number of binary systems (e.g., :math:`10^6`) are generated by drawing their masses and spins according to the PDB distribution described above. Orientation parameters and comoving volume positions are also drawn uniformly and isotropically.
+
+            2. **Gravitational-wave detection simulation**:
+
+            - The generated signals are subject to a detectability threshold based on the signal-to-noise ratio (SNR) for each detector network, corresponding to the O4 or O5 configurations.
+            - Instrumental noise is simulated from the published `sensitivity curves (PSD) for each detector <https://dcc.ligo.org/T2200043-v3/public>`_.
+            - Detector duty cycles are realistically accounted for.
+
+            3. **Source localization**
+
+            - Events passing the SNR threshold are localized on the sky using the ``ligo.skymap`` toolchain (e.g., `bayestar-localize-coincs <https://lscsoft.docs.ligo.org/ligo.skymap/tool/bayestar_localize_coincs.html#offline-localization-bayestar-localize-coincs>`_), producing a sky probability map and distance estimate for each event.
+            - Credible regions (e.g., 90%) and the comoving distance distribution are extracted for each simulated event.
+
+            4. **Observing scenario preparation**
+
+            - The properties of the simulated events (localization, distance, etc.) serve as the basis for defining various electromagnetic (EM) observation scenarios, according to the capabilities of the planned follow-up instruments.
+            - This pipeline allows evaluation, for each instrumental configuration, of the probability of covering the EM counterpart of a given GW event.
+
+            The results of these simulations are used to update the :doc:`Observing Capabilities <userguide:capabilities>`
+
+
+        .. tab-item:: Notebook
+
+            .. toctree::
+                :maxdepth: 1
+
+                auto_tutorials/index
+                ../tutorials/compute_GW_detection_rate.ipynb
+
+
+.. dropdown:: Tools and Resources
+
+    - The simulation pipeline primarily relies on the `ligo.skymap <https://lscsoft.docs.ligo.org/ligo.skymap>`_ software suite.
+    - The scripts used to reproduce the entire population generation and simulation process are publicly available on GitHub (cf. https://github.com/lpsinger/observing-scenarios-simulations).
+    - Sensitivity curves and other configuration parameters are drawn from official IGWN consortium publications.
+
+    .. note::
+
+        This page only describes the methodology for population generation and the simulation pipeline. For results and quantitative analysis,
+        srefer to the corresponding section :footcite:`2023ApJ...958..158K`.
+
+
+
+.. dropdown:: Zenodo GW Injection Data Unpacker
+
+    .. note::
+        Here we show  how to easily unpacking, filtering, and conversion of injection datasets
+        (e.g., GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+        localization files for specific observing runs (e.g., O5, O6), and outputs
+        filtered ECSV tables and organized FITS files.
+
+Usage
+-----
+
+You can run this unpacker from the command line as follows:
+
+.. code-block:: bash
+
+   python scenarios/zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+
+
+Or use a config file:
+
+.. code-block:: bash
+
+    python scenarios/zenodo_unpacker.py --config params_ultrasat.ini
+
+
+Or import and call `process_zip()` in your Python code.
+
+Config file example (`params_ultrasat.ini`)
+----------------------------------
+[params]
+zip = runs_SNR-10.zip
+subdir = runs_SNR-10
+runs = O5 O6
+detectors = HLVK
+data_dir = data
+skymap_dir = skymaps
+mass_threshold = 3.0
+
+Source
+------
+
+Zenodo Dataset: https://zenodo.org/records/14585837
+
+
+
+.. .. literalinclude:: ../../scenarios/zenodo_unpacker.py
+..    :language: python
+..    :caption: Full code of `zenodo_unpacker.py`
+
+
+Module Reference
+----------------
+
+.. automodapi:: scenarios.zenodo_unpacker
+    :no-inheritance-diagram:
+
+References
+==========
+
+.. footbibliography::
