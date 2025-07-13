@@ -3,3 +3,4 @@ m4opt
 joblib
 dask
 pre-commit
+memory-profiler
