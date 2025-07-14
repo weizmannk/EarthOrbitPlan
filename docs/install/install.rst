@@ -61,7 +61,7 @@ to avoid conflicts between dependencies.
       .. tab-item:: PyPI
 
          .. admonition:: Recommended
-            :class: success
+            :class: tip
 
             The recommended way to install EarthOrbitPlan is using pip:
 

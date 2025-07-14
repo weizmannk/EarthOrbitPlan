@@ -5,27 +5,30 @@ EarthOrbitPlan is an educational framework that introduces students and research
 of electromagnetic follow-up observation plans using the :math:`\mathrm{M^4OPT}` toolkit. These follow-up campaigns span a wide range of facilities,
 from Far-UV instruments such as UVEX, to Near-UV missions like UVEX and ULTRASAT, and optical surveys including ZTF and Rubin.
 
-.. note::
+.. info::
 
    See the :doc:`glossary` for definitions of technical terms and abbreviations used throughout this documentation.
 
-*****************
-Table of Contents
-*****************
 
-.. toctree::
-   :maxdepth: 2
+.. admonition:: Table of Contents
+   :class: info
 
-   install/index
-   scenarios/index
-   quickly/index
-   glossary/index
+   .. toctree::
+      :maxdepth: 2
 
-   .. scheduler/index
+      install/index
+      scenarios/index
+      quickly/index
+      glossary/index
 
-Indices and Search
-==================
+      .. scheduler/index
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+
+.. admonition:: Indices and Search
+
+   * :ref:`genindex`
+
+   * :ref:`modindex`
+
+   * :ref:`search`
