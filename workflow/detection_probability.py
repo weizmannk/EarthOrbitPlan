@@ -1,5 +1,4 @@
 # This probability is from https://github.com/m4opt/m4opt-paper
-# Author : Leo Singer
 
 import numpy as np
 import synphot
