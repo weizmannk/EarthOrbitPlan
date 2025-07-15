@@ -12,11 +12,11 @@ Usage
 -----
 From the command line:
 
-    python postprocess_schedules.py  --data-dir data
+    python postprocess.py  --data-dir data
 
 Or using a config file:
 
-    python postprocess_schedules.py --config params_ultrasat.ini
+    python postprocess.py --config params_ultrasat.ini
 
 
 This process will compute the detctection probaility using the detection_probability.py and collect all the needed and store together all the data from the simulation
@@ -28,11 +28,18 @@ import argparse
 import configparser
 import logging
 import sys
+import warnings
 from pathlib import Path
 
 from astropy.table import QTable
 from detection_probability import get_detection_probability_known_position
 from ligo.skymap.util.progress import progress_map
+
+warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
+warnings.filterwarnings("ignore", ".*dubious year.*")
+warnings.filterwarnings(
+    "ignore", "Tried to get polar motions for times after IERS data is valid.*"
+)
 
 
 def parse_arguments():
@@ -100,6 +107,7 @@ def process(row, sched_path):
     plan = QTable.read(plan_file)
     plan_args = {**plan.meta["args"]}
     plan_args.pop("skymap", None)
+
     return (
         get_detection_probability_known_position(plan, row, plan_args),
         plan.meta.get("objective_value"),
@@ -107,6 +115,7 @@ def process(row, sched_path):
         plan.meta.get("solution_status"),
         plan.meta.get("solution_time"),
         len(plan[plan["action"] == "observe"]) // plan_args["visits"],
+        plan_args.get("cutoff"),
     )
 
 
@@ -130,6 +139,7 @@ def main():
         table["solution_status"],
         table["solution_time"],
         table["num_fields"],
+        table["cutoff"],
     ) = zip(*progress_map(lambda row: process(row, sched_path), table))
 
     logging.info(f"Writing results to {output_path}")

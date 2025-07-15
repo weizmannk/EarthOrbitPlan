@@ -18,10 +18,10 @@ def maybe_zero(s: str):
 
 
 n = 8
-with open("tables/events.tex", "w") as f:
+with open("./events.tex", "w") as f:
     for i, row in enumerate(table[:n]):
         print(
-            "O5",
+            row["run"],
             row["coinc_event_id"],
             np.format_float_positional(row["mass1"], 3, fractional=True),
             np.format_float_positional(row["mass2"], 3, fractional=True),
