@@ -1,4 +1,4 @@
-.. _m4opt_scheduler:
+.. _scheduler:
 
 Documentation for m4opt-scheduler.py: Batch Scheduling Script
 =============================================================
