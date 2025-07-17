@@ -325,7 +325,7 @@ Observing Scenarios
             :maxdepth: 1
 
             auto_tutorials/index
-            ../tutorials/compute_GW_detection_rate.ipynb
+            ../tutorials/observing_scenarios.ipynb
 
 
 .. dropdown:: Tools and Resources
