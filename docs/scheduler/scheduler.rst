@@ -1,6 +1,6 @@
 .. _scheduler:
 
-Documentation for m4opt-scheduler.py: Batch Scheduling Script
+Documentation for scheduler.py: Batch Scheduling Script
 =============================================================
 
 This script executes :math:`\mathrm{M^4OPT}`-based scheduling over a batch of gravitational wave sky maps
@@ -23,7 +23,7 @@ You can run the script with:
 
 `m4opt_scheduler`: Function to execute M4OPT scheduling
 -------------------------------------------------------
-.. automodapi:: workflow.scheduler
+.. automodapi:: earthorbitplan.workflow.scheduler
    .. :show-inheritance:
    .. :members:
    .. :private-members:

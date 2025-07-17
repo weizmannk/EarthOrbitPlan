@@ -19,9 +19,12 @@ Or using a config file:
     python postprocess.py --config params_ultrasat.ini
 
 
-This process will compute the detctection probaility using the detection_probability.py and collect all the needed and store together all the data from the simulation
-in and `events.ecsv` file located in the data_dir, in default : ./data. Then you could use it
-latter for future statistic processing .
+Description
+-----------
+This process computes the detection probability using detection_probability.py,
+collects all relevant data from the simulation, and stores the results in an
+`events.ecsv` file located in the data directory (default: ./data). You can
+then use this file later for further statistical processing.
 """
 
 import argparse
@@ -32,8 +35,9 @@ import warnings
 from pathlib import Path
 
 from astropy.table import QTable
-from detection_probability import get_detection_probability_known_position
 from ligo.skymap.util.progress import progress_map
+
+from ..probability.detection_probability import get_detection_probability_known_position
 
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", ".*dubious year.*")
@@ -45,10 +49,6 @@ warnings.filterwarnings(
 def parse_arguments():
     """
     Parse command-line arguments or load them from a .ini configuration file.
-    Returns
-    -------
-    argparse.Namespace
-        The parsed arguments.
     """
     parser = argparse.ArgumentParser(description="Post-process M4OPT ECSV plans.")
     parser.add_argument("--config", type=str, help="Path to .ini configuration file")
@@ -96,6 +96,30 @@ def setup_logging():
 
 
 def process(row, sched_path):
+    """
+    Process a single event row and its associated schedule.
+
+    Parameters
+    ----------
+    row : astropy.table.Row
+        A row from the input event table, containing event and run information.
+    sched_path : pathlib.Path
+        Base path to the directory containing schedule files.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+            - detection probability (float or None)
+            - objective value (float or None)
+            - best bound (float or None)
+            - solution status (str or None)
+            - solution time (float or None)
+            - number of observed fields (int or None)
+            - cutoff value (float or None)
+        Returns all None if the schedule file is missing.
+    """
+
     run = row["run"]
     event_id = row["coinc_event_id"]
     plan_file = sched_path / run / f"{event_id}.ecsv"

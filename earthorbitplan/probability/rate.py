@@ -10,11 +10,13 @@ from scipy import integrate, optimize, special, stats
 
 
 def betabinom_k_n(k, n):
+    """Beta-binomial probability mass at k for n trials."""
     return stats.betabinom(n, k + 1, n - k + 1)
 
 
 @np.vectorize
 def poisson_lognormal_rate_cdf(k, mu, sigma):
+    """Marginalized CDF of Poisson count k with log-normal prior on the rate."""
     lognorm_pdf = stats.lognorm(s=sigma, scale=np.exp(mu)).pdf
 
     def func(lam):
@@ -70,6 +72,7 @@ def poisson_lognormal_rate_quantiles(p, mu, sigma):
 
 
 def format_with_errorbars(mid, lo, hi):
+    """Format a value with asymmetric error bars for display."""
     plus = hi - mid
     minus = mid - lo
     smallest = min(max(0, plus), max(0, minus))

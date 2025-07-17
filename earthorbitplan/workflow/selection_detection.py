@@ -3,8 +3,9 @@ from pathlib import Path
 import numpy as np
 from astropy import units as u
 from astropy.table import QTable
-from rate_stats import poisson_lognormal_rate_quantiles
 from scipy import stats
+
+from ..probability.rate import poisson_lognormal_rate_quantiles
 
 base_path = Path("runs_SNR-10")
 runs = ["O5", "O6"]

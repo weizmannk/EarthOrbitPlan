@@ -11,14 +11,14 @@ Usage
 -----
 You can run the script either with Command-Line Interface arguments:
 
-    python scheduler.py --mission ULTRASAT --bandpass NUV ...
+    python ./workflow/scheduler.py --mission ULTRASAT --bandpass NUV ...
 
 Or with a configuration file:
 
-    python workflow/scheduler.py --config params_ultrasat.ini
+    python ./workflow/scheduler.py --config ./config/params_ultrasat.ini
 
 In the root directory of the project:
-    python -m workflow.scheduler --config params_ultrasat.ini
+    python -m workflow.scheduler --config ./config/params_ultrasat.ini
 
 """
 
@@ -33,22 +33,9 @@ from pathlib import Path
 from astropy.table import QTable
 from tqdm.auto import tqdm
 
-try:
-    # Try relative imports (if running as part of a package)
-    from ..backend.condor import submit_condor_job
-    from ..backend.dask import run_dask
-    from ..backend.parallel import run_parallel
-except (ImportError, ValueError) as e:
-    logging.warning(
-        f"Relative import failed ({e}). "
-        "Falling back to absolute import. "
-        "Tip: To use relative imports properly, run with 'python -m workflow.scheduler' from the project root."
-    )
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from backend.condor import submit_condor_job
-
-    # from backend.dask import run_dask
-    from backend.parallel import run_parallel
+from ..backend.condor import submit_condor_job
+from ..backend.dask import run_dask
+from ..backend.parallel import run_parallel
 
 
 def setup_logging(log_dir):
