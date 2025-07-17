@@ -32,7 +32,9 @@ Zenodo Dataset: https://zenodo.org/records/14585837
 Module Reference
 ----------------
 
-.. automodapi:: earthorbitplan.params_ultrasat.ini
+.. .. literalinclude:: ../../earthorbitplan/config/params_ultrasat.ini
+..    :language: ini
+
    .. :show-inheritance:
    .. :members:
    .. :private-members:

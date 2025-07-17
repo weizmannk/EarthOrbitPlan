@@ -41,7 +41,7 @@ Observing Scenarios
 
 .. dropdown:: Population Modeling
 
-    All simulated populations are generated using the GWTC-3 "Power Law + Dip + Break" (PDB) mass distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A`, which empirically describes the properties of compact binaries detected by the LVK network.
+    All simulated populations are generated using the GWTC-3 "Power Law + Dip + Break" (:terme:`PDB`) mass distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A`, which empirically describes the properties of compact binaries detected by the LIGO-Virgo-KAGRA network.
 
     **Key characteristics:**
 
@@ -51,7 +51,7 @@ Observing Scenarios
 
     - **Tapering:** Cutoff functions at low and high masses reproduce observed behavior at distribution edges.
 
-    - **Pairing law:** Component masses are paired according to a mass-ratio-dependent prescription, producing physically plausible binaries.
+    - **Pairing law:** Component masses ( Primary and secondary masses) are paired according to a mass-ratio-dependent prescription, producing physically plausible binaries.
 
     - **Spin properties:** Spin magnitudes are drawn from uniform distributions with isotropic orientations, and mass-dependent maximum values (see :footcite:`2016A&A...594A..13P`).
 

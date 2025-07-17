@@ -329,7 +329,7 @@ Or use a config file:
 
 .. code-block:: bash
 
-    python scenarios/zenodo_unpacker.py --config params_ultrasat.ini
+    python scenarios/zenodo_unpacker.py --config config/params_ultrasat.ini
 
 
 Or import and call `process_zip()` in your Python code.
