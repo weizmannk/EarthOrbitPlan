@@ -360,7 +360,7 @@ Zenodo Dataset: https://zenodo.org/records/14585837
 Module Reference
 ----------------
 
-.. automodapi:: scenarios.zenodo_unpacker
+.. automodapi:: earthorbitplan.scenarios.zenodo_unpacker
     :no-inheritance-diagram:
 
 References

@@ -49,6 +49,8 @@ and how these observations reveal the physical processes at work in the most ext
     and isotropic kilonova light. **Right**: in a :term:`NSBH` merger, matter may be swallowed directly
     by the :term:`BH` or ejected, depending on the system's geometry. Only disrupted systems yield observable light.
 
+    Credit: This figure is adapted from work by Matthew R. Mumpower
+
 
 
 .. dropdown:: **What about GW170817?**
@@ -94,8 +96,6 @@ and how these observations reveal the physical processes at work in the most ext
 
   - **Blue kilonovae** (Ye > 0.25): Lanthanide-poor, less opaque ejecta emitting at shorter wavelengths (visible and :term:`UV`).
   - **Red kilonovae** (Ye < 0.25): Lanthanide-rich, highly opaque ejecta emitting primarily at longer, IR wavelengths.
-
-
 
 
 .. dropdown:: Multi-wavelength Observations
