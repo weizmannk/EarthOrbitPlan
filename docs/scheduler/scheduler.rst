@@ -11,7 +11,7 @@ You can run the script with:
 
 .. code-block:: bash
 
-    python scheduler.py --config params_ultrasat.ini
+    python earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
 
 .. Functions
 .. ---------

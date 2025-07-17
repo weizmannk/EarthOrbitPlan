@@ -26,13 +26,13 @@ From the command line:
 
 .. code-block:: bash
 
-    python postprocess.py --data-dir data
+    python earthorbitplan/workflow/postprocess.py --data-dir data
 
 Or using a configuration file:
 
 .. code-block:: bash
 
-    python postprocess.py --config params_ultrasat.ini
+    python earthorbitplan/workflow/postprocess.py --config ./earthorbitplan/config/params_ultrasat.ini
 
 The `.ini` config file must contain a `[params]` section with fields like:
 

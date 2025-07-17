@@ -16,7 +16,7 @@ From the command line:
 
 Or using a config file:
 
-    python postprocess.py --config params_ultrasat.ini
+    python earthorbitplan/workflow/postprocess.py --config earthorbitplan/config/params_ultrasat.ini
 
 
 Description

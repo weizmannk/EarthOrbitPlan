@@ -21,7 +21,7 @@ Observing Scenarios
     For up-to-date information on detector status and sensitivity, see the `real-time detector status and range page <https://online.ligo.org>`_.
 
     To model these capabilities, we simulate realistic astrophysical distributions of mass, spin, and sky locations for :term:`CBC`.
-    The GWTC-3 distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A` (Power Law + Dip + Break, PDB) serves as the foundation for population generation
+    The GWTC-3 distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A` (Power Law + Dip + Break, :term:`PDB`) serves as the foundation for population generation
     in these simulations :footcite:`kiendrebeogo:tel-04796327,2023ApJ...958..158K`.
 
     This section details the procedure for generating CBC populations from the GWTC-3 distribution and describes the simulation pipeline used to
@@ -33,7 +33,7 @@ Observing Scenarios
     The so-called GWTC-3 distribution  provides an empirical description of the compact object population based on the GWTC-3 catalog data.
     This modeling has the following features:
 
-    - **Components**: All CBC systems (:term:`BNS`, :term:`NSBH`, :term:`BBH`) are described by a continuous mass distribution, without prior separation.
+    - **Components**: All :term:`CBC` systems (:term:`BNS`, :term:`NSBH`, :term:`BBH`) are described by a continuous mass distribution, without prior separation.
     - **Distribution shape**: The mass function follows a broken power law, with the possibility of a “dip” in the intermediate region to model a potential mass gap between neutron stars and black holes.
     - **Tapering**: Cutoff functions are applied at low and high masses to reproduce the observed behavior at the ends of the distribution.
     - **Pairing function**: Primary and secondary masses for each system are drawn from the distribution and paired via a law depending on the mass ratio, favoring realistic binary formation.
@@ -232,15 +232,15 @@ Observing Scenarios
                     plt.show()
 
 
-    .. note::
+            .. note::
 
-    This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
-    For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
-    The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
+            This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
+            For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
+            The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
 
-    .. warning::
+            .. warning::
 
-    Using large samples (100,000+ events) may require significant computing resources.
+            Using large samples (100,000+ events) may require significant computing resources.
 
 
 .. dropdown:: Simulation process
@@ -322,14 +322,14 @@ You can run this unpacker from the command line as follows:
 
 .. code-block:: bash
 
-   python scenarios/zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+   python earthorbitplan/scenarios/zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
 
 
 Or use a config file:
 
 .. code-block:: bash
 
-    python scenarios/zenodo_unpacker.py --config config/params_ultrasat.ini
+    python earthorbitplan/scenarios/zenodo_unpacker.py --config ./earthorbitplan/config/params_ultrasat.ini
 
 
 Or import and call `process_zip()` in your Python code.

@@ -15,7 +15,7 @@ You can run this unpacker from the command line as follows:
 
 .. code-block:: bash
 
-   python zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+   python earthorbitplan/scenarios/zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
 
 Source
 ------

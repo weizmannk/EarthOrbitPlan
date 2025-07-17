@@ -16,11 +16,11 @@
                   with a new one.
 
 Usage:
-    python3 scenarios/zenodo_downloader.py --permanent-doi 14142969 --file-name runs_SNR-10.zip
+    python3 earthorbitplan/scenarios/zenodo_downloader.py --permanent-doi 14142969 --file-name runs_SNR-10.zip
 
     # OR
 
-    python3 scenarios/zenodo_downloader.py --config  params_ultrasat.ini
+    python3 earthorbitplan/scenarios/zenodo_downloader.py --config  ./earthorbitplan/config/params_ultrasat.ini
 ---------------------------------------------------------------------------------------------------
 """
 

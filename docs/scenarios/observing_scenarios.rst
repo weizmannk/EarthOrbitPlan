@@ -51,7 +51,7 @@ Observing Scenarios
 
     - **Tapering:** Cutoff functions at low and high masses reproduce observed behavior at distribution edges.
 
-    - **Pairing law:** Component masses ( Primary and secondary masses) are paired according to a mass-ratio-dependent prescription, producing physically plausible binaries.
+    - **Pairing law:** Component masses (Primary and secondary masses) are paired according to a mass-ratio-dependent prescription, producing physically plausible binaries.
 
     - **Spin properties:** Spin magnitudes are drawn from uniform distributions with isotropic orientations, and mass-dependent maximum values (see :footcite:`2016A&A...594A..13P`).
 
