@@ -23,10 +23,10 @@ repos:
         # Checks for the existence of private keys.
       - id: end-of-file-fixer
         # Makes sure files end in a newline and only a newline.
-        exclude: ^scenarios/psds\.xml$
+        exclude: ^earthorbitplan/scenarios/psds\.xml$
       - id: trailing-whitespace
         # Trims trailing whitespace.
-        exclude: ^scenarios/psds\.xml$
+        exclude: ^earthorbitplan/scenarios/psds\.xml$
         exclude_types: [python] # Covered by Ruff W291.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -35,7 +35,7 @@ repos:
       # Run the linter.
       - id: ruff
         args: ["--extend-select", "I", "--fix"]
-        exclude: ^scenarios/psds\.xml$
+        exclude: ^earthorbitplan/scenarios/psds\.xml$
       # Run the formatter.
       - id: ruff-format
   - repo: https://github.com/codespell-project/codespell
