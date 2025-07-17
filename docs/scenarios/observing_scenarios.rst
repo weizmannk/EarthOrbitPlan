@@ -280,13 +280,13 @@ Observing Scenarios
 
     .. tab-set::
 
-        .. tab-item:: :term:`SNR` threshold of 8
+        .. tab-item:: SNR threshold of 8
 
             - The **HL configuration**, deployed during the O4a observing run, the simulations data are available at `HL-config <https://doi.org/10.5281/zenodo.10078926>`_.
             - The **HLVK configuration**, planned for O4 and O5,  results are in `HLVK-config <https://doi.org/10.5281/zenodo.7026209>`_.
             - We also simulate **HLV and HV configurations** for O5 to assess the effect of detector configurations, including scenarios where only one LIGO detector is operating, the simulation data are located in `zenodo <https://zenodo.org/records/15617982>`_.
 
-        .. tab-item:: :term:`SNR` threshold of 10
+        .. tab-item:: SNR threshold of 10
 
             - The **HLVK configuration** for the upcoming O5 and O6 runs is used to estimate detection rates based on a more conservative detectability threshold, reflecting planned pipeline improvements and noise rejection strategies.
 
