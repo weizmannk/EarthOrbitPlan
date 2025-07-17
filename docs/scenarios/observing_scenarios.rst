@@ -19,7 +19,7 @@ Observing Scenarios
 
         - Quantitative estimation of detection rates and sky localization accuracy for various detector network configurations and observing runs.
 
-        - Optimization of electromagnetic (:terme:`EM`) follow-up strategies.
+        - Optimization of electromagnetic (:term:`EM`) follow-up strategies.
 
         - Assessment of requirements and trade-offs for future instrumentation and network design.
 
@@ -41,7 +41,7 @@ Observing Scenarios
 
 .. dropdown:: Population Modeling
 
-    All simulated populations are generated using the GWTC-3 "Power Law + Dip + Break" (:terme:`PDB`) mass distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A`, which empirically describes the properties of compact binaries detected by the LIGO-Virgo-KAGRA network.
+    All simulated populations are generated using the GWTC-3 "Power Law + Dip + Break" (:term:`PDB`) mass distribution :footcite:`2022ApJ...931..108F,2023PhRvX..13a1048A`, which empirically describes the properties of compact binaries detected by the LIGO-Virgo-KAGRA network.
 
     **Key characteristics:**
 
@@ -276,7 +276,7 @@ Observing Scenarios
 
 .. dropdown:: Data location on Zenodo
 
-    Our simulations explore multiple detector configurations and :terme: `SNR` thresholds to estimate GW detection rates under realistic observing conditions:
+    Our simulations explore multiple detector configurations and :term: `SNR` thresholds to estimate GW detection rates under realistic observing conditions:
 
     .. tab-set::
 

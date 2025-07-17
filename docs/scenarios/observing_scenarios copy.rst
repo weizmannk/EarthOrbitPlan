@@ -249,7 +249,7 @@ Observing Scenarios
 
         .. tab-item:: Overview
 
-            Our simulations explore multiple detector configurations and :terme: `SNR` thresholds to estimate GW detection rates under realistic observing conditions:
+            Our simulations explore multiple detector configurations and :term: `SNR` thresholds to estimate GW detection rates under realistic observing conditions:
 
             a. **SNR threshold of 8**
 
