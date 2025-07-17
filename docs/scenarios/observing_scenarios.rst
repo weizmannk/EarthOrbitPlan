@@ -19,13 +19,13 @@ Observing Scenarios
 
         - Quantitative estimation of detection rates and sky localization accuracy for various detector network configurations and observing runs.
 
-        - Optimization of electromagnetic (EM) follow-up strategies.
+        - Optimization of electromagnetic (:terme:`EM`) follow-up strategies.
 
         - Assessment of requirements and trade-offs for future instrumentation and network design.
 
     Recent studies :footcite:`2022ApJ...924...54P,2023ApJ...958..158K` have calibrated these simulations using actual public alerts :footcite:`2023PhRvX..13a1048A`,
-    thereby improving the reliability of forecasts through realistic :term:`SNR` thresholds and advanced search methodologies.
-    These developments have enabled population studies, r-process nucleosynthesis analysis, and cosmological parameter inference :footcite:`kiendrebeogo:tel-04796327,2013ApJ...767..124N, 2023ApJ...958..158K`.
+    thereby improving the reliability of forecasts through realistic Signal-to-noise ratio (:term:`SNR`) thresholds and advanced search methodologies.
+    These developments have enabled population studies, :math:`r`-process nucleosynthesis analysis, and cosmological parameter inference :footcite:`kiendrebeogo:tel-04796327,2013ApJ...767..124N, 2023ApJ...958..158K`.
 
 
 .. dropdown:: Current GW Network and Run Status
