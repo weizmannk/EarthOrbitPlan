@@ -30,4 +30,4 @@ Who is it for?
 Getting Started
 ---------------
 
-See the [documentation](https://EarthOrbitPlan.readthedocs.io/en/latest/) for installation instructions, example scenarios, and guided exercises.
+See the `documentation <https://EarthOrbitPlan.readthedocs.io/en/latest/>`_ for installation instructions, example scenarios, and guided exercises.
