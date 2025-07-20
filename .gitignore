@@ -32,7 +32,7 @@ docs/guide/roman_wfi.ds9
 *.zip
 
 # Ignore data directory and everything inside it
-data/
+data_dir/
 
 
 # Eclipse editor project files
