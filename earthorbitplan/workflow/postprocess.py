@@ -36,9 +36,11 @@ from pathlib import Path
 
 from astropy.table import QTable
 from ligo.skymap.util.progress import progress_map
-from m4opt import missions
 
-from ..probability.detection_probability import get_detection_probability_known_position
+# from ..probability.detection_probability import get_detection_probability_known_position
+from earthorbitplan.probability.detection_probability import (
+    get_detection_probability_known_position,
+)
 
 warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
 warnings.filterwarnings("ignore", ".*dubious year.*")
@@ -171,16 +173,16 @@ def process(row, sched_path):
         len(plan[plan["action"] == "observe"]) // plan_args["visits"],
         plan_args.get("cutoff"),
         plan_args.get("nside"),
-        getattr(missions, plan_args["mission"]),
+        plan_args.get("mission"),
         plan_args.get("snr"),
         plan_args.get("deadline"),
         plan_args.get("delay"),
         plan_args.get("exptime_min"),
         plan_args.get("exptime_max"),
-        plan_args("bandpass"),
-        plan_args("absmag_mean"),
-        plan_args("absmag_stdev"),
-        plan_args("visits"),
+        plan_args.get("bandpass"),
+        plan_args.get("absmag_mean"),
+        plan_args.get("absmag_stdev"),
+        plan_args.get("visits"),
     )
 
 
