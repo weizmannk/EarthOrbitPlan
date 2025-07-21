@@ -183,6 +183,8 @@ def process(row, sched_path):
         plan_args.get("absmag_mean"),
         plan_args.get("absmag_stdev"),
         plan_args.get("visits"),
+        plan_args.get("skymap"),
+        plan_args.get("skygrid"),
     )
 
 
@@ -218,6 +220,8 @@ def main():
         table["absmag_mean"],
         table["absmag_stdev"],
         table["visits"],
+        table["skymap"],
+        table["skygrid"],
     ) = zip(*progress_map(lambda row: process(row, sched_path), table))
 
     logging.info(f"Saving results to: {output_path}")
