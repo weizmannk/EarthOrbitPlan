@@ -26,13 +26,19 @@ docs/api
 docs/_build
 docs/guide/roman_wfi.ds9
 
+
 # Exclude folders
 
 # Ignore all zip files
 *.zip
 
 # Ignore data directory and everything inside it
-data/
+
+# Ignore these folders and everything inside them
+data/logs/
+data/progress/
+data/schedules/
+data/skymaps/
 
 
 # Eclipse editor project files
