@@ -15,7 +15,7 @@
 
 # Or use a config file:
 
-#     python scenarios/zenodo_unpacker.py --config  params_ultrasat.ini
+#     python workflow/unpacker.py --config  params_ultrasat.ini
 
 # Or import and call `process_zip()` in your Python code.
 

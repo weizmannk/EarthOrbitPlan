@@ -4,7 +4,7 @@ Configuration File Reference
 =============================
 
 The `./earthorbitplan/config/params_ultrasat.ini` file defines all user-configurable parameters for the `scheduler.py` script
-and for the `zenodo_unpacker.py` script.
+and for the `unpacker.py` script.
 These scripts allow you to run M4OPT scheduling on a batch of gravitational wave skymaps
 and to process injection datasets from Zenodo archives, respectively.
 
@@ -21,7 +21,7 @@ To use this configuration file with the unpacker:
 
 .. code-block:: bash
 
-   python earthorbitplan/scenarios/zenodo_unpacker.py --config  ./earthorbitplan/config/params_ultrasat.ini
+   python earthorbitplan/workflow/unpacker.py --config  ./earthorbitplan/config/params_ultrasat.ini
 
 Supported Backends
 ------------------
@@ -37,6 +37,6 @@ Example Configuration
 
 Below is a complete configuration example for M4OPT scheduling using ULTRASAT parameters.
 
-.. literalinclude:: ../config/params_ultrasat.ini
+.. literalinclude:: ../../earthorbitplan/config/params_ultrasat.ini
    :language: ini
-   :caption: Example `../config/params_ultrasat.ini` for ULTRASAT scheduling
+   :caption: Example `../../earthorbitplan/config/params_ultrasat.ini` for ULTRASAT scheduling

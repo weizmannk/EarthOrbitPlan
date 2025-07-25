@@ -205,7 +205,7 @@ Observing Scenarios
                     import matplotlib.pyplot as plt
 
                     # Load and process data
-                    data_dir = '../../scenarios/farah.h5'
+                    data_dir = '../../earthorbitplan/scenarios/farah.h5'
                     Farah = Table.read(data_dir)[:10000]
                     Farah.sort('mass1')
 
@@ -251,7 +251,6 @@ Observing Scenarios
                     plt.show()
 
             .. note::
-
                 This example uses only the first 10,000 events from the PDB/GWTC-3 catalog for clarity and fast plotting.
                 For a full population analysis, you may increase this number (e.g., up to one million events), but this will require more time and memory.
                 The documentation build does not run the full sample for efficiency—re-run locally for high-statistics plots.
@@ -271,7 +270,8 @@ Observing Scenarios
    4. **Scenario preparation**: Characterize each event for :term:`EM`` follow-up planning.
 
     .. seealso::
-        :doc: Results are continually updated, see `Observing Capabilities <userguide:capabilities>` for the latest.
+
+        Results are continually updated, see :doc:`Observing Capabilities <userguide:capabilities>` for the latest.
 
 
 .. dropdown:: Data location on Zenodo
@@ -324,7 +324,7 @@ Observing Scenarios
         .. toctree::
             :maxdepth: 1
 
-            auto_tutorials/index
+            ../auto_tutorials/index
             ../tutorials/observing_scenarios.ipynb
 
 
@@ -332,7 +332,7 @@ Observing Scenarios
 
     - The simulation pipeline primarily relies on the `ligo.skymap <https://lscsoft.docs.ligo.org/ligo.skymap>`_ software suite.
     - The scripts used to reproduce the entire population generation and simulation process are publicly available on GitHub (cf. https://github.com/lpsinger/observing-scenarios-simulations).
-    - Sensitivity curves and other configuration parameters are drawn from official IGWN consortium publications.
+    - Sensitivity curves and other configuration parameters are drawn from official :term:`IGWN` consortium publications.
 
 
    .. note::

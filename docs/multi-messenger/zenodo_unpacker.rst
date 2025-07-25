@@ -1,4 +1,4 @@
-.. _zenodo_unpacker:
+.. _unpacker:
 
 Zenodo Injection Unpacker
 ==========================
@@ -15,7 +15,7 @@ You can run this unpacker from the command line as follows:
 
 .. code-block:: bash
 
-   python earthorbitplan/scenarios/zenodo_unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
+   python earthorbitplan/workflow/unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --outdir ./data --mass-threshold 3
 
 Source
 ------
@@ -25,9 +25,9 @@ Zenodo Dataset: https://zenodo.org/records/14585837
 .. Full Code
 .. ---------
 
-.. .. literalinclude:: ../../scenarios/zenodo_unpacker.py
+.. .. literalinclude:: ../../workflow/unpacker.py
 ..    :language: python
-..    :caption: Full code of `zenodo_unpacker.py`
+..    :caption: Full code of `unpacker.py`
 
 Module Reference
 ----------------

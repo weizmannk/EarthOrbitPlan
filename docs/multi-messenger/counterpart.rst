@@ -5,7 +5,7 @@ Counterpart
 ===========
 
 When two compact objects such as neutron stars (:term:`NS`) or black holes (:term:`BH`) merge,
-they can produce both gravitational waves (:term:`GW`) and electromagnetic (:term:`EM`) signals.
+they can produce both gravitational waves (:term:`GW`\s) and electromagnetic (:term:`EM`) signals.
 However, the nature and visibility of these signals depend strongly on the type of merging objects and the details of the event.
 This section explains what kinds of multi-messenger signals we can expect from different types of compact binary mergers,
 and how these observations reveal the physical processes at work in the most extreme environments in the universe.
