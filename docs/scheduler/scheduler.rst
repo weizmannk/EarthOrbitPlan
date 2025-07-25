@@ -1,5 +1,10 @@
 .. _scheduler:
 
+===========
+Scheduling
+==========
+
+
 Scientific Rationale
 ====================
 
@@ -236,8 +241,8 @@ Run process
           - 2
 
 
-Statistics and observation plan predictions
-===========================================
+Statistics and predictions
+==========================
 
 .. dropdown:: Filtering from the :term:`CBC` events
 

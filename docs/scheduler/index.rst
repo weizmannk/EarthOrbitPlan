@@ -1,8 +1,8 @@
 .. highlight:: sh
 
-=================
-Scheduling M^4OPT
-=================
+================
+Scheduling M⁴OPT
+================
 
 .. toctree::
    :maxdepth: 2
