@@ -7,8 +7,8 @@ Observing Scenarios
 .. admonition:: Overview
    :class: tip
 
-   Observing scenarios are used to generate quantitative forecasts of gravitational wave (:term:`GW`) network performance by simulating the detection
-   and localization of :term:`GW` events during key science runs :footcite:`2023ApJ...958..158K,2014ApJ...795..105S,2018LRR....21....3A` (e.g., O4, O5).
+   Observing scenarios are used to generate quantitative forecasts of gravitational wave (gravitational-waves) network performance by simulating the detection
+   and localization of gravitational-waves events during key science runs :footcite:`2023ApJ...958..158K,2014ApJ...795..105S,2018LRR....21....3A` (e.g., O4, O5).
    These simulations inform the optimization of observational strategies and the development of future instrumentation, based on population synthesis models and published detector sensitivity data.
 
 
@@ -19,7 +19,7 @@ Observing Scenarios
 
         - Quantitative estimation of detection rates and sky localization accuracy for various detector network configurations and observing runs.
 
-        - Optimization of electromagnetic (:term:`EM`) follow-up strategies.
+        - Optimization of electromagnetic follow-up strategies.
 
         - Assessment of requirements and trade-offs for future instrumentation and network design.
 
@@ -267,7 +267,7 @@ Observing Scenarios
    1. **Population sampling**: Draw binaries from the PDB distribution, including mass, spin, orientation, and location.
    2. **Detection simulation**: Apply :term:`SNR` thresholds using each network’s published sensitivity curves and duty cycles.
    3. **Localization**: Use `ligo.skymap <https://lscsoft.docs.ligo.org/ligo.skymap>`_  tools to estimate sky position and distance for detected events.
-   4. **Scenario preparation**: Characterize each event for :term:`EM`` follow-up planning.
+   4. **Scenario preparation**: Characterize each event for electromagnetic` follow-up planning.
 
     .. seealso::
 
@@ -303,7 +303,7 @@ Observing Scenarios
             Orientation parameters and comoving volume positions are also drawn uniformly and isotropically.
 
 
-        .. tab-item:: :term:`GW` detection simulation
+        .. tab-item:: gravitational-waves detection simulation
 
             - The generated signals are subject to a detectability threshold based on the signal-to-noise ratio (SNR) for each detector network, corresponding to the O4 or O5 configurations.
             - Instrumental noise is simulated from the published `sensitivity curves (PSD) for each detector <https://dcc.ligo.org/T2200043-v3/public>`_.

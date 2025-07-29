@@ -24,7 +24,6 @@ from Far-UV instruments such as UVEX, to Near-UV missions like UVEX and ULTRASAT
       glossary/index
 
 
-
 .. admonition:: Indices and Search
 
    * :ref:`genindex`

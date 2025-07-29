@@ -194,6 +194,7 @@ latex_documents = [
     ("index", project + ".tex", project + " Documentation", author, "manual")
 ]
 
+latex_appendices = ["glossary/index"]
 
 # -- Options for manual page output -------------------------------------------
 
@@ -233,6 +234,7 @@ intersphinx_mapping.update(  # noqa: F405
         "m4opt": ("https://m4opt.readthedocs.io/en/latest/", None),
         "astropy": ("https://docs.astropy.org/en/stable/", None),
         "astropy_healpix": ("https://astropy-healpix.readthedocs.io/en/stable/", None),
+        "astroplan": ("https://astroplan.readthedocs.io/en/latest/", None),
         "docplex": ("http://ibmdecisionoptimization.github.io/docplex-doc/mp/", None),
         "dust-extinction": ("https://dust-extinction.readthedocs.io/en/latest/", None),
         "ligo.skymap": ("https://lscsoft.docs.ligo.org/ligo.skymap/", None),
@@ -240,6 +242,7 @@ intersphinx_mapping.update(  # noqa: F405
         "regions": ("https://astropy-regions.readthedocs.io/en/stable/", None),
         "synphot": ("https://synphot.readthedocs.io/en/stable/", None),
         "userguide": ("https://emfollow.docs.ligo.org/userguide/", None),
+        "conda": ("https://docs.conda.io/projects/conda/en/latest/", None),
     }
 )
 

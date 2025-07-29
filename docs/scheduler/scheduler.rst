@@ -8,15 +8,15 @@ Scheduling
 Scientific Rationale
 ====================
 
-The emergence of all-sky surveys and the increasing number of real-time :term:`GW` alerts have created a pressing need for reliable scheduling frameworks.
+The emergence of all-sky surveys and the increasing number of real-time gravitational-waves alerts have created a pressing need for reliable scheduling frameworks.
 These frameworks must efficiently coordinate follow-up observations across a range of telescopes and missions, both on the ground and in space.
 To meet this need, we developed `|M⁴OPT| <https://m4opt.readthedocs.io/en/latest/>`_ : an open-source toolkit designed to optimize the scheduling of follow-up campaigns.
 
 .. dropdown:: Why is scheduling so challenging?
 
-  :term:`GW` alerts often have large localization uncertainties—sometimes hundreds of square degrees—so astronomers need to decide how to balance *sky coverage*
+  gravitational-waves alerts often have large localization uncertainties—sometimes hundreds of square degrees—so astronomers need to decide how to balance *sky coverage*
   (looking at as much area as possible) versus *depth* (spending enough time on each field to detect faint signals).
-  Moreover, :term:`EM` counterparts to :term:`GW` events can evolve rapidly, so observation plans must be generated quickly and efficiently.
+  Moreover, electromagnetic counterparts to gravitational-waves events can evolve rapidly, so observation plans must be generated quickly and efficiently.
 
 
   .. admonition:: Mixed Integer Linear Programming (MILP)
@@ -131,7 +131,10 @@ Run process
 
                     m4opt animate ./data/14.ecsv 14_MOVIE.gif --dpi 300 --still 14_MOVIE.pdf
 
+
             .. tab-item:: Animation
+
+                .. _animation::
 
                 The animation produces:
 
@@ -259,7 +262,7 @@ Statistics and predictions
         You can easily download another dataset from Zenodo by replacing the `permanent_doi`
         with a new one.
 
-        Download the :term:`GW` simulation data from the `Zenodo database <https://zenodo.org/>`_
+        Download the gravitational-waves simulation data from the `Zenodo database <https://zenodo.org/>`_
 
         .. tab-set::
 
@@ -289,8 +292,8 @@ Statistics and predictions
             localization files for specific observing runs (e.g., O5, O6), and outputs
             filtered ECSV tables and organized FITS files.
 
-            The output will include an `.ecsv` file (`observing-scenarios.ecsv`) recording :term:`GW`` parameters such as mass, distance, and sky localization area.
-            It will also copy the FITS files containing the :term:`GW` skymap probabilities into the directory specified by `--skymap-dir` (by default `./data/skymaps`) for each run.
+            The output will include an `.ecsv` file (`observing-scenarios.ecsv`) recording gravitational-waves` parameters such as mass, distance, and sky localization area.
+            It will also copy the FITS files containing the gravitational-waves skymap probabilities into the directory specified by `--skymap-dir` (by default `./data/skymaps`) for each run.
             These outputs are useful for scheduling with :math:`\mathrm{M^4OPT}` and the statictric productions.
 
 
