@@ -1,17 +1,26 @@
-# Core project requirements
-m4opt
+# Main dependencies
+
+m4opt @ git+https://github.com/m4opt/m4opt@main
+pandas
 joblib
 dask
-pip install dask-jobqueue
-pre-commit
+dask-jobqueue
+python-ligo-lw
+igwn-ligolw
 memory-profiler
-pip install sphinx
-pip install sphinx-gallery
-pip install pybtex
-pip install sphinx-astropy
-pip install sphinx-copybutton
-pip install sphinxcontrib-typer
-pip install sphinxcontrib-bibtex
-pip install nbsphinx
-pip install sphinx-design
-pip install pydata-sphinx-theme
+
+
+# Doc/test dependencies (optional)
+ipykernel
+nbsphinx
+jupyter-sphinx
+sphinx-thebe
+sphinx
+sphinx-astropy[confv2]
+sphinxcontrib-bibtex
+sphinxcontrib-typer
+sphinx-automodapi
+sphinx-design
+sphinx-gallery
+numpydoc
+graphviz

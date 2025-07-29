@@ -1,6 +1,6 @@
 .. _scheduler:
 
-===========
+==========
 Scheduling
 ==========
 
@@ -301,9 +301,9 @@ Statistics and predictions
 
                 .. tab-item:: Using CLI
 
-                        .. code-block:: console
+                    .. code-block:: console
 
-                            $ earthorbitplan.workflow.unpacker --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+                        $ earthorbitplan.workflow.unpacker --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
                 .. tab-item:: Using a config file
 
@@ -312,39 +312,75 @@ Statistics and predictions
                         $ earthorbitplan.workflow.unpacker --config ./earthorbitplan/config/params_ultrasat.ini
 
 
+.. dropdown:: Submitting scheduling jobs in parallel or on a cluster
 
 
+    .. admonition::  Why run scheduling jobs in parallel or on a cluster?
+        :class: tip
+
+        In gravitational-wave follow-up, researchers often need to process many sky maps or events quickly.
+        Running scheduling jobs in parallel—using local multi-core processing, HTCondor, or SLURM—can significantly accelerate these computations.
+
+        To select a specific execution backend, set the `backend` option in your configuration file.
+        Available options include `"condor"`, `"parallel"`, `"slurm"`, or `"dask"`.
 
 
-.. This script executes :math:`\mathrm{M^4OPT}`-based scheduling over a batch of gravitational wave sky maps
-.. using different backend methods (Condor, local parallel, or Dask). It supports command-line
-.. configuration and .ini-based setup.
+    .. admonition::  Submit jobs
+        :class: tip
+
+        The config file (e.g., :doc:`params_ultrasat.ini <../../config/params_ultrasat.ini>`)
+        is used by default for ULTRASAT simulations.
+        For other telescopes, use the relevant config files available in the
+        :doc:`config <../../config>` directory.
+
+        .. tab-set::
+
+            .. tab-item::  Parallel execution
+
+                **Local parallel execution** is ideal for small to medium workloads and can also be used on clusters.
+                This approach distributes jobs across available CPU cores on a single machine or node.
+
+                .. code-block:: console
+
+                    python earthorbitplan.workflow.scheduler --config ../../config/params_ultrasat.ini --backend parallel
+
+            .. tab-item::  SLURM
+
+                Most of the clusters using  are cluster workload managers that handle large-scale job distribution across many compute nodes, making them ideal for processing many events efficiently.
 
 
+                .. code-block:: console
+
+                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend slurm
 
 
+            .. tab-item::  HTCondor
+
+                *HTCondor** is a workload manager for high-throughput computing, suitable for running many independent jobs across a cluster or grid environment.
+                We commonly used to run many independent jobs across clusters like the LIGO clusters at CIT, LHO, and LLO.
+
+                This script is configured for use **only on LIGO clusters** (CIT, LHO, LLO).
+                If you want to use HTCondor on a different cluster, you will need to update the backend implementation in
+                :doc:`condor.py <../../backend/condor.py>`.
+
+                .. code-block:: console
+
+                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend condor
 
 
+            .. tab-item:: Dask
+
+                **Dask** enables flexible parallel execution by dynamically distributing tasks across a cluster of workers managed by HTCondor.
+                This backend is configured for use on LIGO clusters, but requires less cluster-specific configuration than the classic HTCondor mode.
+                To adapt for another cluster running HTCondor, edit :doc:`dask.py <../../backend/dask.py>`.
+
+                .. code-block:: console
+
+                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend dask
 
 
-.. You can run the script with:
+    .. note::
 
-.. .. code-block:: bash
-
-..     python earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
-
-.. .. Functions
-.. .. ---------
-
-.. .. .. literalinclude:: ../../workflow/scheduler.py
-.. ..    :language: python
-.. ..    :caption: Full code of `scheduler.py`
-
-
-.. `m4opt_scheduler`: Function to execute M4OPT scheduling
-.. -------------------------------------------------------
-.. .. automodapi:: earthorbitplan.workflow.scheduler
-..    .. :show-inheritance:
-..    .. :members:
-..    .. :private-members:
-..    .. :undoc-members:
+        The ini file :doc:`params_ultrasat.ini <../../config/params_ultrasat.ini>` contains all parameters and can be easily edited to adapt to another telescope's
+        specifications, modify the observing campaign, or update output directories. The results are exactly the same as described in the :ref:`Run process` section,
+        but here they are produced for multiple events for statistical analysis.

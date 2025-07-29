@@ -1,0 +1,17 @@
+# Core project requirements
+m4opt
+joblib
+dask
+pip install dask-jobqueue
+pre-commit
+memory-profiler
+pip install sphinx
+pip install sphinx-gallery
+pip install pybtex
+pip install sphinx-astropy
+pip install sphinx-copybutton
+pip install sphinxcontrib-typer
+pip install sphinxcontrib-bibtex
+pip install nbsphinx
+pip install sphinx-design
+pip install pydata-sphinx-theme

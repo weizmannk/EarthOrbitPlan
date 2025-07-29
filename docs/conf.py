@@ -84,6 +84,8 @@ except NameError:
         "sphinx_astropy.ext.generate_config",
         "sphinx_astropy.ext.missing_static",
         "sphinx_astropy.ext.changelog_links",
+        "jupyter_sphinx",
+        "sphinx_thebe",
         # other extensions...
     ]
 
@@ -100,6 +102,8 @@ additional_extensions = [
     "nbsphinx",
     "sphinx_gallery.gen_gallery",
     "sphinx_design",
+    "jupyter_sphinx",
+    "sphinx_thebe",
 ]
 for ext in additional_extensions:
     if ext not in extensions:
@@ -136,6 +140,21 @@ sphinx_gallery_conf = {
 #     # # this case sphinx_gallery and numpy in a tuple of strings.
 #     # 'doc_module': ('SampleModule'),
 # }
+
+
+# Enable interactive code cells in Sphinx docs with Thebe and Binder (extension: "jupyter_sphinx")
+jupyter_sphinx_thebelab_config = {
+    "requestKernel": True,  # Start a Jupyter kernel for executing code cells
+    "mountActivateWidget": True,
+    "mountStatusWidget": True,
+    "binderOptions": {
+        "repo": "weizmannk/EarthOrbitPlan",  # GitHub repo: username/repo-name (this need a /requirements.txt)
+        "binderUrl": "https://mybinder.org",  # BinderHub URL (default is fine)
+        "ref": "main",  # Branch or tag to use
+        "filepath": "earthorbitplan/tutorials/",  # Folder (or file) to open in Binder, relative to repo root
+    },
+}
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

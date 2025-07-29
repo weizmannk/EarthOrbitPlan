@@ -1,26 +1,25 @@
 #!/usr/bin/env python
-"""
-m4opt-scheduler: Batch Scheduling for Gravitational Wave Follow-up
-==================================================================
 
-This script executes batch scheduling using the M4OPT framework for a list of gravitational wave sky maps.
-It supports various execution backends (HTCondor, local parallel with joblib, or Dask) and can be configured
-via command-line arguments or a configuration `.ini` file.
+# m4opt-scheduler: Batch Scheduling for Gravitational Wave Follow-up
+# ==================================================================
 
-Usage
------
-You can run the script either with Command-Line Interface arguments:
+# This script executes batch scheduling using the M4OPT framework for a list of gravitational wave sky maps.
+# It supports various execution backends (HTCondor, local parallel with joblib, or Dask) and can be configured
+# via command-line arguments or a configuration `.ini` file.
 
-    python ./earthorbitplan/workflow/scheduler.py --mission ULTRASAT --bandpass NUV ...
+# Usage
+# -----
+# You can run the script either with Command-Line Interface arguments:
 
-Or with a configuration file:
+#     python ./earthorbitplan/workflow/scheduler.py --mission ULTRASAT --bandpass NUV ...
 
-    python ./earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
+# Or with a configuration file:
 
-In the root directory of the project:
-    python -m earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini
+#     python ./earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
 
-"""
+# In the root directory of the project:
+#     python -m earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini
+
 
 import argparse
 import configparser
@@ -57,6 +56,14 @@ def parse_arguments():
         allow_abbrev=False,
     )
     parser.add_argument("--config", type=str, help="Path to .ini config file")
+    parser.add_argument(
+        "--backend",
+        type=str,
+        default="condor",
+        choices=["condor", "parallel", "dask"],
+        help="Execution backend",
+    )
+
     args, remaining_args = parser.parse_known_args()
 
     if args.config:
@@ -84,7 +91,7 @@ def parse_arguments():
             log_dir=cfg.get("log_dir", fallback="logs"),
             prog_dir=cfg.get("prog_dir", fallback="progress"),
             event_table=cfg.get("event_table", fallback="observing-scenarios.ecsv"),
-            backend=cfg.get("backend", fallback="condor"),
+            # backend=cfg.get("backend", fallback="condor"),
             n_cores=cfg.getint("n_cores", fallback=4),
         )
 
