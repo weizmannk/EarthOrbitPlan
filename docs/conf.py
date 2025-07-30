@@ -142,6 +142,8 @@ sphinx_gallery_conf = {
 # }
 
 
+# -- Options for the Thebe and Binder -----------------------------------------------------
+
 # Enable interactive code cells in Sphinx docs with Thebe and Binder (extension: "jupyter_sphinx")
 jupyter_sphinx_thebelab_config = {
     "requestKernel": True,  # Start a Jupyter kernel for executing code cells

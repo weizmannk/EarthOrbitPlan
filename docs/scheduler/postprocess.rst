@@ -44,16 +44,16 @@ After generating observation plans, post-processing computes detection probabili
     .. tab-set::
 
         .. tab-item:: python
-            
+
 
             Once activated, you can edit and run any code block below in your browser.
             Powered by Thebe and Binder.
 
-            .. thebe-button::
-                
+            .. thebe-button:: Run the detection rate
+
                 .. jupyter-execute::
                     :raises:
-                    
+
                     import warnings
 
                     import numpy as np
@@ -174,7 +174,7 @@ After generating observation plans, post-processing computes detection probabili
 
                     rst_table = make_rst_table(headers, rst_rows)
 
-                    # Print or save the table for RST documentation
+                    # Print the table for RST documentation
                     print(rst_table)
 
 

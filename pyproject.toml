@@ -43,6 +43,7 @@ docs = [
     "sphinxcontrib-bibtex",
     "sphinxcontrib-typer",
     "sphinx-automodapi",
+    "sphinx-thebe",
     "sphinx-design",
     "jupyter-sphinx",
     "ipykernel",
