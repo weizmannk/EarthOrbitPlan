@@ -22,7 +22,7 @@ from Far-UV instruments such as UVEX, to Near-UV missions like UVEX and ULTRASAT
       scenarios/index
       scheduler/index
       glossary/index
-
+      tutorials/GALLERY_HEADER
 
 .. admonition:: Indices and Search
 

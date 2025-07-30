@@ -45,6 +45,7 @@ except ImportError:
     )
     sys.exit(1)
 
+
 # Get configuration information from pyproject.toml
 
 with open(os.path.join(os.path.dirname(__file__), "..", "pyproject.toml"), "rb") as f:
@@ -145,18 +146,30 @@ sphinx_gallery_conf = {
 
 # -- Options for the Thebe and Binder -----------------------------------------------------
 
-# Enable interactive code cells in Sphinx docs with Thebe and Binder (extension: "jupyter_sphinx")
-jupyter_sphinx_thebelab_config = {
-    "requestKernel": True,  # Start a Jupyter kernel for executing code cells
-    "mountActivateWidget": True,
-    "mountStatusWidget": True,
-    "binderOptions": {
-        "repo": "weizmannk/EarthOrbitPlan",  # GitHub repo: username/repo-name (this need a /requirements.txt)
-        "binderUrl": "https://mybinder.org",  # BinderHub URL (default is fine)
-        "ref": "main",  # Branch or tag to use
-        "filepath": "earthorbitplan/tutorials/",  # Folder (or file) to open in Binder, relative to repo root
+# # Enable interactive code cells in Sphinx docs with Thebe and Binder (extension: "jupyter_sphinx")
+# jupyter_sphinx_thebelab_config = {
+#     "requestKernel": True,  # Start a Jupyter kernel for executing code cells
+#     "mountActivateWidget": True,
+#     "mountStatusWidget": True,
+#     "binderOptions": {
+#         "repo": "weizmannk/EarthOrbitPlan",  # GitHub repo: username/repo-name (this need a /requirements.txt)
+#         "binderUrl": "https://mybinder.org",  # BinderHub URL (default is fine)
+#         "ref": "main",  # Branch or tag to use
+#         "filepath": "earthorbitplan/tutorials/",  # Folder (or file) to open in Binder, relative to repo root
+#     },
+# }
+
+thebe_config = {
+    "always_load": True,
+    "binder_options": {
+        "repo": "EarthOrbitPlan/requirements",
+        "binder_url": "https://mybinder.org",
+        "filepath": "earthorbitplan/tutorials/",
     },
 }
+# html_theme_options = {
+#     "use_thebe": True,
+# }
 
 
 # List of patterns, relative to source directory, that match files and
@@ -283,10 +296,29 @@ todo_include_todos = True
 autodoc_typehints = "description"  # Show type hints in the API documentation (optional)
 
 
-# -# -- BibTeX for scientific references ----------------------------------------
+# --- BibTeX for scientific references ----------------------------------------
 bibtex_bibfiles = ["refs.bib"]
 bibtex_default_style = "short_alpha"
 # bibtex_author_limit = 3
 
 
-print("DEBUG extensions =", extensions)
+# -- Set notebook execution options accordingly -------------------------------
+
+on_rtd = os.environ.get("READTHEDOCS") == "True"
+
+if on_rtd:
+    jupyter_execute_notebooks = "auto"  # or "force"
+else:
+    jupyter_execute_notebooks = "never"
+
+if on_rtd:
+    nbsphinx_execute = "auto"
+else:
+    nbsphinx_execute = "never"
+
+sd_fontawesome_latex = True
+
+# FontAwesome Icons
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+]

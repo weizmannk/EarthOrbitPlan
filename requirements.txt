@@ -1,6 +1,4 @@
 # Main dependencies
-astropy >= 7.1.0
---index-url https://pypi.org/simple
 # m4opt @ git+https://github.com/m4opt/m4opt@main
 m4opt
 pandas
@@ -17,11 +15,14 @@ ipykernel
 nbsphinx
 jupyter-sphinx
 sphinx-thebe
+astropy==6.1.7
 sphinx
 sphinx-astropy[confv2]
 sphinxcontrib-bibtex
 sphinxcontrib-typer
 sphinx-automodapi
+sphinx-book-theme
+myst-nb
 sphinx-design
 sphinx-gallery
 numpydoc

@@ -31,9 +31,14 @@ After generating observation plans, post-processing computes detection probabili
         The results are aggregated and saved in an ECSV table (by default, ``events.ecsv``), ready for statistical analysis or further reporting.
 
 
+    .. dropdown:: Main Processing (`earthorbitplan.workflow.postprocess.process`)
+        :icon: check
+        :color: muted
 
-    .. admonition:: Main Processing (`earthorbitplan.workflow.postprocess`)
-        :class: tip
+        .. card::
+            :class-card: sd-bg-warning sd-text-dark
+
+            .. autofunction:: earthorbitplan.workflow.postprocess.process
 
 
 .. dropdown:: Kilonova detection rate and Statistics
@@ -44,15 +49,12 @@ After generating observation plans, post-processing computes detection probabili
 
         .. tab-item:: python
 
-
-            Once activated, you can edit and run any code block below in your browser.
-            Powered by Thebe and Binder.
+            You can edit and run any code block below in your browser.
 
             .. jupyter-execute::
                 :raises:
 
                 import warnings
-
                 import numpy as np
                 from astropy import units as u
                 from astropy.table import QTable
@@ -189,11 +191,3 @@ After generating observation plans, post-processing computes detection probabili
                 Alternatively, you can download the notebook and run it locally:
 
                 - :download:`Download this notebook <../../earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`
-
-
-
- Main Processing (`earthorbitplan.workflow.postprocess`)
-========================================================
-
-.. automodapi:: earthorbitplan.workflow.postprocess
-    :no-inheritance-diagram:

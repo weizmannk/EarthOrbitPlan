@@ -1,9 +1,5 @@
 .. _scheduler:
 
-.. ==========
-.. Scheduling
-.. ==========
-
 
 Scientific Rationale
 ====================
@@ -130,17 +126,28 @@ Run process
 
                     m4opt animate ./data/14.ecsv 14_MOVIE.gif --dpi 300 --still 14_MOVIE.pdf
 
-
             .. tab-item:: Animation
 
-                The animation produces:
+                .. card:: Animation
+                    :class-card: sd-bg-warning
 
-                - ``14_MOVIE.gif`` — an animation of the schedule
-                - ``14_MOVIE.pdf`` — a static pdf,  of the observation sequence.
+                    **The animation produces:**
 
-                .. image:: ../_static/14_MOVIE.gif
+                    - ``14_MOVIE.gif`` — an animation of the schedule
+                    - ``14_MOVIE.pdf`` — a static pdf,  of the observation sequence.
+
+                .. figure:: ../_static/14_MOVIE.gif
                     :alt: Example animation of the observation plan
                     :align: center
+
+
+                    *Example animation of the observation plan*
+
+            .. tab-item:: Static plan
+
+                :octicon:`file` Download or view the static PDF:
+
+                - :download:`14_MOVIE.pdf <../_static/14_MOVIE.pdf>`
 
         .. tab-set::
 
@@ -154,10 +161,9 @@ Run process
                 - The symbol :math:`\oplus` shows the direction of the center of the Earth (sub-Earth point) projected onto the sky.
                 - The symbol :math:`\odot` shows the direction of the Sun (sub-solar point) on the sky.
 
-        .. seealso:: For more details of marker conventions
+        .. seealso::
 
-            For more details of marker conventions,
-            see the `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_.
+            For more details of marker conventions: `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_.
 
 
     .. note::
@@ -309,12 +315,14 @@ Statistics and predictions
 .. dropdown:: Submitting scheduling jobs in parallel or on a cluster
 
 
-    .. admonition::  Why run scheduling jobs in parallel or on a cluster?
-        :class: tip
+    .. card:: Why run scheduling jobs in parallel or on a cluster?
+        :class-card: sd-bg-dark sd-text-white
 
+        Backend process
+        ^^^
         In gravitational-wave follow-up, researchers often need to process many sky maps or events quickly.
         Running scheduling jobs in parallel—using local multi-core processing, HTCondor, or SLURM—can significantly accelerate these computations.
-
+        +++
         To select a specific execution backend, set the `backend` option in your configuration file.
         Available options include `"condor"`, `"parallel"`, `"slurm"`, or `"dask"`.
 
