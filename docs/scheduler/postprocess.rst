@@ -36,8 +36,8 @@ After generating observation plans, post-processing computes detection probabili
         :class: tip
 
 
-        .. .. automodapi:: earthorbitplan.workflow.postprocess
-        ..     :no-inheritance-diagram:
+        .. automodapi:: earthorbitplan.workflow.postprocess
+            :no-inheritance-diagram:
 
 
 .. dropdown:: Kilonova detection rate and Statistics
