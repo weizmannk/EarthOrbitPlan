@@ -86,9 +86,9 @@ and how these observations reveal the physical processes at work in the most ext
 
 .. dropdown:: Kilonovae
 
-  :term:`KNe` are transient astrophysical phenomena emitting from UV to IR wavelengths, following :term:`NS` mergers (:term:`BNS` or :term:`NSBH`). These events:
+  :term:`KNe` are transient astrophysical phenomena emitting from :term:`UV` to :term:`IR` wavelengths, following :term:`NS` mergers (:term:`BNS` or :term:`NSBH`). These events:
 
-  - **Produce heavy elements** via r-process nucleosynthesis (e.g., gold, platinum).
+  - **Produce heavy elements** via :math:`r`-process nucleosynthesis (e.g., gold, platinum).
   - Emit relatively isotropic EM radiation, unlike the highly directional GRBs.
   - Offer clues about neutron star interiors, dense matter physics, and cosmic chemical evolution.
 
@@ -117,23 +117,3 @@ and how these observations reveal the physical processes at work in the most ext
   - Refine cosmological parameters, including the expansion rate of the universe.
 
   Multi-messenger astronomy promises transformative insights into the most energetic and mysterious phenomena in our universe.
-
-
-
-
-    .. .. list-table:: Signals from Different CBC Types
-    ..   :widths: 15 28 57
-    ..   :header-rows: 1
-
-    ..   * - CBC Type
-    ..     - Gravitational Waves
-    ..     - Electromagnetic Counterpart
-    ..   * - :term:`BBH`
-    ..     - Strong, clear signals
-    ..     - None (no matter involved)
-    ..   * - :term:`BNS`
-    ..     - Strong, structure-affected signals
-    ..     - :term:`GRB`, :term:`KNe`, afterglows (X-ray to radio)
-    ..   * - :term:`NSBH`
-    ..     - Strong signals
-    ..     - Possible electromagnetic emission if :term:`NS` is disrupted by :term:`BH`
