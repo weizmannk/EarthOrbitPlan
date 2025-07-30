@@ -134,8 +134,6 @@ Run process
 
             .. tab-item:: Animation
 
-                .. _animation::
-
                 The animation produces:
 
                 - ``14_MOVIE.gif`` — an animation of the schedule
@@ -173,7 +171,7 @@ Run process
 
     You can load and inspect a schedule file using Astropy:
 
-    .. code-block:: console
+    .. code-block:: python
 
         >>> from astropy.table import QTable
         >>> from earthorbitplan.utils.path import get_project_root
@@ -186,45 +184,35 @@ Run process
         >>> display["dec"] = obs["target_coord"].dec
         >>> display.round({'duration': 1, 'ra': 2, 'dec': 2})
         >>> print(display)
-             start_time          duration   ra    dec
-                                    s       deg   deg
-        ----------------------- -------- ------ -----
-        2012-07-14 16:04:59.480   1080.0 221.14 58.26
-        2012-07-14 17:17:11.127   1080.0 221.14 58.26
-        2012-07-14 17:35:59.480   3786.3 218.06 43.89
-        2012-07-14 19:09:05.819   3786.3 218.06 43.89
 
 
  .. dropdown:: ECSV Metadata Extraction
 
     Load a schedule, extract key metadata and visit counts:
 
-    .. code-block:: bash
+    .. jupyter-execute::
 
-        >>> from astropy.table import QTable
-        >>> from earthorbitplan.utils.path import get_project_root
-        >>> root = get_project_root()
-        >>> output_file = root / "data" / "14.ecsv"
-        >>> plan = QTable.read(output_file, format="ascii.ecsv")
-        >>> objective = plan.meta.get("objective_value")
-        >>> best_bound = plan.meta.get("best_bound")
-        >>> status = plan.meta.get("solution_status")
-        >>> time_used = plan.meta.get("solution_time")
-        >>> visits = plan.meta.get("args", {}).get("visits", 2)
-        >>> n_obs = len(plan[plan["action"] == "observe"])
-        >>> unique_fields = n_obs // visits
-        >>> print("Schedule metadata:")
-        >>> print(f" • Objective value: {objective:.4f}")
-        >>> print(f" • Best bound: {best_bound:.4f}")
-        >>> print(f" • Solver status: {status}")
-        >>> print(f" • Solution time: {time_used}")
-        >>> print(f" • Unique fields observed: {unique_fields}")
-        Schedule metadata:
-            • Objective value: 0.9483
-            • Best bound: 0.9483
-            • Solver status: integer optimal solution
-            • Solution time: 29.206 s
-            • Unique fields observed: 2
+        import sys, os
+        sys.path.insert(0, os.path.abspath('../..'))
+        from astropy.table import QTable
+        from earthorbitplan.utils.path import get_project_root
+        root = get_project_root()
+        output_file = root / "data" / "14.ecsv"
+        plan = QTable.read(output_file, format="ascii.ecsv")
+        objective = plan.meta.get("objective_value")
+        best_bound = plan.meta.get("best_bound")
+        status = plan.meta.get("solution_status")
+        time_used = plan.meta.get("solution_time")
+        visits = plan.meta.get("args", {}).get("visits", 2)
+        n_obs = len(plan[plan["action"] == "observe"])
+        unique_fields = n_obs // visits
+        print("Schedule metadata:")
+        print(f" • Objective value: {objective:.4f}")
+        print(f" • Best bound: {best_bound:.4f}")
+        print(f" • Solver status: {status}")
+        print(f" • Solution time: {time_used}")
+        print(f" • Unique fields observed: {unique_fields}")
+
 
     .. list-table:: Schedule metadata summary
         :header-rows: 1
@@ -356,7 +344,7 @@ Statistics and predictions
 
             .. tab-item::  HTCondor
 
-                *HTCondor** is a workload manager for high-throughput computing, suitable for running many independent jobs across a cluster or grid environment.
+                **HTCondor** is a workload manager for high-throughput computing, suitable for running many independent jobs across a cluster or grid environment.
                 We commonly used to run many independent jobs across clusters like the LIGO clusters at CIT, LHO, and LLO.
 
                 This script is configured for use **only on LIGO clusters** (CIT, LHO, LLO).

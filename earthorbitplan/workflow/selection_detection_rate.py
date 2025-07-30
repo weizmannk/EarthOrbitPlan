@@ -1,15 +1,7 @@
-# import warnings
-
 import numpy as np
 from astropy import units as u
 from astropy.table import QTable
 from scipy import stats
-
-# warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
-# warnings.filterwarnings("ignore", ".*dubious year.*")
-# warnings.filterwarnings(
-#     "ignore", "Tried to get polar motions for times after IERS data is valid.*"
-# )
 
 
 def summarize_selected_detected_events(

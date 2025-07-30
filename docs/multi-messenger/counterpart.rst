@@ -102,7 +102,7 @@ and how these observations reveal the physical processes at work in the most ext
 
   Observations across multiple wavelengths are essential to fully characterize merger events:
 
-  - **Ground-based observatories:** :term:``, :term:`LSST` for optical follow-up.
+  - **Ground-based observatories:** :term:`ZTF`, :term:`LSST` for optical follow-up.
   - **Space-based observatories:** Swift (:term:`GRB`), JWST (infrared), upcoming ULTRASAT (:term:`UV`).
   - **GW detectors:** LIGO-Virgo-KAGRA (ground-based), LISA (future space-based detector).
 

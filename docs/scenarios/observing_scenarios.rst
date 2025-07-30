@@ -192,7 +192,6 @@ Observing Scenarios
 
         .. tab-item:: Gaussian kernel density estimaton
 
-            :class: thebe, thebe-init
             .. plot::
                 :caption: Gaussian kernel density estimator analysis of the PDB/GWTC-3 distribution, showing comparative mass and spin distributions across CBC categories.
                             **Left:** Logarithmic 2D distribution of primary vs. secondary masses for the first 10,000 PDB/GWTC-3 CBC events, based on Gaussian kernel density estimation.

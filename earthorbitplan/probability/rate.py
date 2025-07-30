@@ -1,9 +1,9 @@
-"""
-Functions for propagating errors in rates.
+# """
+# Functions for propagating errors in rates.
 
-Reproduced from
-https://github.com/lpsinger/observing-scenarios-simulations/blob/main/plots-and-tables.ipynb.
-"""
+# Reproduced from
+# https://github.com/lpsinger/observing-scenarios-simulations/blob/main/plots-and-tables.ipynb.
+# """
 
 import numpy as np
 from scipy import integrate, optimize, special, stats

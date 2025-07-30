@@ -104,6 +104,7 @@ additional_extensions = [
     "sphinx_design",
     "jupyter_sphinx",
     "sphinx_thebe",
+    "sphinx_automodapi.automodapi",
 ]
 for ext in additional_extensions:
     if ext not in extensions:
@@ -286,3 +287,6 @@ autodoc_typehints = "description"  # Show type hints in the API documentation (o
 bibtex_bibfiles = ["refs.bib"]
 bibtex_default_style = "short_alpha"
 # bibtex_author_limit = 3
+
+
+print("DEBUG extensions =", extensions)

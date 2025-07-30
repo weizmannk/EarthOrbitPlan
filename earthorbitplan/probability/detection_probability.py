@@ -1,5 +1,7 @@
 # This probability is from https://github.com/m4opt/m4opt-paper
 
+import warnings
+
 import numpy as np
 import synphot
 from astropy import units as u
@@ -13,6 +15,10 @@ from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot.extinction import DustExtinction
 from scipy import stats
+
+warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
+warnings.filterwarnings("ignore", ".*dubious year.*")
+warnings.filterwarnings("ignore", ".*polar motions.*")
 
 
 def get_detection_probability_known_position(plan, event_row, plan_args):
