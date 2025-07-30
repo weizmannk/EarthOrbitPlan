@@ -1,8 +1,8 @@
 .. _scheduler:
 
-==========
-Scheduling
-==========
+.. ==========
+.. Scheduling
+.. ==========
 
 
 Scientific Rationale
