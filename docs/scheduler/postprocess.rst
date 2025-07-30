@@ -45,11 +45,13 @@ After generating observation plans, post-processing computes detection probabili
 
         .. tab-item:: python
 
-            {thebe-button}
+            
 
             Once activated, you can edit and run any code block below in your browser.
             Powered by Thebe and Binder.
 
+            {thebe-button}
+            
             .. jupyter-execute::
                 :raises:
 
@@ -175,13 +177,6 @@ After generating observation plans, post-processing computes detection probabili
 
                 # Print or save the table for RST documentation
                 print(rst_table)
-
-
-        .. tab-item:: notebook
-
-            .. jupyter-kernel:: python3
-
-                ../../tutorials/kilonovae_detection_rate.ipynb
 
 
         .. tab-item:: Notebook
