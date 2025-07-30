@@ -14,9 +14,9 @@ To meet this need, we developed `|M⁴OPT| <https://m4opt.readthedocs.io/en/late
 
 .. dropdown:: Why is scheduling so challenging?
 
-  gravitational-waves alerts often have large localization uncertainties—sometimes hundreds of square degrees—so astronomers need to decide how to balance *sky coverage*
-  (looking at as much area as possible) versus *depth* (spending enough time on each field to detect faint signals).
-  Moreover, electromagnetic counterparts to gravitational-waves events can evolve rapidly, so observation plans must be generated quickly and efficiently.
+    gravitational-waves alerts often have large localization uncertainties—sometimes hundreds of square degrees—so astronomers need to decide how to balance *sky coverage*
+    (looking at as much area as possible) versus *depth* (spending enough time on each field to detect faint signals).
+    Moreover, electromagnetic counterparts to gravitational-waves events can evolve rapidly, so observation plans must be generated quickly and efficiently.
 
 
     .. admonition:: Mixed Integer Linear Programming (MILP)
