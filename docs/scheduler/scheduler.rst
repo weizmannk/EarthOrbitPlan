@@ -168,6 +168,7 @@ Run process
 
 
 .. dropdown:: ECSV file inspection
+    :class: thebe
 
     You can load and inspect a schedule file using Astropy:
 
