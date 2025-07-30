@@ -171,8 +171,7 @@ Run process
 
     You can load and inspect a schedule file using Astropy:
 
-    .. jupyter-kernel:: python3
-        :id: read_ecsv_file
+    .. jupyter-execute::
 
         >>> from astropy.table import QTable
         >>> from earthorbitplan.utils.path import get_project_root
