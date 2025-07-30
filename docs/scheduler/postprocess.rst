@@ -36,10 +36,6 @@ After generating observation plans, post-processing computes detection probabili
         :class: tip
 
 
-        .. automodapi:: earthorbitplan.workflow.postprocess
-            :no-inheritance-diagram:
-
-
 .. dropdown:: Kilonova detection rate and Statistics
 
      Calculating poisson-lognormal rate quantiles and formatting
@@ -187,6 +183,17 @@ After generating observation plans, post-processing computes detection probabili
 
                 - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`__
 
+                .. image:: https://mybinder.org/badge_logo.svg
+                    :target: https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=https%3A%2F%2Fgithub.com%2Fweizmannk%2FEarthOrbitPlan%2Fblob%2Fmain%2Fearthorbitplan%2Ftutorials%2Fkilonovae_detection_rate.ipynb
+
                 Alternatively, you can download the notebook and run it locally:
 
                 - :download:`Download this notebook <../../earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`
+
+
+
+ Main Processing (`earthorbitplan.workflow.postprocess`)
+========================================================
+
+.. automodapi:: earthorbitplan.workflow.postprocess
+    :no-inheritance-diagram:
