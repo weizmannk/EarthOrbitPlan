@@ -26,8 +26,7 @@ To meet this need, we developed `|M⁴OPT| <https://m4opt.readthedocs.io/en/late
         This approach dynamically allocates observation time across fields and optimizes the exposure time for each one, maximizing the overall
         probability of detection. Unlike fixed or manually tuned schedules, this method adapts to the conditions of each field, such as:
 
-    - background noise and background light (including natural sky brightness from the galaxy, zodiacal light, and instrumental effects;
-        for ground-based telescopes, this also includes the increased sky brightness during astronomical twilight—just before sunrise or after sunset),
+    - background noise and background light (including natural sky brightness from the galaxy, zodiacal light, and instrumental effects; for ground-based telescopes, this also includes the increased sky brightness during astronomical twilight—just before sunrise or after sunset),
     - distance uncertainty,
     - instrumental sensitivity.
 
