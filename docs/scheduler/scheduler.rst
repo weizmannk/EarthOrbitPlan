@@ -236,7 +236,7 @@ Run process
 Statistics and predictions
 ==========================
 
-.. dropdown:: Filtering from the :term:`CBC` events
+.. dropdown:: Filtering from the CBC events
 
     Here is how to filter :term:`BNS` and :term:`NSBH` events from the `Observing scenarios <https://m4opt.readthedocs.io/en/latest/guide/scenarios.html>`_.
     The following command will download the specified ZIP file, extract its contents, and filter the events based on your chosen criteria.
