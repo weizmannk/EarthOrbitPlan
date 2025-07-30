@@ -44,17 +44,16 @@ After generating observation plans, post-processing computes detection probabili
     .. tab-set::
 
         .. tab-item:: python
-
             
 
             Once activated, you can edit and run any code block below in your browser.
             Powered by Thebe and Binder.
 
             .. thebe-button::
-
+                
                 .. jupyter-execute::
                     :raises:
-
+                    
                     import warnings
 
                     import numpy as np
