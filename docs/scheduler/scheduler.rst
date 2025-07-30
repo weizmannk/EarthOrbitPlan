@@ -168,7 +168,6 @@ Run process
 
 
 .. dropdown:: ECSV file inspection
-    :class: thebe
 
     You can load and inspect a schedule file using Astropy:
 
@@ -242,31 +241,34 @@ Statistics and predictions
     Here is how to filter :term:`BNS` and :term:`NSBH` events from the `Observing scenarios <https://m4opt.readthedocs.io/en/latest/guide/scenarios.html>`_.
     The following command will download the specified ZIP file, extract its contents, and filter the events based on your chosen criteria.
 
-    .. admonition:: Zenodo API
-        :class: info
 
-        We have written a script for interacting with the Zenodo API, facilitating the download of files based on a DOI.
-        This class provides functionality to retrieve the latest version DOI associated with a provided
-        permanent DOI, and subsequently download the corresponding file from Zenodo.
+    .. dropdown:: Download data from Zenodo
 
-        You can easily download another dataset from Zenodo by replacing the `permanent_doi`
-        with a new one.
+        .. admonition:: Zenodo API
+            :class: thebe
 
-        Download the gravitational-waves simulation data from the `Zenodo database <https://zenodo.org/>`_
+            We have written a script for interacting with the Zenodo API, facilitating the download of files based on a DOI.
+            This class provides functionality to retrieve the latest version DOI associated with a provided
+            permanent DOI, and subsequently download the corresponding file from Zenodo.
 
-        .. tab-set::
+            You can easily download another dataset from Zenodo by replacing the `permanent_doi`
+            with a new one.
 
-            .. tab-item:: Using command line
+            Download the gravitational-waves simulation data from the `Zenodo database <https://zenodo.org/>`_
 
-                .. code-block:: console
+            .. tab-set::
 
-                    $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 14142969 --file-name runs_SNR-10.zip
+                .. tab-item:: Using command line
 
-            .. tab-item:: Using a config file
+                    .. code-block:: console
 
-                .. code-block:: console
+                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 14142969 --file-name runs_SNR-10.zip
 
-                    $ earthorbitplan.scenarios.zenodo_downloader --config ./earthorbitplan/config/params_ultrasat.ini
+                .. tab-item:: Using a config file
+
+                    .. code-block:: console
+
+                        $ earthorbitplan.scenarios.zenodo_downloader --config ./earthorbitplan/config/params_ultrasat.ini
 
 
         .. note::
@@ -274,7 +276,10 @@ Statistics and predictions
             `https://zenodo.org/records/14585837 <https://zenodo.org/records/14585837>`_
 
 
-        .. admonition:: Unpack the zip file and filter the :term:`CBC` events
+
+    .. dropdown:: Filter out the BBH events
+
+        .. admonition:: Unpack the zip file and filter the CBC events
             :class: info
 
             This process automates the unpacking, filtering, and conversion of injection datasets

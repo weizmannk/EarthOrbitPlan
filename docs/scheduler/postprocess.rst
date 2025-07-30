@@ -183,8 +183,10 @@ After generating observation plans, post-processing computes detection probabili
 
             .. seealso::
 
-                You can explore and run the calculations in the
-                - :download:`Download this notebook <../../earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`
-                - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=https%3A%2F%2Fgithub.com%2Fweizmannk%2FEarthOrbitPlan%2Ftree%2Fmain%2Fearthorbitplan%2Ftutorials%2Fkilonovae_detection_rate.ipynb>`_
+                You can explore and run the calculations directly in a Jupyter environment:
 
-                Alternatively, view it rendered in the documentation if included in the toctree.
+                - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`__
+
+                Alternatively, you can download the notebook and run it locally:
+
+                - :download:`Download this notebook <../../earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`
