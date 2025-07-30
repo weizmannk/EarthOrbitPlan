@@ -255,7 +255,7 @@ Statistics and predictions
 
         .. tab-set::
 
-            .. tab-item:: Using CLI
+            .. tab-item:: Using command line
 
                 .. code-block:: console
 
@@ -288,7 +288,7 @@ Statistics and predictions
 
             .. tab-set::
 
-                .. tab-item:: Using CLI
+                .. tab-item:: Using command line
 
                     .. code-block:: console
 
