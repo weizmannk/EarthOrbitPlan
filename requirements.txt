@@ -1,7 +1,7 @@
 # Main dependencies
 
-m4opt @ git+https://github.com/m4opt/m4opt@main
-astropy==6.1.7
+m4opt
+astropy
 pandas
 joblib
 dask
