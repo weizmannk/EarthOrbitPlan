@@ -171,11 +171,9 @@ Run process
 
     You can load and inspect a schedule file using Astropy:
 
-    .. jupyter-kernel:: python3
-        :id: read_ecsv_file
 
     .. jupyter-execute::
-        :kernel: read_ecsv_file
+        :raises:
 
         from astropy.table import QTable
         from earthorbitplan.utils.path import get_project_root
@@ -190,17 +188,11 @@ Run process
         print(display)
 
 
-    :jupyter-download-script:`Download load schedule script <read_ecsv_file>`
-
  .. dropdown:: ECSV Metadata Extraction
 
     Load a schedule, extract key metadata and visit counts:
 
-    .. jupyter-kernel:: python3
-        :id: display_metadata
-
     .. jupyter-execute::
-        :kernel: display_metadata
         :raises:
 
         from astropy.table import QTable
@@ -222,11 +214,6 @@ Run process
         print(f" • Solution time: {time_used}")
         print(f" • Unique fields observed: {unique_fields}")
 
-    .. note::
-
-        To reuse  it in your own scripts download the code:
-
-        :jupyter-download-script:`display <display_metadata>`
 
     .. list-table:: Schedule metadata summary
         :header-rows: 1
