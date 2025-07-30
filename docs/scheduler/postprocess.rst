@@ -52,8 +52,6 @@ After generating observation plans, post-processing computes detection probabili
             Once activated, you can edit and run any code block below in your browser.
             Powered by Thebe and Binder.
 
-            .. thebe-button:: Run the detection rate
-
             .. jupyter-execute::
                 :raises:
 
