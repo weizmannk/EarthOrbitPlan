@@ -1,7 +1,6 @@
 # Main dependencies
 astropy>=7.1.0
 m4opt
-astropy
 pandas
 joblib
 dask
