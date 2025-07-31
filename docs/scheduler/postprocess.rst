@@ -34,7 +34,6 @@ After generating observation plans, post-processing computes detection probabili
     .. dropdown:: Main Processing (`earthorbitplan.workflow.postprocess.process`)
 
         .. card::
-
             .. autofunction:: earthorbitplan.workflow.postprocess.process
 
 

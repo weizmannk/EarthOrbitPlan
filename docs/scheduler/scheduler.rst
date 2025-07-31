@@ -128,8 +128,7 @@ Run process
 
             .. tab-item:: Animation
 
-                .. card:: Animation
-                    :class-card: sd-bg-warning
+                .. card:: Animation: `m4opt._cli.animate`
 
                     **The animation produces:**
 

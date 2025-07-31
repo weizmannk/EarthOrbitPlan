@@ -316,5 +316,9 @@ if on_rtd:
 else:
     nbsphinx_execute = "never"
 
-# sd_fontawesome_latex = True
+sd_fontawesome_latex = True
 
+# FontAwesome Icons
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+]
