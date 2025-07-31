@@ -316,7 +316,6 @@ Statistics and predictions
 
 
     .. card:: Why run scheduling jobs in parallel or on a cluster?
-        :class-card: sd-bg-dark sd-text-white
 
         Backend process
         ^^^
