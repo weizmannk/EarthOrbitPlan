@@ -99,20 +99,24 @@ Run process
 
 
 
+
 .. dropdown:: Output and Visualization
 
     .. admonition:: Understanding the Output
         :class: info
 
-        The generated ECSV file (e.g. ``14.ecsv``) contains your observation plan, including:
 
-        - Pointing coordinates,
-        - Exposure times,
-        - Slew (repositioning) times,
-        - Visit (by default: two visits per field),
-        - All relevant metadata.
+        .. card::
 
-        By default, the schedule includes **two visits per field**—so each coordinate may appear twice, corresponding to repeated observations.
+            The generated ECSV file (e.g. ``14.ecsv``) contains your observation plan, including:
+            ^^^
+            - Pointing coordinates,
+            - Exposure times,
+            - Slew (repositioning) times,
+            - Visit (by default: two visits per field),
+            - All relevant metadata.
+            +++
+            By default, the schedule includes **two visits per field**—so each coordinate may appear twice, corresponding to repeated observations.
 
 
     .. admonition:: Visualizing the Schedule
@@ -128,19 +132,18 @@ Run process
 
             .. tab-item:: Animation
 
-                .. card:: Animation: `m4opt._cli.animate`
+                .. card::
 
-                    **The animation produces:**
+                    The animation produces:
 
                     - ``14_MOVIE.gif`` — an animation of the schedule
                     - ``14_MOVIE.pdf`` — a static pdf,  of the observation sequence.
 
-                .. figure:: ../_static/14_MOVIE.gif
-                    :alt: Example animation of the observation plan
-                    :align: center
-
-
-                    *Example animation of the observation plan*
+                    ^^^
+                    .. figure:: ../_static/14_MOVIE.gif
+                        :align: center
+                    +++
+                    Example animation of the observation plan
 
             .. tab-item:: Static plan
 
@@ -173,50 +176,52 @@ Run process
 
 .. dropdown:: ECSV file inspection
 
-    You can load and inspect a schedule file using Astropy:
+    .. card::  Retrieve observation coordinates
 
+        You can load and inspect a schedule file using Astropy:
+        ^^^
+        .. jupyter-execute::
+            :raises:
 
-    .. jupyter-execute::
-        :raises:
-
-        from astropy.table import QTable
-        from earthorbitplan.utils.path import get_project_root
-        root = get_project_root()
-        output_file = root / "data" / "14.ecsv"
-        plan = QTable.read(output_file, format="ascii.ecsv")
-        obs = plan[plan["action"] == "observe"]
-        display = obs["start_time", "duration"]
-        display["ra"] = obs["target_coord"].ra
-        display["dec"] = obs["target_coord"].dec
-        display.round({'duration': 1, 'ra': 2, 'dec': 2})
-        print(display)
-
+            from astropy.table import QTable
+            from earthorbitplan.utils.path import get_project_root
+            root = get_project_root()
+            output_file = root / "data" / "14.ecsv"
+            plan = QTable.read(output_file, format="ascii.ecsv")
+            obs = plan[plan["action"] == "observe"]
+            display = obs["start_time", "duration"]
+            display["ra"] = obs["target_coord"].ra
+            display["dec"] = obs["target_coord"].dec
+            display.round({'duration': 1, 'ra': 2, 'dec': 2})
+            print(display)
 
  .. dropdown:: ECSV Metadata Extraction
 
-    Load a schedule, extract key metadata and visit counts:
+    .. card::  Retrieve observation coordinates
 
-    .. jupyter-execute::
-        :raises:
+         Load a schedule, extract key metadata and visit counts:
+        ^^^
+        .. jupyter-execute::
+            :raises:
 
-        from astropy.table import QTable
-        from earthorbitplan.utils.path import get_project_root
-        root = get_project_root()
-        output_file = root / "data" / "14.ecsv"
-        plan = QTable.read(output_file, format="ascii.ecsv")
-        objective = plan.meta.get("objective_value")
-        best_bound = plan.meta.get("best_bound")
-        status = plan.meta.get("solution_status")
-        time_used = plan.meta.get("solution_time")
-        visits = plan.meta.get("args", {}).get("visits", 2)
-        n_obs = len(plan[plan["action"] == "observe"])
-        unique_fields = n_obs // visits
-        print("Schedule metadata:")
-        print(f" • Objective value: {objective:.4f}")
-        print(f" • Best bound: {best_bound:.4f}")
-        print(f" • Solver status: {status}")
-        print(f" • Solution time: {time_used}")
-        print(f" • Unique fields observed: {unique_fields}")
+            from astropy.table import QTable
+            from earthorbitplan.utils.path import get_project_root
+            root = get_project_root()
+            output_file = root / "data" / "14.ecsv"
+            plan = QTable.read(output_file, format="ascii.ecsv")
+            objective = plan.meta.get("objective_value")
+            best_bound = plan.meta.get("best_bound")
+            status = plan.meta.get("solution_status")
+            time_used = plan.meta.get("solution_time")
+            visits = plan.meta.get("args", {}).get("visits", 2)
+            n_obs = len(plan[plan["action"] == "observe"])
+            unique_fields = n_obs // visits
+            print("Schedule metadata:")
+            print(f" • Objective value: {objective:.4f}")
+            print(f" • Best bound: {best_bound:.4f}")
+            print(f" • Solver status: {status}")
+            print(f" • Solution time: {time_used}")
+            print(f" • Unique fields observed: {unique_fields}")
 
 
     .. list-table:: Schedule metadata summary
