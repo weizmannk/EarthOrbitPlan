@@ -165,7 +165,7 @@ Run process
 
         .. seealso::
 
-            For more details of marker conventions: `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_.
+            `ligo.skymap plotting documentation <https://lscsoft.docs.ligo.org/ligo.skymap/plot/marker.html#module-ligo.skymap.plot.marker/>`_ for more details of marker conventions.
 
 
     .. note::

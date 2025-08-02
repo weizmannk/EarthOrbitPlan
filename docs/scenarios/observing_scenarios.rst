@@ -324,8 +324,10 @@ Observing Scenarios
         .. toctree::
             :maxdepth: 1
 
-            ../auto_tutorials/index
-            ../tutorials/observing_scenarios.ipynb
+            - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/observing_scenarios.ipynb>`__
+
+            .. image:: https://mybinder.org/badge_logo.svg
+                :target: https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=https%3A%2F%2Fgithub.com%2Fweizmannk%2FEarthOrbitPlan%2Fblob%2Fmain%2Fearthorbitplan%2Ftutorials%2Fobserving_scenarios.ipynb
 
 
 .. dropdown:: Tools and Resources
