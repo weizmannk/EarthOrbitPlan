@@ -293,7 +293,7 @@ Observing Scenarios
 
 .. dropdown:: Notebooks & Resources
 
-    .. :tab-set::
+    .. tab-set::
 
         .. tab-item:: Population sampling
 
@@ -314,15 +314,16 @@ Observing Scenarios
             - Credible regions (e.g., 90%) and the comoving distance distribution are extracted for each simulated event.
 
 
-    .. admonition:: Run the full analysis in interactive Jupyter notebooks
-        :class: tip
+    .. card:: Run the full analysis in interactive Jupyter notebooks
 
-        You can explore the tutorials interactively:
+        You can explore the tutorials interactively
 
+        ^^^
         - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/observing_scenarios.ipynb>`__
 
         .. image:: https://mybinder.org/badge_logo.svg
             :target: https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/observing_scenarios.ipynb
+        +++
 
 
 .. dropdown:: Tools and Resources
