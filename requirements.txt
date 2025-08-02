@@ -1,6 +1,5 @@
 # Main dependencies
-# m4opt @ git+https://github.com/m4opt/m4opt@main
-m4opt
+m4opt @ git+https://github.com/m4opt/m4opt@main
 pandas
 joblib
 dask
