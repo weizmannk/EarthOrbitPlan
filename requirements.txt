@@ -1,9 +1,10 @@
 # Main dependencies
+# m4opt @ git+https://github.com/m4opt/m4opt@main
+m4opt
 pandas
 joblib
 dask
 dask-jobqueue
-ligo.skymap>= 2.4.0
 python-ligo-lw
 igwn-ligolw
 memory-profiler
