@@ -21,7 +21,6 @@ from Far-UV instruments such as UVEX, to Near-UV missions like UVEX and ULTRASAT
       multi-messenger/index
       scenarios/index
       scheduler/index
-      config/index
 
 .. admonition:: Indices and Search
 
