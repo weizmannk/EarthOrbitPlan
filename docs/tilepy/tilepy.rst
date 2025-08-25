@@ -1,8 +1,8 @@
 .. _tilepy:
 
-======
-tilepy
-======
+============
+Requirements
+============
 
 .. admonition:: Installation
    :class: tip

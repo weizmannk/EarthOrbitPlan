@@ -1,7 +1,7 @@
 .. highlight:: sh
 
 =================
-Scheduling tilepy
+tilepy
 =================
 
 .. toctree::
