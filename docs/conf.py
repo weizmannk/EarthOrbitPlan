@@ -267,6 +267,7 @@ linkcheck_anchors = False
 intersphinx_mapping.update(  # noqa: F405
     {
         "m4opt": ("https://m4opt.readthedocs.io/en/latest/", None),
+        "tilepy": ("https://tilepy.readthedocs.io/en/latest/", None),
         "astropy": ("https://docs.astropy.org/en/stable/", None),
         "astropy_healpix": ("https://astropy-healpix.readthedocs.io/en/stable/", None),
         "astroplan": ("https://astroplan.readthedocs.io/en/latest/", None),
