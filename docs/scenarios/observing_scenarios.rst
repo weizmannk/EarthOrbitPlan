@@ -319,10 +319,11 @@ Observing Scenarios
         You can explore the tutorials interactively
 
         ^^^
-        - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/observing_scenarios.ipynb>`__
+        .. button-link:: https://colab.research.google.com/github.com/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/observing_scenarios.ipynb
+            :color: info
+            :shadow:
 
-        .. image:: https://mybinder.org/badge_logo.svg
-            :target: https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/observing_scenarios.ipynb
+            Open in Colab
         +++
 
 

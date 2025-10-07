@@ -220,15 +220,11 @@ After generating observation plans, post-processing computes detection probabili
 
                 You can explore,  edit  and run the calculations directly in a Jupyter environment:
 
-                - `Open in Binder <https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=lab/tree/earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`__
+                .. button-link:: https://colab.research.google.com/github.com/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/kilonovae_detection_rate.ipynb
+                    :color: info
+                    :shadow:
 
-                .. image:: https://mybinder.org/badge_logo.svg
-                    :target: https://mybinder.org/v2/gh/weizmannk/EarthOrbitPlan/HEAD?urlpath=https%3A%2F%2Fgithub.com%2Fweizmannk%2FEarthOrbitPlan%2Fblob%2Fmain%2Fearthorbitplan%2Ftutorials%2Fkilonovae_detection_rate.ipynb
-
-                Alternatively, you can download the notebook and run it locally:
-
-                - :download:`Download this notebook <../../earthorbitplan/tutorials/kilonovae_detection_rate.ipynb>`
-
+                    Open in Colab
 
 
 .. dropdown:: Function for selected and etected events
