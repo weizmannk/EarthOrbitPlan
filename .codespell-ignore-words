@@ -1,0 +1,6 @@
+# Project-specific abbreviations to ignore for codespell
+# Used in scientific context, , or French words, not a typo
+
+theses
+te
+Theses

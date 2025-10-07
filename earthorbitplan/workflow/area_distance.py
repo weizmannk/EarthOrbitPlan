@@ -17,8 +17,6 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
 
-from earthorbitplan.utils.path import get_project_root
-
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", ".*dubious year.*")
 warnings.filterwarnings(
@@ -26,7 +24,7 @@ warnings.filterwarnings(
 )
 
 
-def customize_style(columns=1):
+def customize_style(columns=0):
     if columns == 1:
         target_width = 3.5  # ApJ column size in inches
     else:
@@ -39,15 +37,12 @@ def customize_style(columns=1):
     plt.rcParams["figure.figsize"] = (target_width, height * target_width / width)
 
 
-def plot_area_distance():
+def plot_area_distance(events_file, show=False):
     """Plot area vs distance for each run and save as PDF."""
 
     quantity_support()
 
     customize_style()
-
-    root = get_project_root()
-    events_file = root / "data" / "events.ecsv"
     main_table = QTable.read(events_file)
 
     # List all expected constant columns (global parameters)
@@ -99,12 +94,27 @@ def plot_area_distance():
 
     chisq_ppf = stats.chi2(df=2).ppf
     area_factor = chisq_ppf(skymap_area_cl / 100) / chisq_ppf(constants["cutoff"])
+
+    print("area_factor=", area_factor)
+    print("min_area=", min_area)
+    print("deadline=", constants["deadline"])
+    print("delay=", constants["delay"])
+    print("visits=", constants["visits"])
+    print("exptime_min=", constants["exptime_min"])
+    print("exptime_max=", constants["exptime_max"])
+    print("deadline - delay=", (constants["deadline"] - constants["delay"]))
+
     max_area = (
         area_factor
         * min_area
         * (constants["deadline"] - constants["delay"])
         / (constants["visits"] * constants["exptime_min"])
     ).to(u.deg**2)
+
+    ###
+    sky_area = (1 * u.spat).to(u.deg**2)
+    print(f" max_area / sky area: {max_area / sky_area}")
+
     max_distance = (
         10
         ** (
@@ -139,10 +149,10 @@ def plot_area_distance():
         width, height = plt.rcParams["figure.figsize"]
         default_fig_width_height_ratio = width / height
         fig_width_height_ratio = 0.7
-        width = 7
+        # width = 7
         fig = plt.figure(figsize=(width, width * fig_width_height_ratio))
 
-        left, bottom, width, height = (
+        left, bottom, _, _ = (
             0.2,
             0.065,
             0.475,
@@ -164,11 +174,14 @@ def plot_area_distance():
                     10 ** (np.log10(50 / 4000) * 4 / default_fig_width_height_ratio)
                     * u.spat
                 ).to(u.deg**2),
-                (1 * u.spat).to(u.deg**2),
+                (20 * u.spat).to(u.deg**2),
+                # (10 ** np.ceil(np.log10(max_area.to_value(u.deg**2)))) * u.deg**2
+                # max_area
             ),
             xscale="log",
             yscale="log",
         )
+
         ax_joint.set_xlabel(r"Luminosity distance, $d_\mathrm{L}$ (Mpc)")
         ax_joint.set_ylabel(
             rf"{skymap_area_cl}% credible area, $A_{{{skymap_area_cl}\%}}$ (deg$^2$)"
@@ -269,6 +282,7 @@ def plot_area_distance():
             ),
             u.Quantity(
                 [max_area, max_area, min_area, ax_joint.get_ylim()[0] * u.deg**2]
+                # [sky_area, sky_area, min_area, ax_joint.get_ylim()[0] * u.deg**2]
             ),
             color=color,
         )
@@ -550,9 +564,27 @@ def plot_area_distance():
             va="top",
             bbox={"facecolor": "white", "boxstyle": "round"},
         )
+        print(
+            "min_area=",
+            min_area,
+            "max_area=",
+            max_area,
+            "crossover=",
+            crossover_distance,
+            "max_distance=",
+            max_distance,
+        )
         fig.savefig(f"area-distance-{run}.pdf")
-        plt.close(fig)
+
+        if not show:
+            plt.close(fig)
+        else:
+            plt.show()
+    # if show:
+    #     plt.show()
 
 
-if __name__ == "__main__":
-    plot_area_distance()
+# if __name__ == "__main__":
+#     root = get_project_root()
+#     events_file = root / "data" / "events.ecsv"
+#     plot_area_distance(events_file)
