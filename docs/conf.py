@@ -144,29 +144,6 @@ sphinx_gallery_conf = {
 # }
 
 
-# -- Options for the Thebe and Binder -----------------------------------------------------
-
-# # Enable interactive code cells in Sphinx docs with Thebe and Binder (extension: "jupyter_sphinx")
-# jupyter_sphinx_thebelab_config = {
-#     "requestKernel": True,  # Start a Jupyter kernel for executing code cells
-#     "mountActivateWidget": True,
-#     "mountStatusWidget": True,
-#     "binderOptions": {
-#         "repo": "weizmannk/EarthOrbitPlan",  # GitHub repo: username/repo-name (this need a /requirements.txt)
-#         "binderUrl": "https://mybinder.org",  # BinderHub URL (default is fine)
-#         "ref": "main",  # Branch or tag to use
-#         "filepath": "earthorbitplan/tutorials/",  # Folder (or file) to open in Binder, relative to repo root
-#     },
-# }
-
-thebe_config = {
-    "always_load": True,
-    "binder_options": {
-        "repo": "EarthOrbitPlan/requirements",
-        "binder_url": "https://mybinder.org",
-        "filepath": "earthorbitplan/tutorials/",
-    },
-}
 # html_theme_options = {
 #     "use_thebe": True,
 # }

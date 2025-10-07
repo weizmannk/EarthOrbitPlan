@@ -316,14 +316,16 @@ Observing Scenarios
 
     .. card:: Run the full analysis in interactive Jupyter notebooks
 
-        You can explore the tutorials interactively
+        You can explore the tutorials interactively.
 
         ^^^
-        .. button-link:: https://colab.research.google.com/github.com/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/observing_scenarios.ipynb
+
+        .. button-link:: https://colab.research.google.com/github/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/observing_scenarios.ipynb
             :color: info
             :shadow:
 
             Open in Colab
+
         +++
 
 
