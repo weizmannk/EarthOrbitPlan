@@ -17,7 +17,7 @@ def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
         error = {log_dir}/$(Cluster)_$(Process).err
         log = {log_dir}/$(Cluster)_$(Process).log
         request_memory = 80000 MB
-        request_disk = 10000 MB
+        request_disk = 8000 MB
         request_cpus = 1
         on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
         on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
@@ -40,7 +40,7 @@ def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
         if proc.returncode != 0:
             logging.error(f"Condor submit error for {event_id}: {stderr.strip()}")
         else:
-            print(f"Submitted condor job for {event_id}: {stdout.strip()}")
+            logging.info(f"Submitted condor job for {event_id}")
 
     except Exception as e:
         logging.error(f"Error submitting Condor job for {event_id}: {e}")

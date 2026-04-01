@@ -12,10 +12,13 @@ from astropy.visualization import quantity_support
 from astropy_healpix import HEALPix
 from m4opt import missions
 from m4opt.synphot import observing
+from m4opt.synphot.background import update_missions
 from matplotlib import patheffects
 from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
+import logging
+from tqdm.auto import tqdm
 
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", ".*dubious year.*")
@@ -23,6 +26,11 @@ warnings.filterwarnings(
     "ignore", "Tried to get polar motions for times after IERS data is valid.*"
 )
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    force=True,
+)
 
 def customize_style(columns=1):
     if columns == 1:
@@ -36,6 +44,118 @@ def customize_style(columns=1):
     plt.rcParams["mathtext.fontset"] = "stix"
     plt.rcParams["figure.figsize"] = (target_width, height * target_width / width)
 
+# ---------------------------------------------------------------------------
+# Theoretical limiting magnitude
+# ---------------------------------------------------------------------------
+def compute_theoretical_limmag(
+    mission,
+    hpx: HEALPix,
+    constants: dict,
+    date: Time | None = None,
+    time_step: u.Quantity = 1 * u.hour,
+) -> u.Quantity:
+    """
+    Compute the theoretical best-case limiting magnitude over the full sky.
+ 
+    For ULTRASAT (GEO orbit), the Cerenkov background varies along the orbit
+    as the satellite traverses different regions of the Van Allen radiation
+    belts (AE8 model). To capture this variation, the orbit is propagated
+    over one full sidereal day (one GEO period ≈ 24 h) and limmag is
+    evaluated at each orbital position over all HEALPix pixels.
+ 
+    Following the same pattern as M4OPT's scheduler, all orbital positions
+    are computed at once via ``mission.observer_location(obstimes)`` to
+    ensure type compatibility with the AE8 Cerenkov model.
+ 
+    Non-observable pixels (blocked by Earth limb, Sun, or Moon constraints)
+    return ``-inf`` and are excluded from the maximum.
+ 
+    Parameters
+    ----------
+    mission : m4opt Mission
+        Mission object (e.g. ``ultrasat``, ``uvex``).
+    hpx : HEALPix
+        HEALPix grid used for full-sky evaluation.
+    constants : dict
+        Scheduling constants from the plan metadata.
+        Required keys: ``snr``, ``deadline``, ``delay``,
+        ``exptime_max``, ``bandpass``.
+    date : astropy.time.Time, optional
+        Reference date for orbit propagation. Defaults to 2026-03-01.
+    time_step : astropy.units.Quantity, optional
+        Time step between orbital samples (default: 1 hour).
+        For GEO orbits (ULTRASAT), 1 hour is sufficient since the Cerenkov
+        background varies slowly. Use smaller steps for LEO missions.
+ 
+    Returns
+    -------
+    astropy.units.Quantity
+        Best-case limiting magnitude in AB mag, maximised over all
+        observable sky pixels and all sampled orbital positions.
+    """
+    if date is None:
+        date = Time("2026-03-01")
+ 
+    # Propagate orbit over one full GEO period (24 h) — same pattern as M4OPT
+    obstimes           = date + np.arange(
+        0, 24 * u.hour, time_step, like=time_step
+    )
+    observer_locations = mission.observer_location(obstimes)
+ 
+    exptime       = min(
+        constants["deadline"] - constants["delay"],
+        constants["exptime_max"],
+    )
+    flat_spectrum = synphot.SourceSpectrum(synphot.ConstFlux1D, amplitude=0 * u.ABmag)
+    all_pixels    = np.arange(hpx.npix)
+ 
+    def _limmag_at_time(obs_location, obs_time: Time) -> float:
+        """Evaluate limmag over all sky pixels at a single orbital position.
+ 
+        Returns the maximum over finite pixels, or ``-inf`` if no pixel
+        is observable at this time.
+        """
+        with observing(
+            observer_location=obs_location,
+            target_coord=hpx.healpix_to_skycoord(all_pixels),
+            obstime=obs_time,
+        ):
+            # Inject Cerenkov background at the real orbital position (AE8 model).
+            # For missions without Cerenkov (e.g. UVEX), this is a no-op.
+            update_missions(mission, obs_location, obs_time)
+            limmag = mission.detector.get_limmag(
+                constants["snr"], exptime, flat_spectrum, constants["bandpass"],
+            )
+ 
+        # Exclude non-observable pixels (-inf from Earth limb, Sun, Moon)
+        finite = np.isfinite(limmag.to_value(u.mag))
+        if not np.any(finite):
+            logging.warning(f"No observable pixels at {obs_time.iso} — skipping.")
+            return -np.inf
+ 
+        logging.debug(
+            f"  {obs_time.iso} ==> "
+            f"limmag [{limmag[finite].min():.3f}, {limmag[finite].max():.3f}] "
+            f"({finite.sum()}/{hpx.npix} observable pixels)"
+        )
+        return limmag[finite].max().to_value(u.mag)
+ 
+    limmag_best = max(
+        _limmag_at_time(obs_loc, obs_time)
+        for obs_loc, obs_time in tqdm(
+            zip(observer_locations, obstimes),
+            desc=f"limmag ({mission.name})",
+            total=len(obstimes),
+            unit="step",
+        )
+    )
+ 
+    logging.info(
+        f"Theoretical limmag = {limmag_best:.3f} mag "
+        f"({len(obstimes)} steps × {time_step}/step × {hpx.npix} pixels)"
+    )
+    return limmag_best * u.mag
+ 
 
 def plot_area_distance(events_file, show=False):
     """Plot area vs distance for each run and save as PDF."""
@@ -77,17 +197,14 @@ def plot_area_distance(events_file, show=False):
     mission = getattr(missions, constants["mission"])
     cutoff = constants["cutoff"]
 
-    with observing(
-        observer_location=EarthLocation(0 * u.m, 0 * u.m, 0 * u.m),
-        target_coord=hpx.healpix_to_skycoord(np.arange(hpx.npix)),
-        obstime=Time("2025-01-01"),
-    ):
-        limmag = mission.detector.get_limmag(
-            constants["snr"],
-            min(constants["deadline"] - constants["delay"], constants["exptime_max"]),
-            synphot.SourceSpectrum(synphot.ConstFlux1D, amplitude=0 * u.ABmag),
-            constants["bandpass"],
-        ).max()
+    # limmag  = compute_theoretical_limmag(
+    #     mission,
+    #     hpx,
+    #     constants,
+    #     date = Time("2026-04-01"), 
+    #     time_step =  0.5 * u.h,
+    # )
+    limmag = 23.576296607302744 * u.mag
 
     skymap_area_cl = 90
     min_area = (mission.fov.width * mission.fov.height).to(u.deg**2)

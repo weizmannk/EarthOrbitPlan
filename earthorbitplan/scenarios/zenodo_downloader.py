@@ -16,7 +16,7 @@
                   with a new one.
 
 Usage:
-    python3 earthorbitplan/scenarios/zenodo_downloader.py --permanent-doi 14142969 --file-name runs_SNR-10.zip
+    python3 earthorbitplan/scenarios/zenodo_downloader.py --permanent-doi 18601773 --file-name runs.zip
 
     # OR
 
@@ -35,7 +35,7 @@ from tqdm.auto import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-# If the link to the data is required manually, it can be accessed at : https://doi.org/10.5281/zenodo.14142969
+# If the link to the data is required manually, it can be accessed at : https://zenodo.org/records/18709319
 
 
 def parse_arguments():

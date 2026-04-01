@@ -5,20 +5,21 @@ authors = [{name = "", email = "kiend.weizman7@gmail.com"}]
 license = {text = "BSD-3-Clause"}
 description = "Educational Framework for Multimessenger Observing Scenarios"
 readme = "README.rst"
-requires-python = ">=3.11"
+requires-python = ">=3.11, <3.12"
 dependencies = [
-    "m4opt @ git+https://github.com/m4opt/m4opt@main",
+    "m4opt",
+    # uv pip install --no-deps git+https://github.com/weizmannk/m4opt@cerenkov-background-light
     "pandas",
     "joblib",
     "dask",
     "dask-jobqueue",
     "pre-commit",
     "memory-profiler",
-    "python-ligo-lw",
     "igwn-ligolw",
     "memory-profiler",
 ]
 
+#
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",

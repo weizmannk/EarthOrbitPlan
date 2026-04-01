@@ -14,6 +14,7 @@ from m4opt import missions
 from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot.extinction import DustExtinction
+from m4opt.synphot.background import update_missions
 from scipy import stats
 
 warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
@@ -52,6 +53,16 @@ def get_detection_probability_known_position(plan, event_row, plan_args):
         target_coord=fields["target_coord"],
         obstime=(fields["start_time"] + 0.5 * fields["duration"]),
     ):
+        
+        # Update mission parameters with contextual background information
+        # Compute limmag per field: the Cerenkov background depends on the satellite's
+        # position in the radiation belts (AE8 model), which varies along the orbit.
+        update_missions(
+            mission, 
+            fields["observer_location"][0], 
+            (fields["start_time"] + 0.5 * fields["duration"])[0],
+        )
+        
         spectrum = synphot.SourceSpectrum(
             synphot.ConstFlux1D, amplitude=0 * u.ABmag
         ) * synphot.SpectralElement(DustExtinction())
@@ -125,12 +136,19 @@ def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
         target_coord=hpx.healpix_to_skycoord(skymap["ipix"]),
         obstime=plan["start_time"][0],
     ):
+        # Update mission parameters with contextual background information
+        # Compute limmag per field: the Cerenkov background depends on the satellite's
+        # position in the radiation belts (AE8 model), which varies along the orbit.
+        update_missions(mission, plan["observer_location"][0], plan["start_time"][0])
+        
+        
         spectrum = synphot.SourceSpectrum(
             synphot.ConstFlux1D, amplitude=0 * u.ABmag
         ) * synphot.SpectralElement(DustExtinction())
         skymap["limmag"] = mission.detector.get_limmag(
             plan_args["snr"], skymap["duration"], spectrum, plan_args["bandpass"]
         )
+    
     skymap["limmag"][np.isnan(skymap["limmag"])] = -np.inf * u.mag
 
     distmean, diststd, distnorm = distance.parameters_to_moments(
