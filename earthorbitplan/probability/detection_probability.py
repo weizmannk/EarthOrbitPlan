@@ -16,6 +16,7 @@ from m4opt.synphot import observing
 from m4opt.synphot.extinction import DustExtinction
 from m4opt.synphot.background import update_missions
 from scipy import stats
+from tqdm import tqdm
 
 warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
 warnings.filterwarnings("ignore", ".*dubious year.*")
@@ -48,32 +49,85 @@ def get_detection_probability_known_position(plan, event_row, plan_args):
     if len(fields) == 0:
         return 0
 
-    with observing(
-        observer_location=fields["observer_location"],
-        target_coord=fields["target_coord"],
-        obstime=(fields["start_time"] + 0.5 * fields["duration"]),
-    ):
+    # with observing(
+    #     observer_location=fields["observer_location"],
+    #     target_coord=fields["target_coord"],
+    #     obstime=(fields["start_time"] + 0.5 * fields["duration"]),
+    # ):
         
-        # Update mission parameters with contextual background information
-        # Compute limmag per field: the Cerenkov background depends on the satellite's
-        # position in the radiation belts (AE8 model), which varies along the orbit.
-        update_missions(
-            mission, 
-            fields["observer_location"][0], 
-            (fields["start_time"] + 0.5 * fields["duration"])[0],
+    #     # Update mission parameters with contextual background information
+    #     # Compute limmag per field: the Cerenkov background depends on the satellite's
+    #     # position in the radiation belts (AE8 model), which varies along the orbit.
+    #     update_missions(
+    #         mission, 
+    #         fields["observer_location"][0], 
+    #         (fields["start_time"] + 0.5 * fields["duration"])[0],
+    #     )
+        
+        
+    #     spectrum = synphot.SourceSpectrum(
+    #         synphot.ConstFlux1D, amplitude=0 * u.ABmag
+    #     ) * synphot.SpectralElement(DustExtinction())
+    #     limmag = mission.detector.get_limmag(
+    #         plan_args["snr"], fields["duration"], spectrum, plan_args["bandpass"]
+    #     ).max()
+
+    def _limmag_obs_time(field, mission, plan_args) -> float:
+        """
+        Evaluate limiting magnitude at a single orbital position.
+        
+        Takes into account:
+        - Observer location in orbit (affects Cerenkov background via AE8 model)
+        - Observation time (affects SNR accumulation)
+        - Dust extinction along line of sight
+        """
+        with observing(
+            observer_location=field["observer_location"],
+            target_coord=field["target_coord"],
+            obstime=(field["start_time"] + 0.5 * field["duration"]),
+        ):
+            # Update mission parameters based on orbital position
+            # (Cerenkov background varies with radiation belt exposure)
+            update_missions(
+                mission, 
+                field["observer_location"], 
+                (field["start_time"] + 0.5 * field["duration"]),
+            )
+        
+            # Create spectrum with dust extinction
+            spectrum = synphot.SourceSpectrum(
+                synphot.ConstFlux1D, amplitude=0 * u.ABmag
+            ) * synphot.SpectralElement(DustExtinction())
+            
+            # Compute limiting magnitude for this field
+            limmag = mission.detector.get_limmag(
+                plan_args["snr"], 
+                field["duration"],
+                spectrum, 
+                plan_args["bandpass"]
+            )
+        return limmag
+
+    # Compute limiting magnitude for all fields covering the true position
+    # Take the law  detectable limiting magnitude across all observations
+    limmag = max(
+        _limmag_obs_time(field, mission, plan_args) 
+        for field in tqdm(
+            fields,
+            desc=f"Computing limmag ({mission.name})",
+            total=len(fields),
+            unit="field",
         )
-        
-        spectrum = synphot.SourceSpectrum(
-            synphot.ConstFlux1D, amplitude=0 * u.ABmag
-        ) * synphot.SpectralElement(DustExtinction())
-        limmag = mission.detector.get_limmag(
-            plan_args["snr"], fields["duration"], spectrum, plan_args["bandpass"]
-        ).max()
-    lim_absmag = limmag - Distance(event_row["distance"] * u.Mpc).distmod
+    )
+
+    # Convert to absolute magnitude limit at source distance
+    lim_absmag =  limmag - Distance(event_row["distance"] * u.Mpc).distmod
+    # Return probability that intrinsic magnitude is brighter than limit
+    # (based on Gaussian distribution of kilonova absolute magnitudes)
     return stats.norm(
         loc=plan_args["absmag_mean"], scale=plan_args["absmag_stdev"]
     ).cdf(lim_absmag.to_value(u.mag))
-
+    
 
 def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
     """
@@ -126,6 +180,7 @@ def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
         fields["duration"].to_value(u.s),
     ):
         durations[ipix] = np.maximum(durations[ipix], duration)
+
     skymap["duration"] = durations * u.s
     skymap["ipix"] = np.arange(hpx.npix)
 
@@ -148,6 +203,7 @@ def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
         skymap["limmag"] = mission.detector.get_limmag(
             plan_args["snr"], skymap["duration"], spectrum, plan_args["bandpass"]
         )
+    
     
     skymap["limmag"][np.isnan(skymap["limmag"])] = -np.inf * u.mag
 
