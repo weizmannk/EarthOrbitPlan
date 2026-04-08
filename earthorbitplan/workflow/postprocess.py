@@ -15,16 +15,8 @@ import logging
 import sys
 from pathlib import Path
 
-import numpy as np
-import synphot
-from astropy import units as u
-from astropy.coordinates import ICRS
 from astropy.table import QTable
-from astropy_healpix import HEALPix
 from ligo.skymap.util.progress import progress_map
-from m4opt import missions
-from m4opt.synphot import observing
-from m4opt.synphot.background import update_missions
 
 from earthorbitplan.probability.detection_probability import (
     get_detection_probability_known_position,
@@ -66,6 +58,7 @@ def setup_logging():
         force=True,
     )
 
+
 def process(row, sched_path):
     """
     Process an event and extract detection probability, optimization metrics,
@@ -96,12 +89,12 @@ def process(row, sched_path):
         logging.warning(f"Missing schedule file: {plan_file}")
         return (None,) * 20
 
-    plan      = QTable.read(plan_file)
+    plan = QTable.read(plan_file)
     plan_args = plan.meta["args"]
     plan_args.pop("skymap", None)
 
     observations = plan[plan["action"] == "observe"].filled()
-    num_fields   = len(observations) // plan_args["visits"]
+    num_fields = len(observations) // plan_args["visits"]
 
     return (
         get_detection_probability_known_position(plan, row, plan_args),
@@ -131,9 +124,9 @@ def main():
     args = parse_arguments()
     setup_logging()
 
-    base_path   = Path(args.data_dir)
-    input_path  = base_path / args.event_table
-    sched_path  = base_path / args.sched_dir
+    base_path = Path(args.data_dir)
+    input_path = base_path / args.event_table
+    sched_path = base_path / args.sched_dir
     output_path = base_path / args.output_file
 
     logging.info(f"Loading event table from: {input_path}")
