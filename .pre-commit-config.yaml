@@ -46,7 +46,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        args: ["--ignore-words=.codespell-ignore-words", "--write-changes"]
+        args: ["--ignore-words=.codespell-ignore-words"] #, "--write-changes"]
         exclude: |
           (^docs/scenarios/psds\.xml$|^docs/refs\.bib$|^data/progres/|^data/schedules/|^data/skymaps/)
         additional_dependencies:

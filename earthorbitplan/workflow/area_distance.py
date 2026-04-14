@@ -17,7 +17,7 @@ Visual Components
 1. Main scatter plot with triggered events (stars) and missing events (gray circles)
 2. 5x5 legend grid showing all combinations of objective value x detection probability
 3. Marginal histograms for distance and area distributions
-4. Theoretical limit boundaries (max area, max distance, area & d⁻⁴)
+4. Theoretical limit boundaries (max area, max distance, area & d^4)
 
 
 Example
@@ -50,6 +50,19 @@ from earthorbitplan.utils.path import get_project_root
 from m4opt import missions
 from m4opt.synphot import observing
 from m4opt.synphot.background import update_missions
+
+# Suppress known warnings from astropy and lal
+warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
+warnings.filterwarnings("ignore", ".*dubious year.*")
+warnings.filterwarnings(
+    "ignore", "Tried to get polar motions for times after IERS data is valid.*"
+)
+
+# Configure logging for progress tracking
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", force=True
+)
+
 
 # Suppress known warnings from astropy and lal
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
@@ -920,19 +933,19 @@ def plot_area_distance(events_file, show=False):
 
         # Format statistics text WITH percentiles
         stats_text = (
-            f"Total: {total_events}\n"
-            f"Triggered: {n_triggered} ({100 * n_triggered / total_events:.1f}%)\n"
-            f"Detected (eff): {n_detected_eff:.0f}\n"
-            f"\n"
+            # f"Total: {total_events}\n"
+            # f"Triggered: {n_triggered} ({100 * n_triggered / total_events:.1f}%)\n"
+            # f"Detected (eff): {n_detected_eff:.0f}\n"
+            # f"\n"
             f"90th percentiles:\n"
-            f"All events:  {perc_90_all:.0f} Mpc\n"
-            f"Triggered: {perc_90_trig:.0f} Mpc\n"
-            f"Detected:  {perc_90_det:.0f} Mpc"
+            f"All events: {perc_90_all:.0f}  Mpc\n"
+            f"Triggered:  {perc_90_trig:.0f} Mpc\n"
+            f"Detected:   {perc_90_det:.0f} Mpc"
         )
 
         # Statistics box with percentiles
         fig.text(
-            0.11,
+            0.115,
             0.94,
             stats_text,
             fontsize=9,  # Slightly smaller for more text
@@ -954,17 +967,17 @@ def plot_area_distance(events_file, show=False):
         # ===================================================================
         stats_text_area = (
             f"90th percentiles:\n"
-            f"All events: {perc_90_area_all:.0f} deg$^2$ \n"
-            f"Triggered:{perc_90_area_trig:.0f} deg$^2$ \n"
-            f"Detected: {perc_90_area_det:.0f} deg$^2$"
+            f"All events: {perc_90_area_all:.0f}  deg$^2$ \n"
+            f"Triggered:  {perc_90_area_trig:.0f} deg$^2$ \n"
+            f"Detected:   {perc_90_area_det:.0f}  deg$^2$"
         )
 
         fig.text(
-            0.94,
+            0.77,
             0.11,
             stats_text_area,
             fontsize=9,
-            ha="right",
+            ha="left",
             va="bottom",
             family="monospace",
             weight="bold",
