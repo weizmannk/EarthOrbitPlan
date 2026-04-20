@@ -28,6 +28,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
 import numpy as np
 from astropy.table import QTable
 from tqdm.auto import tqdm
@@ -49,12 +50,13 @@ def setup_logging(log_dir):
         force=True,
     )
 
+
 def parse_inf_int(value):
     """Parse int or 'inf'"""
-    if value.lower() == 'inf':
+    if value.lower() == "inf":
         return np.inf
     return int(value)
-    
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -83,7 +85,7 @@ def parse_arguments():
             absmag_mean=cfg.getfloat("absmag_mean", fallback=-16),
             absmag_stdev=cfg.getfloat("absmag_stdev", fallback=1.3),
             exptime_min=cfg.getint("exptime_min", fallback=300),
-            exptime_max=cfg.getfloat("exptime_max", fallback=np.inf),  
+            exptime_max=cfg.getfloat("exptime_max", fallback=np.inf),
             snr=cfg.getint("snr", fallback=10),
             delay=cfg.get("delay", fallback="15min"),
             deadline=cfg.get("deadline", fallback="24hour"),
@@ -119,7 +121,10 @@ def parse_arguments():
         "--exptime-min", type=int, default=300, help="Minimum exposure time (s)"
     )
     parser.add_argument(
-        "--exptime-max", type=parse_inf_int, default=np.inf, help="Maximum exposure time (s)"
+        "--exptime-max",
+        type=parse_inf_int,
+        default=np.inf,
+        help="Maximum exposure time (s)",
     )
     parser.add_argument("--snr", type=int, default=10, help="SNR threshold")
     parser.add_argument("--delay", type=str, default="0h", help="Visibility delay")
@@ -194,6 +199,7 @@ def create_wrapper(run_name, event_id, base_path, args, m4opt_executable):
 
     wrapper_content = (
         f"#!/bin/bash\n"
+        f"export OMP_NUM_THREADS=1\n"
         f"\n{m4opt_executable} "
         f"schedule "
         f"{skymap_file} "

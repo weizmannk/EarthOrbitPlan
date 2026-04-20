@@ -42,6 +42,13 @@ repos:
 
       # Run the formatter.
       - id: ruff-format
+
+  # strip output from Jupyter and IPython notebooks
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
@@ -58,9 +65,3 @@ repos:
     hooks:
       - id: black-jupyter
         types: [jupyter]
-
-  # strip output from Jupyter and IPython notebooks
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.1
-    hooks:
-      - id: nbstripout

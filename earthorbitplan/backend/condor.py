@@ -11,7 +11,6 @@ def submit_condor_job(run_name, event_id, log_dir, wrapper_script):
         +MaxHours = 24
         universe = vanilla
         accounting_group = ligo.dev.o4.cbc.pe.bayestar
-        getenv = true
         executable = {wrapper_script}
         output = {log_dir}/$(Cluster)_$(Process).out
         error = {log_dir}/$(Cluster)_$(Process).err
