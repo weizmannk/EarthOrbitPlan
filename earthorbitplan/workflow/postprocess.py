@@ -75,7 +75,7 @@ def process(row, sched_path):
     -------
     tuple
         detection_probability_known_position, objective_value, best_bound,
-        solution_status, solution_time, num_fields, limmag_best,
+        solution_status, solution_time, num_fields,
         cutoff, nside, mission, snr, deadline, delay,
         exptime_min, exptime_max, bandpass,
         absmag_mean, absmag_stdev, visits, skymap, skygrid.
@@ -154,7 +154,7 @@ def main():
         table["visits"],
         table["skymap"],
         table["skygrid"],
-    ) = zip(*progress_map(lambda row: process(row, sched_path), table))
+    ) = zip(*progress_map(lambda row: process(row, sched_path), table, jobs=None))
 
     logging.info(f"Saving results to: {output_path}")
     table.write(output_path, overwrite=True)

@@ -17,7 +17,7 @@ Visual Components
 1. Main scatter plot with triggered events (stars) and missing events (gray circles)
 2. 5x5 legend grid showing all combinations of objective value x detection probability
 3. Marginal histograms for distance and area distributions
-4. Theoretical limit boundaries (max area, max distance, area & d^4)
+4. Theoretical limit boundaries (max area, max distance, area & d⁻⁴)
 
 
 Example
@@ -33,6 +33,7 @@ import warnings
 import numpy as np
 import synphot
 from astropy import units as u
+from astropy.coordinates import ICRS
 from astropy.cosmology import Planck15 as cosmo
 from astropy.cosmology import z_at_value
 from astropy.table import QTable
@@ -42,6 +43,8 @@ from astropy_healpix import HEALPix
 from matplotlib import colors as mcolors
 from matplotlib import gridspec, patheffects
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import FancyBboxPatch
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import stats
 from tqdm.auto import tqdm
@@ -50,19 +53,6 @@ from earthorbitplan.utils.path import get_project_root
 from m4opt import missions
 from m4opt.synphot import observing
 from m4opt.synphot.background import update_missions
-
-# Suppress known warnings from astropy and lal
-warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
-warnings.filterwarnings("ignore", ".*dubious year.*")
-warnings.filterwarnings(
-    "ignore", "Tried to get polar motions for times after IERS data is valid.*"
-)
-
-# Configure logging for progress tracking
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", force=True
-)
-
 
 # Suppress known warnings from astropy and lal
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
@@ -297,28 +287,60 @@ def plot_area_distance(events_file, show=False):
     # ===================================================================
     # Setup observational parameters
     # ===================================================================
-    skymap_area_cl = 90  # Credible level for sky localization area
-    # hpx = HEALPix(nside=constants["nside"], frame=ICRS(), order="nested")
     mission = getattr(missions, constants["mission"])
     cutoff = constants["cutoff"]  # Threshold for triggered vs missing
 
-    limmag = 23.576296607302744 * u.mag  # Limiting magnitude
-    #  This Function need to be run with Cplex credendials , so its hardcoded to ovoid rerunning it every time
-    # limmag  = compute_theoretical_limmag(
-    #     mission,
-    #     hpx,
-    #     constants,
-    #     date = Time("2026-04-01"),
-    #     time_step =  0.5 * u.h,
-    # )
+    if mission.name == "ultrasat":
+        limmag = 23.576296607302744 * u.mag  # Limiting magnitude
 
-    min_area = (mission.fov.width * mission.fov.height).to(u.deg**2)
+    else:
+        #  This Function need to be run with Cplex credendials , so its hardcoded to ovoid rerunning it every time
+        hpx = HEALPix(nside=constants["nside"], frame=ICRS(), order="nested")
+        limmag = compute_theoretical_limmag(
+            mission,
+            hpx,
+            constants,
+            date=Time("2026-05-14"),
+            time_step=0.5 * u.h,
+        )
 
     # ===================================================================
     # Calculate theoretical detection limits
     # ===================================================================
     # These define the boundaries of detectability in the area-distance plane
-    # chisq_ppf = stats.chi2(df=2).ppf
+
+    min_area = (mission.fov.width * mission.fov.height).to(u.deg**2)
+
+    # Full sky area in square degrees
+    full_sky_area = (1 * u.spat).to(u.deg**2)  # 41,253 deg^2
+
+    skymap_area_cl = 90  # Credible level for sky localization area
+    # Maximum coverable area within the "deadline" time
+    chisq_ppf = stats.chi2(df=2).ppf
+    area_factor = chisq_ppf(skymap_area_cl / 100) / chisq_ppf(constants["cutoff"])
+    max_area = (
+        area_factor
+        * min_area
+        * (constants["deadline"] - constants["delay"])
+        / (constants["visits"] * constants["exptime_min"])
+    ).to(u.deg**2)
+
+    # ratio et max_area_display
+    ratio = max_area / full_sky_area
+
+    if ratio > 1:
+        max_area_display = full_sky_area  # float
+        logging.info(
+            f"max_area ({max_area:.0f} deg2) > full_sky ({full_sky_area:.0f} deg2): "
+            f"ratio = {ratio:.2f}x — using full sky as display limit"
+        )
+    else:
+        max_area_display = max_area  # float
+        logging.info(
+            f"max_area ({max_area:.0f} deg2) < full_sky — "
+            f"using max_area as display limit\n"
+            f"ratio = {ratio:.2f} x full sky area"
+        )
 
     # Maximum distance: beyond this, sources are too faint to detect
     max_distance = (
@@ -338,13 +360,10 @@ def plot_area_distance(events_file, show=False):
         * u.Mpc
     )
 
-    # Full sky area in square degrees
-    full_sky_area = (1 * u.spat).to(u.deg**2)
-
     # Crossover distance: where area constraint transitions from full sky to FOV-limited
     crossover_distance = (
         max_distance
-        * (min_area / full_sky_area).to_value(u.dimensionless_unscaled) ** 0.25
+        * (min_area / max_area_display).to_value(u.dimensionless_unscaled) ** 0.25
     )
 
     # ===================================================================
@@ -353,6 +372,9 @@ def plot_area_distance(events_file, show=False):
     runs = np.unique(main_table["run"])
 
     for run in runs:
+        if run == "O5a-HL":
+            continue
+
         logging.info(f"Processing run: {run}")
 
         # Filter events for current run
@@ -389,7 +411,7 @@ def plot_area_distance(events_file, show=False):
         xlim_min, xlim_max = 40, 4000  # Distance range in Mpc
         crossover_val = crossover_distance.to_value(u.Mpc)
         max_dist_val = max_distance.to_value(u.Mpc)
-        full_sky_val = full_sky_area.to_value(u.deg**2)
+        max_area_display_val = full_sky_area.to_value(u.deg**2)
         min_area_val = min_area.to_value(u.deg**2)
 
         # Dynamic y-axis limit based on actual data
@@ -398,8 +420,7 @@ def plot_area_distance(events_file, show=False):
         else:
             actual_max_area = 1000
 
-        max_area_display = full_sky_val
-        ylim_max = max(actual_max_area * 3.5, max_area_display * 1.3, 1000)
+        ylim_max = max(actual_max_area * 3.5, max_area_display_val * 1.3, 1000)
         ylim_min = 0.1
 
         # ===================================================================
@@ -452,7 +473,13 @@ def plot_area_distance(events_file, show=False):
         # Gray shaded region: undetectable parameter space
         ax_joint.fill_between(
             [xlim_min, crossover_val, max_dist_val, max_dist_val, xlim_max],
-            [max_area_display, max_area_display, min_area_val, ylim_min, ylim_min],
+            [
+                max_area_display_val,
+                max_area_display_val,
+                min_area_val,
+                ylim_min,
+                ylim_min,
+            ],
             [ylim_max] * 5,
             color="lightgray",
             alpha=0.4,
@@ -462,7 +489,7 @@ def plot_area_distance(events_file, show=False):
         # Black dashed line: detection boundary
         ax_joint.plot(
             [xlim_min, crossover_val, max_dist_val, max_dist_val],
-            [max_area_display, max_area_display, min_area_val, ylim_min],
+            [max_area_display_val, max_area_display_val, min_area_val, ylim_min],
             color="black",
             linewidth=3,
             zorder=1,
@@ -486,7 +513,7 @@ def plot_area_distance(events_file, show=False):
         # "Max area" label on horizontal segment
         ax_joint.text(
             np.sqrt(xlim_min * crossover_val),
-            max_area_display * 1.15,
+            max_area_display_val * 1.15,
             "Max area",
             **text_kwargs,
         )
@@ -505,7 +532,7 @@ def plot_area_distance(events_file, show=False):
         # "Area & d^{-4}" label on diagonal segment
         ax_joint.text(
             np.sqrt(crossover_val * max_dist_val),
-            np.sqrt(min_area_val * max_area_display),
+            np.sqrt(min_area_val * max_area_display_val),
             r"Area $\propto d^{-4}$",
             rotation=-45,
             **text_kwargs,
@@ -637,7 +664,6 @@ def plot_area_distance(events_file, show=False):
         ax_legend.patch.set_alpha(0.95)
 
         # Add rounded corner box overlay
-        from matplotlib.patches import FancyBboxPatch
 
         fancy_box = FancyBboxPatch(
             (0, 0),
@@ -657,7 +683,6 @@ def plot_area_distance(events_file, show=False):
         # ===================================================================
         # Create text legend (Missing / Triggered)
         # ===================================================================
-        from matplotlib.lines import Line2D
 
         # Define legend symbols
         legend_elements = [
@@ -993,7 +1018,7 @@ def plot_area_distance(events_file, show=False):
         # ===================================================================
         # Save figure to PDF
         # ===================================================================
-        output_file = f"area-distance-{run}.pdf"
+        output_file = f"{mission.name}_allsky_area-distance_{run}.pdf"
         fig.savefig(output_file, dpi=300, bbox_inches="tight")
         logging.info(f" Saved: {output_file}")
         logging.info(

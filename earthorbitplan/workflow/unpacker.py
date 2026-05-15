@@ -11,11 +11,11 @@
 # -----
 # Run from the command line:
 
-#     python unpacker.py --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+#     python unpacker.py --zip runs.zip --subdir runs --runs O5a-HL O5a-HLV O5b-HLV O5c-HLV  --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
 # Or use a config file:
 
-#     python workflow/unpacker.py --config  params_ultrasat.ini
+#     python earthorbitplan/workflow/unpacker.py --config  earthorbitplan/config/params_ultrasat.ini
 
 # Or import and call `process_zip()` in your Python code.
 
@@ -32,6 +32,7 @@ from functools import reduce
 from shutil import copyfileobj
 from tempfile import NamedTemporaryFile
 
+import numpy as np
 from astropy import units as u
 from astropy.cosmology import Planck15 as cosmo
 from astropy.cosmology import z_at_value
@@ -64,7 +65,7 @@ def parse_arguments():
             zip=cfg.get("zip"),
             subdir=cfg.get("subdir", fallback="runs_SNR-10"),
             runs=cfg.get("runs", fallback="O5 O6").split(),
-            detectors=cfg.get("detectors", fallback="HLVK"),
+            detectors=cfg.get("detectors", fallback=""),
             data_dir=cfg.get("data_dir", fallback="data"),
             skymap_dir=cfg.get("skymap_dir", fallback="skymaps"),
             mass_threshold=cfg.getfloat("mass_threshold", fallback=3.0),
@@ -85,7 +86,7 @@ def parse_arguments():
     parser.add_argument(
         "--detectors",
         type=str,
-        default="HLVK",
+        default="",
         help="Detector combination tag (e.g., HLVK).",
     )
     parser.add_argument(
@@ -108,9 +109,9 @@ def process_zip(
     runs,
     outdir,
     skymap_dir,
-    max_mass2=3.0,
-    subdir="runs_SNR-10",
-    detectors="HLVK",
+    max_ns_mass=3.0,
+    subdir="runs",
+    detectors="None",
 ):
     """
     Extract and filter GW injection tables from a Zenodo-style ZIP archive.
@@ -125,7 +126,7 @@ def process_zip(
         Destination directory for output files.
     skymap_dir : str or Path
         Directory for output skymap FITS files.
-    max_mass2 : float, optional
+    max_ns_mass : float, optional
         Maximum mass for secondary object (used to filter BNS/NSBH).
     subdir : str, optional
         Name of the root folder inside the ZIP archive.
@@ -148,7 +149,7 @@ def process_zip(
 
         tables = []
         for run in tqdm(runs, desc="Reading summary tables"):
-            in_run = in_root / f"{run}{detectors}" / "farah"
+            in_run = in_root / f"{run}{detectors}" / "fullpop4"
             table = reduce(
                 join,
                 (
@@ -178,11 +179,14 @@ def process_zip(
         del tables
 
         # filter the BNS and NSBH event with NS max of 3 Sun mass
-        z = z_at_value(cosmo.luminosity_distance, table["distance"] * u.Mpc).to_value()
-        zp1 = 1 + z
-        source_mass2 = table["mass2"] / zp1
+        table["redshift"] = z_at_value(
+            cosmo.luminosity_distance, table["distance"] * u.Mpc
+        ).to_value(u.dimensionless_unscaled)
 
-        table = table[source_mass2 <= max_mass2]
+        table = table[table["mass2"] <= max_ns_mass * (1 + table["redshift"])]
+        table["source_class"] = np.where(
+            table["mass1"] <= max_ns_mass * (1 + table["redshift"]), "BNS", "NSBH"
+        )
 
         table.write(f"{out_root}/observing-scenarios.ecsv", overwrite=True)
 
@@ -190,7 +194,7 @@ def process_zip(
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
             in_path = (
-                in_root / f"{row['run']}{detectors}" / "farah" / "allsky" / filename
+                in_root / f"{row['run']}{detectors}" / "fullpop4" / "allsky" / filename
             )
             out_path = skymap_root / row["run"] / filename
             with in_path.open("rb") as in_file, out_path.open("wb") as out_file:
@@ -204,7 +208,7 @@ if __name__ == "__main__":
         runs=args.runs,
         outdir=args.data_dir,
         skymap_dir=args.skymap_dir,
-        max_mass2=args.mass_threshold,
+        max_ns_mass=args.mass_threshold,
         subdir=args.subdir,
         detectors=args.detectors,
     )
