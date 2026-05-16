@@ -12,21 +12,24 @@ def summarize_selected_detected_events(
     merger_rate_hi=510,
     run_duration=1.5,
     poisson_lognormal_rate_quantiles=None,
+    output_file=None,
     verbose=True,
 ):
     """
-    Summarize selected and detected events by class an run, returning a LaTeX table of rate quantiles.
+    Summarize selected and detected events by class and run, returning a LaTeX table of rate quantiles.
 
     Computes the 5%, 50%, and 95% quantiles of the merger rate for each run using a Poisson-lognormal model,
-    following the O3 Rate & Population (R&P) methodology
-    (see `Phys. Rev. X 13, 011048 <https://doi.org/10.1103/PhysRevX.13.011048>`_).
+    following the O4 Rate & Population (R&P) methodology
+    (see `GWTC-4 R&P <https://arxiv.org/pdf/2508.18083>`_).
 
-    The log-expected rate for each run is:
+    The log-expected rate for each run $r$ and source class $c$ is:
     .. math::
 
-        \mu = \log(\mathrm{target median}) + \log(\mathrm{run duration}) - \log(\mathrm{simulation effective rate}) + \log(N)
+        \mu_{r,c} = \log(\mathrm{target\ median}) + \log(\mathrm{run\ duration})
+                  - \log(\mathrm{effective\ rate}_{\mathrm{sim},r}) + \log(N_{r,c})
 
-    where :math:`N` is the number of selected or detected events.
+    where :math:`N_{r,c}` is the number of selected or detected events for class $c$ in run $r$.
+    Note the effective simulation rate depends only on the run, not the class.
 
     Parameters
     ----------
@@ -35,47 +38,31 @@ def summarize_selected_detected_events(
     quantiles : sequence of float, optional
         Probability quantiles to compute (default: (0.5, 0.05, 0.95)).
     merger_rate_lo : float, optional
-        Lower bound of target merger rate (Gpc\\ :sup:`-3`\\ yr\\ :sup:`-1`).
+        Lower bound of target merger rate (Gpc^-3 yr^-1).
     merger_rate_mid : float, optional
-        Median of target merger rate (Gpc\\ :sup:`-3`\\ yr\\ :sup:`-1`).
+        Median of target merger rate (Gpc^-3 yr^-1).
     merger_rate_hi : float, optional
-        Upper bound of target merger rate (Gpc\\ :sup:`-3`\\ yr\\ :sup:`-1`).
+        Upper bound of target merger rate (Gpc^-3 yr^-1).
     run_duration : float, optional
         Duration of the observing run in years (default: 1.5).
     poisson_lognormal_rate_quantiles : callable
         Function to calculate Poisson-lognormal rate quantiles.
     verbose : bool, optional
-        If True, prints the LaTeX table.
+        If True, displays the tabular in Jupyter via IPython.display.Latex.
 
     Returns
     -------
     str
-        LaTeX-formatted table as a string, with one row for the number of 
-        events selected and one row for the expected number of events detected,
-        broken down by source class (BNS, NSBH, All) and observing run,
-        along with their 90% credible intervals.
+        Full LaTeX table (\\begin{table}...\\end{table}) as a string.
+        Rows = observing runs x {Selected, Detected}. Columns = BNS, NSBH, All.
+        Style: \\Xhline thick rules, \\multirow for run names, \\textbf headers.
+        Requires: multirow, makecell packages in LaTeX preamble.
 
     Notes
     -----
-    Source classes: BNS (both components < 3 Sun-Mass), NSBH (one component > 3 Sun-Mass), 
-    All (no mass cut). The merger rate quantiles are standardized using the O3 
-    Rate & Population (R&P) reference values ...
+    Source classes: BNS (both components < 3 Msun), NSBH (one component > 3 Msun),
+    All (no mass cut). Column order is BNS => NSBH => All, from most specific to most inclusive.
 
-    Example
-    -------
-    >>> from earthorbitplan.workflow.selection_detection_rate import summarize_selected_detected_events
-    >>> from earthorbitplan.probability.rate import poisson_lognormal_rate_quantiles
-    >>> from earthorbitplan.utils.path import get_project_root
-    >>> root = get_project_root()
-    >>> events_file = root / "data" / "events.ecsv"
-    >>> latex_table = summarize_selected_detected_events(
-    ...     events_file, poisson_lognormal_rate_quantiles=poisson_lognormal_rate_quantiles
-    ... )
-    >>> print(latex_table)
-    Run & O5a (BNS) & O5a (NSBH) & O5a (All) & O5b (BNS) & O5b (NSBH) & O5b (All) \\
-    Number of events selected & $43_{-26}^{+56}$ & $12_{-7}^{+15}$ & $55_{-33}^{+72}$ & ... \\
-    Number of events detected & $19_{-12}^{+26}$ & $8_{-5}^{+11}$ & $27_{-16}^{+34}$ & ...
-    
     References
     ----------
     .. footbibliography::
@@ -85,7 +72,7 @@ def summarize_selected_detected_events(
     main_table = QTable.read(events_file)
     runs = np.unique(main_table["run"])
 
-    # Get cutoff value use for the simulation
+    # Get cutoff value used for the simulation
     cutoff_values = main_table["cutoff"]
     if not np.all(cutoff_values == cutoff_values[0]):
         raise ValueError("Multiple cutoff values found in the table.")
@@ -94,21 +81,10 @@ def summarize_selected_detected_events(
     # Apply cutoff filter
     main_table = main_table[main_table["objective_value"] >= cutoff]
 
-    # Check that at least one event remains
     if len(main_table) == 0:
         raise RuntimeError("No events passed the cutoff filter.")
 
-    # Derive source class from component masses before filtering
-    main_table["source_class"] = np.where(
-        (main_table["mass1"] <= 3) & (main_table["mass2"] <= 3),
-        "BNS",
-        np.where(
-            (main_table["mass1"] > 3) | (main_table["mass2"] > 3),
-            "NSBH",
-            "Other",
-        ),
-    )
-
+    # Class order: BNS => NSBH => All (specific to inclusive)
     is_class_by_category = {
         "BNS": lambda table: table["source_class"] == "BNS",
         "NSBH": lambda table: table["source_class"] == "NSBH",
@@ -116,7 +92,6 @@ def summarize_selected_detected_events(
     }
 
     event_tables_by_run = {run: main_table[main_table["run"] == run] for run in runs}
-
     event_tables_by_run_and_class = {
         run: {
             cls: table[is_class(table)]
@@ -125,27 +100,26 @@ def summarize_selected_detected_events(
         for run, table in event_tables_by_run.items()
     }
 
-    # 90% confidence interval width for standard normal (used to scale log-normal sigma)
+    # 90% CI width for standard normal
     (standard_90pct_interval,) = np.diff(stats.norm.interval(0.9))
 
-    # Log-mean (mu) and log-standard deviation (sigma) for the target merger rate distribution
+    # Lognormal prior parameters
     log_target_rate_mu = np.log(merger_rate_mid)
     log_target_rate_sigma = (
         np.log(merger_rate_hi / merger_rate_lo) / standard_90pct_interval
     )
 
-    # Log-effective of observing scenarios simulation rates per run, from metadata
+    # Log effective simulation rate per run (from metadata)
     log_sim_effective_rate_by_run = {
         key: np.log(value.to_value(u.Gpc**-3 * u.yr**-1))
         for key, value in main_table.meta["effective_rate"].items()
     }
 
-    # Prepare mu for each run and class
+    # Compute mu_{r,c} for each run and class
     mu = []
     for run in runs:
         mu_run = []
         for table_class in event_tables_by_run_and_class[run].values():
-            # for cls, table_class in event_tables_by_run_and_class[run].items():
             n_selected = len(table_class)
             n_detected = np.sum(table_class["detection_probability_known_position"])
             mu_run.append(
@@ -158,8 +132,12 @@ def summarize_selected_detected_events(
 
     mu = np.moveaxis(np.array(mu), 2, 0)
 
-    # Compute quantiles => shape (2, n_runs, n_classes, 3)
-    # by_run a shape (n_runs, n_classes, 3)
+    # Compute Poisson-lognormal quantiles
+    # rate_quantiles shape: (2, n_runs, n_classes, 3)
+    #   axis 0: [selected, detected]
+    #   axis 1: runs
+    #   axis 2: classes (BNS, NSBH, All)
+    #   axis 3: quantiles (median, lo, hi)
     prob_quantiles = np.array(quantiles)
     rate_quantiles = poisson_lognormal_rate_quantiles(
         prob_quantiles[np.newaxis, np.newaxis, :],
@@ -167,46 +145,121 @@ def summarize_selected_detected_events(
         log_target_rate_sigma,
     )
 
-    # Build LaTeX table
-    classes = list(is_class_by_category.keys())
-    n_classes = len(classes)
-    col_spec = "l" + "c" * (len(runs) * n_classes)
+    # -------------------------------------------------------------------------
+    # Build LaTeX table — article style:
+    #   - \Xhline{3\arrayrulewidth} for thick top/bottom/mid rules
+    #   - \multirow{2}{*} to merge run name across Selected/Detected rows
+    #   - \textbf for column headers and run names
+    #   - \hline between runs
+    # Requires: \usepackage{multirow, makecell} in preamble
+    # -------------------------------------------------------------------------
+    classes = list(is_class_by_category.keys())  # ["BNS", "NSBH", "All"]
+    row_labels = ["Selected", "Detected"]
+    xhline = r"\Xhline{3\arrayrulewidth}"
+    hline = r"\hline"
 
-    # Row 1: run names spanning n_classes columns each
-    run_headers = " & ".join(
-        rf"\multicolumn{{{n_classes}}}{{c}}{{{run}}}" for run in runs
-    )
+    def fmt(mid, lo, hi):
+        m, lo_val, h_val = np.rint([mid, mid - lo, hi - mid]).astype(int)
+        return f"${m}_{{-{lo_val}}}^{{+{h_val}}}$"
 
-    # Row 2: class names under each run
-    class_headers = " & ".join(cls for _ in runs for cls in classes)
+    col_spec = "llccc"
+    header = r"\textbf{Run} & & \textbf{BNS} & \textbf{NSBH} & \textbf{All} \\"
 
-    # Data rows
-    labels = ["Number of events selected", "Number of events detected"]
     data_rows = []
-    for i, (label, by_run) in enumerate(zip(labels, rate_quantiles)):
-        formatted = [
-            "${}_{{-{}}}^{{+{}}}$".format(
-                *np.rint([mid, mid - lo, hi - mid]).astype(int)
+    for i_run, run in enumerate(runs):
+        for i_label, label in enumerate(row_labels):
+            # \multirow on first sub-row only; blank on second
+            run_cell = (
+                rf"\multirow{{2}}{{*}}{{\textbf{{{run}}}}}" if i_label == 0 else ""
             )
-            for run_quantiles in by_run
-            for mid, lo, hi in run_quantiles
-        ]
-        data_rows.append(" & ".join([label] + formatted) + r" \\")
+            cells = [
+                fmt(*rate_quantiles[i_label, i_run, i_cls, :])
+                for i_cls in range(len(classes))
+            ]
+            data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
+        # thin \hline between runs, nothing after last
+        if i_run < len(runs) - 1:
+            data_rows.append(hline)
 
-    latex_table = "\n".join(
+    # tabular only — KaTeX-compatible for Jupyter display
+    tabular = "\n".join(
         [
             rf"\begin{{tabular}}{{{col_spec}}}",
-            r"\hline",
-            rf"& {run_headers} \\",
-            rf"& {class_headers} \\",
-            r"\hline",
+            xhline,
+            header,
+            xhline,
             *data_rows,
-            r"\hline",
+            xhline,
             r"\end{tabular}",
         ]
     )
 
+    # Full article wrapper with styling and caption
+    latex_table = "\n".join(
+        [
+            r"\begin{table}",
+            r"\renewcommand\arraystretch{1.3}",
+            r"\setlength{\tabcolsep}{0.4cm}",
+            r"\centering",
+            r"\caption{Expected number of selected and detected events per observing run"
+            r" and source class. Events are pre-filtered to retain only BNS and NSBH"
+            r" (mass2 $\leq 3\,M_\odot$)."
+            r" BNS: both components $\leq 3\,M_\odot$;"
+            r" NSBH: one component $> 3\,M_\odot$;"
+            r" All: BNS $+$ NSBH combined."
+            r" Values are medians with 90\% credible intervals.}",
+            r"\label{tab:selected-detected}",
+            tabular,
+            r"\end{table}",
+        ]
+    )
+
     if verbose:
-        print(latex_table)
+
+        def make_rst_table(headers, rows):
+            columns = [headers] + rows
+            n_cols = len(headers)
+            col_widths = [
+                max(len(str(row[i])) for row in columns) for i in range(n_cols)
+            ]
+
+            def sep(char="+", fill="-"):
+                return char + char.join(fill * (w + 2) for w in col_widths) + char
+
+            def fmt_row(row):
+                return (
+                    "| "
+                    + " | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths))
+                    + " |"
+                )
+
+            lines = [sep(), fmt_row(headers), sep("=", "=")]
+            for row in rows:
+                lines.append(fmt_row(row))
+                lines.append(sep())
+            return "\n".join(lines)
+
+        headers = ["Run", "", "BNS", "NSBH", "All"]
+        rst_rows = []
+        for i_run, run in enumerate(runs):
+            for i_label, label in enumerate(row_labels):
+                run_cell = run if i_label == 0 else ""
+                cells = [
+                    "{}_{{-{}}}^{{+{}}}".format(
+                        *np.rint([mid, mid - lo, hi - mid]).astype(int)
+                    )
+                    for mid, lo, hi in [
+                        rate_quantiles[i_label, i_run, i_cls, :]
+                        for i_cls in range(len(classes))
+                    ]
+                ]
+                rst_rows.append([run_cell, label] + cells)
+
+        print(make_rst_table(headers, rst_rows))
+
+    if output_file is not None:
+        from pathlib import Path
+
+        Path(output_file).write_text(latex_table)
 
     return latex_table

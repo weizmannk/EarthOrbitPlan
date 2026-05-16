@@ -49,7 +49,6 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import stats
 from tqdm.auto import tqdm
 
-from earthorbitplan.utils.path import get_project_root
 from m4opt import missions
 from m4opt.synphot import observing
 from m4opt.synphot.background import update_missions
@@ -202,7 +201,7 @@ def compute_theoretical_limmag(
     return limmag_best * u.mag
 
 
-def plot_area_distance(events_file, show=False):
+def plot_area_distance(events_file, outdir="output", show=False):
     """
     area-distance plot for each run.
 
@@ -1018,7 +1017,7 @@ def plot_area_distance(events_file, show=False):
         # ===================================================================
         # Save figure to PDF
         # ===================================================================
-        output_file = f"{mission.name}_allsky_area-distance_{run}.pdf"
+        output_file = f"{outdir}/{mission.name}_allsky_area-distance_{run}.pdf"
         fig.savefig(output_file, dpi=300, bbox_inches="tight")
         logging.info(f" Saved: {output_file}")
         logging.info(
@@ -1032,7 +1031,7 @@ def plot_area_distance(events_file, show=False):
             plt.show()
 
 
-if __name__ == "__main__":
-    root = get_project_root()
-    events_file = root / "data" / "events.ecsv"
-    plot_area_distance(events_file)
+# if __name__ == "__main__":
+#     root = get_project_root()
+#     events_file = root / "data" / "events.ecsv"
+#     plot_area_distance(events_file)
