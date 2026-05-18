@@ -195,7 +195,7 @@ def compute_theoretical_limmag(
     )
 
     logging.info(
-        f"Theoretical limmag = {limmag_best:.3f} mag "
+        f"Theoretical limmag {mission.name} = {limmag_best:.3f} mag "
         f"({len(obstimes)} steps x {time_step}/step x {hpx.npix} pixels)"
     )
     return limmag_best * u.mag
@@ -289,12 +289,29 @@ def plot_area_distance(events_file, outdir="output", show=False):
     mission = getattr(missions, constants["mission"])
     cutoff = constants["cutoff"]  # Threshold for triggered vs missing
 
+    #  This Function need to be run with Cplex credendials , so its hardcoded to ovoid rerunning it every time
+    hpx = HEALPix(nside=constants["nside"], frame=ICRS(), order="nested")
+
+    logging.info(mission.name)
     if mission.name == "ultrasat":
         limmag = 23.576296607302744 * u.mag  # Limiting magnitude
+        # ULTRASATneed cplex to propagate around the orbit
 
+    # elif  mission.name == "uvex":
+    #     with observing(
+    #         observer_location=EarthLocation(0 * u.m, 0 * u.m, 0 * u.m),
+    #         target_coord=hpx.healpix_to_skycoord(np.arange(hpx.npix)),
+    #         obstime=Time("2026-05-14"),
+    #     ):
+    #         limmag = mission.detector.get_limmag(
+    #             constants["snr"],
+    #             min(constants["deadline"] - constants["delay"],
+    #                 constants["exptime_max"]),
+    #             synphot.SourceSpectrum(synphot.ConstFlux1D, amplitude=0 * u.ABmag),
+    #             constants["bandpass"],
+    #         ).max()
+    #         logging.info(f"limmag:{limmag}")
     else:
-        #  This Function need to be run with Cplex credendials , so its hardcoded to ovoid rerunning it every time
-        hpx = HEALPix(nside=constants["nside"], frame=ICRS(), order="nested")
         limmag = compute_theoretical_limmag(
             mission,
             hpx,
@@ -922,7 +939,7 @@ def plot_area_distance(events_file, outdir="output", show=False):
         fig.text(
             0.94,
             0.94,
-            run,
+            f"{mission.name.upper()}\n\n{run}",
             fontsize=18,
             weight="bold",
             ha="right",
