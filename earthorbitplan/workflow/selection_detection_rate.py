@@ -83,7 +83,7 @@ def summarize_selected_detected_events(
     # Map skygrid for ULTRASAT to be add in the the caption
     skygrid_label = {
         "allsky": r"\emph{All-Sky Survey} (AllSS)",
-        "non_overlap": r"\emph{Low-Cadence Survey} (LCS)",
+        "non-overlap": r"\emph{Low-Cadence Survey} (LCS)",
     }.get(skygrid, "")
 
     # Get cutoff value used for the simulation
@@ -221,7 +221,7 @@ def summarize_selected_detected_events(
             r" BNS: both components $\leq 3\,M_\odot$;"
             r" NSBH: one component $> 3\,M_\odot$;"
             r" All: BNS $+$ NSBH combined."
-            r" Values are medians with 90\% credible intervals.}}",
+            r" Values are medians with 90\% credible intervals.}",
             rf"\label{{tab:{mission}-{skygrid}-selected-detected-{run_duration}yr}}",
             tabular,
             r"\end{table}",
