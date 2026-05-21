@@ -7,10 +7,10 @@ from scipy import stats
 def summarize_selected_detected_events(
     events_file,
     quantiles=(0.5, 0.05, 0.95),
-    merger_rate_lo=100,
-    merger_rate_mid=240,
-    merger_rate_hi=510,
-    run_duration=1.5,
+    merger_rate_lo=50,
+    merger_rate_mid=130,
+    merger_rate_hi=290,
+    run_duration=1.0,
     poisson_lognormal_rate_quantiles=None,
     output_file=None,
     verbose=True,
@@ -70,7 +70,21 @@ def summarize_selected_detected_events(
 
     # Load main event table
     main_table = QTable.read(events_file)
+
+    # Get unique run names, excluding O5a-HL
     runs = np.unique(main_table["run"])
+    runs = runs[runs != "O5a-HL"]
+
+    # Extract mission and skygrid from metadata
+    mission = np.unique(main_table["mission"])[0]
+    skygrid_raw = np.unique(main_table["skygrid"])[0]
+    skygrid = "" if skygrid_raw == "None" else skygrid_raw
+
+    # Map skygrid for ULTRASAT to be add in the the caption
+    skygrid_label = {
+        "allsky": r"\emph{All-Sky Survey} (AllSS)",
+        "non_overlap": r"\emph{Low-Cadence Survey} (LCS)",
+    }.get(skygrid, "")
 
     # Get cutoff value used for the simulation
     cutoff_values = main_table["cutoff"]
@@ -193,22 +207,22 @@ def summarize_selected_detected_events(
             r"\end{tabular}",
         ]
     )
+    # Caption with mission and skygrid
+    skygrid_str = rf" using the {skygrid_label} strategy," if skygrid_label else ","
 
-    # Full article wrapper with styling and caption
     latex_table = "\n".join(
         [
             r"\begin{table}",
             r"\renewcommand\arraystretch{1.3}",
-            r"\setlength{\tabcolsep}{0.4cm}",
+            r"\setlength{\tabcolsep}{0.3cm}",
             r"\centering",
-            r"\caption{Expected number of selected and detected events per observing run"
-            r" and source class. Events are pre-filtered to retain only BNS and NSBH"
-            r" (mass2 $\leq 3\,M_\odot$)."
+            rf"\caption{{Expected number of selected and detected events for {mission.upper()}"
+            rf"{skygrid_str} per observing run and source class."
             r" BNS: both components $\leq 3\,M_\odot$;"
             r" NSBH: one component $> 3\,M_\odot$;"
             r" All: BNS $+$ NSBH combined."
-            r" Values are medians with 90\% credible intervals.}",
-            r"\label{tab:selected-detected}",
+            r" Values are medians with 90\% credible intervals.}}",
+            rf"\label{{tab:{mission}-{skygrid}-selected-detected-{run_duration}yr}}",
             tabular,
             r"\end{table}",
         ]

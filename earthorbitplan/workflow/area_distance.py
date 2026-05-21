@@ -385,6 +385,11 @@ def plot_area_distance(events_file, outdir="output", show=False):
     # ===================================================================
     # Process each observing run separately
     # ===================================================================
+
+    # Extract mission skygrid from metadata
+    skygrid_raw = np.unique(main_table["skygrid"])[0]
+    skygrid = "" if skygrid_raw == "None" else skygrid_raw
+
     runs = np.unique(main_table["run"])
 
     for run in runs:
@@ -1034,7 +1039,7 @@ def plot_area_distance(events_file, outdir="output", show=False):
         # ===================================================================
         # Save figure to PDF
         # ===================================================================
-        output_file = f"{outdir}/{mission.name}_allsky_area-distance_{run}.pdf"
+        output_file = f"{outdir}/{mission.name}_{skygrid}_area-distance_{run}.pdf"
         fig.savefig(output_file, dpi=300, bbox_inches="tight")
         logging.info(f" Saved: {output_file}")
         logging.info(
