@@ -2,12 +2,65 @@ EarthOrbitPlan: An Educational Framework for Multimessenger Observing Scenarios
 ===============================================================================
 
 .. image:: https://readthedocs.org/projects/EarthOrbitPlan/badge/?version=latest
-   :target: https://EarthOrbitPlan.readthedocs.io/en/latest/?badge=latest
+   :target: https://EarthOrbitPlan.readthedocs.io/en/latest/
    :alt: Documentation Status
+.. image:: https://github.com/weizmannk/EarthOrbitPlan/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/weizmannk/EarthOrbitPlan/actions/workflows/ci.yml
+   :alt: CI Status
+.. image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
+   :target: https://opensource.org/licenses/BSD-3-Clause
+   :alt: License: BSD-3-Clause
+.. image:: https://img.shields.io/badge/python-3.11-blue.svg
+   :target: https://www.python.org/downloads/release/python-3110/
+   :alt: Python 3.11
+.. Replace XXXXXXX with the Zenodo record id once the release is archived.
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg
+   :target: https://doi.org/10.5281/zenodo.XXXXXXX
+   :alt: DOI
 
 **EarthOrbitPlan** is an open-source educational framework designed to introduce students, educators, and early-career researchers to the challenges and opportunities of gravitational wave (GW) multi-messenger follow-up observations.
 
 By simulating realistic observing scenarios, from the initial detection of a GW event to the coordinated search for its electromagnetic counterpart. EarthOrbitPlan offers a hands-on approach to learning about the coordination and optimization required in modern astronomy.
+
+Install
+-------
+
+EarthOrbitPlan requires **Python 3.11** (inherited from `M⁴OPT <https://github.com/m4opt/m4opt>`_).
+
+.. code-block:: bash
+
+   python3.11 -m venv .venv
+   source .venv/bin/activate
+   pip install --upgrade pip
+   pip install earthorbitplan            # from PyPI
+
+   # or, for a development checkout:
+   git clone https://github.com/weizmannk/EarthOrbitPlan.git
+   cd EarthOrbitPlan
+   pip install -e ".[dev,docs]"
+
+The M⁴OPT scheduler needs the CPLEX solver; see the
+`M⁴OPT CPLEX guide <https://m4opt.readthedocs.io/en/latest/install/cplex.html>`_.
+
+Quickstart
+----------
+
+A self-contained taste of the statistics layer (no solver or data files
+required): the 5th/50th/95th percentile event counts for a Poisson process
+with a log-normal prior on its rate.
+
+.. code-block:: python
+
+   import numpy as np
+   from earthorbitplan.probability.rate import poisson_lognormal_rate_quantiles
+
+   quantiles = poisson_lognormal_rate_quantiles(np.array([0.05, 0.5, 0.95]), mu=2.0, sigma=0.5)
+   print(quantiles)  # -> [ 1.415...  6.826... 17.859... ]
+
+For the full workflow, from a GW skymap to a scheduled UVEX/ULTRASAT
+follow-up plan and its detection statistics, follow the
+`M⁴OPT scheduler walkthrough <https://EarthOrbitPlan.readthedocs.io/en/latest/m4opt-scheduler/index.html>`_
+in the documentation.
 
 Key Features
 ------------
@@ -27,7 +80,17 @@ Who is it for?
 - **Educators** seeking ready-to-use tools and resources for teaching astronomy, physics, or data science.
 - **Researchers** wishing to prototype observation strategies or demonstrate multi-messenger concepts.
 
-Getting Started
----------------
+Documentation and project files
+-------------------------------
 
-See the `documentation <https://EarthOrbitPlan.readthedocs.io/en/latest/>`_ for installation instructions, example scenarios, and guided exercises.
+- Documentation: https://EarthOrbitPlan.readthedocs.io
+- Contributing guide: `CONTRIBUTING.md <CONTRIBUTING.md>`_
+- Changelog: `CHANGELOG.md <CHANGELOG.md>`_
+
+How to cite
+-----------
+
+If you use EarthOrbitPlan in your research or teaching, please cite it using the
+metadata in `CITATION.cff <CITATION.cff>`_ (GitHub's *Cite this repository*
+button generates APA/BibTeX from it). The archived-release DOI will be added
+here once available.
