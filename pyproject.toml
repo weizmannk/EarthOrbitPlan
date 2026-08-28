@@ -102,10 +102,8 @@ doctest_optionflags = [
 
 [tool.coverage.run]
 omit = [
-    "EarthOrbitPlan/*setup_package*",
-    "*/EarthOrbitPlan/*setup_package*",
-    "*/EarthOrbitPlan/extern/*",
-    "*/EarthOrbitPlan/_version*",
+    "*/earthorbitplan/_version*",
+    "*/earthorbitplan/tutorials/*",
 ]
 
 [tool.coverage.report]
@@ -129,7 +127,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "_version.py"
+write_to = "earthorbitplan/_version.py"
 
 [tool.mypy]
 exclude = ["^docs/"]
