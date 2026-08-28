@@ -125,10 +125,10 @@ print(rst_table)
 
 
 # Collaboration einstein telescope
-# et l'organisation, mored than 2000 scientist 
-# 
-# AT the end of 2030 or in the beginning of 2040 
-# end of 2026 taking the crutial decisions about the building and operational 
+# et l'organisation, mored than 2000 scientist
+#
+# AT the end of 2030 or in the beginning of 2040
+# end of 2026 taking the crucial decisions about the building and operational
 # 40 km or 20 km  , geometry (N, L or triangle), 2L should be better  than an triangle
 # Location : Génèves + Region EMR , Laboratoir DZA (germany) with 90million €
 # estimation about the cost :  billion €
@@ -138,4 +138,4 @@ print(rst_table)
 
 # cosmic explorer are in advance than ET
 # ET look more for low frequency and cosmic explorer for high frequency
-#  
+#

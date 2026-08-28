@@ -3,8 +3,9 @@ import shlex
 
 from dask_jobqueue import HTCondorCluster
 from distributed import Client, as_completed
-from m4opt._cli import app
 from tqdm import tqdm
+
+from m4opt._cli import app
 
 
 def run_dask(event_ids, args):

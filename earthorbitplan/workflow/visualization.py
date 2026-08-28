@@ -8,12 +8,13 @@ from astropy.table import QTable
 from astropy.time import Time
 from astropy.visualization import quantity_support
 from astropy_healpix import HEALPix
-from m4opt import missions
-from m4opt.synphot import observing
 from matplotlib import patheffects
 from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
+
+from m4opt import missions
+from m4opt.synphot import observing
 
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", ".*dubious year.*")

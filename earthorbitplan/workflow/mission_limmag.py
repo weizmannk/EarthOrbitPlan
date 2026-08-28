@@ -31,13 +31,14 @@ from astropy_healpix import HEALPix
 from ligo.skymap.bayestar import rasterize
 from ligo.skymap.distance import parameters_to_marginal_moments, parameters_to_moments
 from ligo.skymap.io import read_sky_map
+from scipy import stats
+
 from m4opt import missions
 from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot._math import countrate
 from m4opt.synphot.background import update_missions
 from m4opt.synphot.extinction import DustExtinction
-from scipy import stats
 
 
 # ---------------------------------------------------------------------------
@@ -74,8 +75,8 @@ def parse_arguments():
         )
 
     parser.add_argument("--input-table", type=str, default="bns.ecsv")
-    parser.add_argument("--plan-dir",    type=str, default="data/O5")
-    parser.add_argument("--output-dir",  type=str, default="add_limmag")
+    parser.add_argument("--plan-dir", type=str, default="data/O5")
+    parser.add_argument("--output-dir", type=str, default="add_limmag")
     return parser.parse_args(remaining)
 
 
@@ -84,9 +85,9 @@ def parse_arguments():
 # ---------------------------------------------------------------------------
 def _masked_col(values, n_obs):
     """Interleave observe/slew rows; mask the slew rows."""
-    arr      = np.asarray(values, dtype=float)
+    arr = np.asarray(values, dtype=float)
     repeated = np.repeat(arr, 2)
-    mask     = np.tile([False, True], n_obs)
+    mask = np.tile([False, True], n_obs)
     return Masked(repeated, mask=mask)[:-1]
 
 
@@ -100,15 +101,15 @@ def process(plan_args, mission, hpx, skymap, observations, footprints):
     update_missions() is always called — it handles Cerenkov internally
     (injects AE8-based spectrum for ULTRASAT, does nothing for others).
     """
-    snr              = plan_args["snr"]
-    bandpass         = plan_args["bandpass"]
+    snr = plan_args["snr"]
+    bandpass = plan_args["bandpass"]
     bandpass_spectrum = mission.detector.bandpasses[bandpass]
-    absmagmu         = plan_args["absmag_mean"]
-    absmagsigma      = plan_args["absmag_stdev"]
-    a                = 5 / np.log(10)
+    absmagmu = plan_args["absmag_mean"]
+    absmagsigma = plan_args["absmag_stdev"]
+    a = 5 / np.log(10)
 
-    flat_spectrum        = synphot.SourceSpectrum(synphot.ConstFlux1D, amplitude=0 * u.ABmag)
-    dusty_flat_spectrum  = flat_spectrum * DustExtinction()
+    flat_spectrum = synphot.SourceSpectrum(synphot.ConstFlux1D, amplitude=0 * u.ABmag)
+    dusty_flat_spectrum = flat_spectrum * DustExtinction()
     observation_midtimes = observations["start_time"] + 0.5 * observations["duration"]
 
     distmean_all, diststd_all, _ = parameters_to_moments(
@@ -120,9 +121,9 @@ def process(plan_args, mission, hpx, skymap, observations, footprints):
     for i_obs, (obs, obs_time, footprint) in enumerate(
         zip(observations, observation_midtimes, footprints)
     ):
-        obs_location  = obs["observer_location"]
-        n_pix         = len(footprint)
-        duration_arr  = np.full(n_pix, obs["duration"].to_value(u.s)) * u.s
+        obs_location = obs["observer_location"]
+        n_pix = len(footprint)
+        duration_arr = np.full(n_pix, obs["duration"].to_value(u.s)) * u.s
 
         obs_loc_tiled = EarthLocation.from_geocentric(
             *(
@@ -167,34 +168,34 @@ def process(plan_args, mission, hpx, skymap, observations, footprints):
             return None
 
         # Detection probability per pixel
-        dm           = distmean_all[footprint]
-        ds           = diststd_all[footprint]
-        sigma2_log   = np.log1p(np.square(ds / dm))
+        dm = distmean_all[footprint]
+        ds = diststd_all[footprint]
+        sigma2_log = np.log1p(np.square(ds / dm))
         logdistsigma = np.sqrt(sigma2_log)
-        logdistmu    = np.log(dm) - 0.5 * sigma2_log
-        appmagmu_pix    = absmagmu + a * logdistmu + 25
-        appmagsigma_pix = np.sqrt(
-            np.square(absmagsigma) + np.square(a * logdistsigma)
-        )
+        logdistmu = np.log(dm) - 0.5 * sigma2_log
+        appmagmu_pix = absmagmu + a * logdistmu + 25
+        appmagsigma_pix = np.sqrt(np.square(absmagsigma) + np.square(a * logdistsigma))
         det_prob_pix = skymap["PROB"][footprint] * stats.norm(
             loc=appmagmu_pix, scale=appmagsigma_pix
         ).cdf(limmag_dust)
 
-        rows.append({
-            "limmag_no_dust":         float(np.median(limmag_no_dust)),
-            "limmag_dust":    float(np.median(limmag_dust)),
-            "sky_background":         float(sky_bg),
-            "dust":           float(dust_ext),
-            "prob":           float(skymap["PROB"][footprint].sum()),
-            "dist":           float(
-                parameters_to_marginal_moments(
-                    skymap[footprint]["PROB"] / skymap[footprint]["PROB"].sum(),
-                    skymap[footprint]["DISTMU"],
-                    skymap[footprint]["DISTSIGMA"],
-                )[0]
-            ),
-            "detection_prob": float(np.sum(det_prob_pix)),
-        })
+        rows.append(
+            {
+                "limmag_no_dust": float(np.median(limmag_no_dust)),
+                "limmag_dust": float(np.median(limmag_dust)),
+                "sky_background": float(sky_bg),
+                "dust": float(dust_ext),
+                "prob": float(skymap["PROB"][footprint].sum()),
+                "dist": float(
+                    parameters_to_marginal_moments(
+                        skymap[footprint]["PROB"] / skymap[footprint]["PROB"].sum(),
+                        skymap[footprint]["DISTMU"],
+                        skymap[footprint]["DISTSIGMA"],
+                    )[0]
+                ),
+                "detection_prob": float(np.sum(det_prob_pix)),
+            }
+        )
 
     return rows
 
@@ -206,7 +207,7 @@ def main():
     setup_logging()
     args = parse_arguments()
 
-    plan_dir   = Path(args.plan_dir)
+    plan_dir = Path(args.plan_dir)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -222,14 +223,14 @@ def main():
             logging.warning(f"Missing plan file: {plan_file}, skipping.")
             continue
 
-        plan      = QTable.read(plan_file)
+        plan = QTable.read(plan_file)
         plan_args = plan.meta["args"]
 
-        hpx     = HEALPix(nside=plan_args["nside"], order="nested", frame=ICRS())
+        hpx = HEALPix(nside=plan_args["nside"], order="nested", frame=ICRS())
         mission = getattr(missions, plan_args["mission"])
 
         skymap_moc = read_sky_map(plan_args["skymap"], moc=True)
-        skymap     = rasterize(skymap_moc, order=hpx.level)
+        skymap = rasterize(skymap_moc, order=hpx.level)
 
         observations = plan[plan["action"] == "observe"].filled()
         if len(observations) == 0:
@@ -247,7 +248,14 @@ def main():
             continue
 
         n_obs = len(rows)
-        for key in ["limmag_no_dust", "limmag_dust" "sky_background", "dust", "prob", "dist", "detection_prob"]:
+        for key in [
+            "limmag_no_dust",
+            "limmag_dustsky_background",
+            "dust",
+            "prob",
+            "dist",
+            "detection_prob",
+        ]:
             plan[key] = _masked_col([r[key] for r in rows], n_obs)
 
         plan["start_time"].precision = 0
