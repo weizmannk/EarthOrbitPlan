@@ -27,8 +27,10 @@ repos:
         exclude: ^earthorbitplan/scenarios/psds\.xml$
       - id: trailing-whitespace
         # Trims trailing whitespace.
-        exclude: |
-          (^earthorbitplan/scenarios/psds\.xml$|^data/logs/|^data/progres/|^data/schedules/|^data/skymaps/)
+        # NOTE: use "|-" (not "|"): a plain block scalar appends a newline to the
+        # regex, which breaks re.search and silently disables the exclusion.
+        exclude: |-
+          (^earthorbitplan/scenarios/psds\.xml$|^data/logs/|^data/progress/|^data/schedules/|^data/skymaps/)
         exclude_types: [python] # Covered by Ruff W291.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -37,8 +39,8 @@ repos:
       # Run the linter.
       - id: ruff
         args: ["--extend-select", "I", "--fix"]
-        exclude: |
-          (^earthorbitplan/scenarios/psds\.xml$|^data/logs/|^data/progres/|^data/schedules/|^data/skymaps/)
+        exclude: |-
+          (^earthorbitplan/scenarios/psds\.xml$|^data/logs/|^data/progress/|^data/schedules/|^data/skymaps/)
 
       # Run the formatter.
       - id: ruff-format
@@ -54,8 +56,8 @@ repos:
     hooks:
       - id: codespell
         args: ["--ignore-words=.codespell-ignore-words"] #, "--write-changes"]
-        exclude: |
-          (^docs/scenarios/psds\.xml$|^docs/refs\.bib$|^data/progres/|^data/schedules/|^data/skymaps/)
+        exclude: |-
+          (^earthorbitplan/scenarios/psds\.xml$|^docs/refs\.bib$|^data/progress/|^data/schedules/|^data/skymaps/)
         additional_dependencies:
           - tomli
 
