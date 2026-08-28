@@ -1,4 +1,10 @@
 
+# Virtual environments
+.venv/
+venv/
+env/
+.python-version
+
 # Compiled files
 *.py[cod]
 *.a
