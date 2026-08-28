@@ -1,22 +1,20 @@
 [project]
 name = "EarthOrbitPlan"
 dynamic = ["version"]
-authors = [{name = "", email = "kiend.weizman7@gmail.com"}]
-license = {text = "BSD-3-Clause"}
+authors = [{name = "Ramodgwendé Weizmann Kiendrébéogo", email = "kiend.weizman7@gmail.com"}]
+license = "BSD-3-Clause"
 description = "Educational Framework for Multimessenger Observing Scenarios"
 readme = "README.rst"
 requires-python = ">=3.11, <3.12"
 dependencies = [
+    # m4opt pins Python to 3.11; see requires-python above.
     "m4opt",
-    # uv pip install --no-deps git+https://github.com/weizmannk/m4opt@cerenkov-background-light
     "pandas",
     "joblib",
     "dask",
     "dask-jobqueue",
-    "pre-commit",
     "memory-profiler",
     "igwn-ligolw",
-    "memory-profiler",
 ]
 
 #
@@ -24,7 +22,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.11",
@@ -37,6 +34,10 @@ test = [
     "astroplan",
     "networkx",
     "pytest-astropy",
+]
+dev = [
+    "pre-commit",
+    "EarthOrbitPlan[test]",
 ]
 docs = [
     "pysiaf",
@@ -82,19 +83,12 @@ Homepage  = "https://EarthOrbitPlan.readthedocs.io"
 ]
 [tool.pytest.ini_options]
 testpaths = [
-    "EarthOrbitPlan",
-    "docs",
+    "tests",
 ]
 norecursedirs = [
     "_build",
 ]
 astropy_header = true
-doctest_plus = "enabled"
-text_file_format = "rst"
-addopts = [
-    "--doctest-rst",
-    "--ignore=docs/_build",
-]
 doctest_optionflags = [
     "FLOAT_CMP",
     "IGNORE_EXCEPTION_DETAIL",
