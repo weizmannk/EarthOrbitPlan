@@ -271,7 +271,7 @@ Statistics and predictions
 
                     .. code-block:: console
 
-                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 14142969 --file-name runs_SNR-10.zip
+                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 22550047 --file-name runs_SNR-10.zip
 
                 .. tab-item:: Using a config file
 

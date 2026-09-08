@@ -16,7 +16,7 @@
                   with a new one.
 
 Usage:
-    python3 earthorbitplan/scenarios/zenodo_downloader.py --permanent-doi 18601773 --file-name runs.zip
+    python3 earthorbitplan/scenarios/zenodo_downloader.py --permanent-doi 22550047 --file-name runs.zip
 
     # OR
 
@@ -35,7 +35,7 @@ from tqdm.auto import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-# If the link to the data is required manually, it can be accessed at : https://zenodo.org/records/18709319
+# If the link to the data is required manually, it can be accessed at : https://zenodo.org/records/22550048
 
 
 def parse_arguments():
@@ -66,7 +66,7 @@ def parse_arguments():
         "--permanent-doi",
         type=str,
         required=True,
-        help="Permanent Zenodo DOI (digits only, e.g., 14142969)",
+        help="Permanent Zenodo DOI (digits only, e.g., 22550047)",
     )
     parser.add_argument(
         "--file-name",
