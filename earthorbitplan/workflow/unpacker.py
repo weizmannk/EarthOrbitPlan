@@ -3,24 +3,25 @@
 # =================================
 
 # This module automates the unpacking, filtering, and conversion of injection datasets
-# (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
-# localization files for specific observing runs (e.g., O5, O6), and outputs
-# filtered ECSV tables and organized FITS files.
+# (GWTC-5.0, FullPop or PixelPop population model) from Zenodo ZIP archives. It
+# processes event tables and associated localization files for specific observing
+# runs (e.g., O5a, IR1HL), and outputs filtered ECSV tables and organized FITS files.
 
 # Usage
 # -----
 # Run from the command line:
 
-#     python unpacker.py --zip runs.zip --subdir runs --runs O5a-HL O5a-HLV O5b-HLV O5c-HLV  --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+#     python unpacker.py --zip runs.zip --subdir runs --pop fullpop --runs IR1HL IR1HLV O5a O5b O5c  --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
-# Or use a config file:
+# Or use a config file (must contain a [params] section):
 
-#     python earthorbitplan/workflow/unpacker.py --config  earthorbitplan/config/params_ultrasat.ini
+#     python earthorbitplan/workflow/unpacker.py --config  earthorbitplan/scenarios/params_scenarios.ini
 
 # Or import and call `process_zip()` in your Python code.
 
-# Source data:
-#     https://zenodo.org/records/14585837
+# Source data (concept DOIs, always resolve to the latest version):
+#     FullPop  : https://doi.org/10.5281/zenodo.22550047
+#     PixelPop : https://doi.org/10.5281/zenodo.22555948
 # """
 
 import argparse
@@ -63,8 +64,9 @@ def parse_arguments():
 
         return argparse.Namespace(
             zip=cfg.get("zip"),
-            subdir=cfg.get("subdir", fallback="runs_SNR-10"),
-            runs=cfg.get("runs", fallback="O5 O6").split(),
+            subdir=cfg.get("subdir", fallback="runs"),
+            pop=cfg.get("pop", fallback="fullpop"),
+            runs=cfg.get("runs", fallback="IR1HL IR1HLV O5a O5b O5c").split(),
             detectors=cfg.get("detectors", fallback=""),
             data_dir=cfg.get("data_dir", fallback="data"),
             skymap_dir=cfg.get("skymap_dir", fallback="skymaps"),
@@ -77,11 +79,21 @@ def parse_arguments():
     parser.add_argument(
         "--subdir",
         type=str,
-        default="runs_SNR-10",
+        default="runs",
         help="Subdirectory inside the ZIP archive.",
     )
     parser.add_argument(
-        "--runs", nargs="+", default=["O5", "O6"], help="Observation runs to process."
+        "--pop",
+        type=str,
+        choices=["fullpop", "pixelpop"],
+        default="fullpop",
+        help="Population-model subdirectory inside each run (default: fullpop).",
+    )
+    parser.add_argument(
+        "--runs",
+        nargs="+",
+        default=["IR1HL", "IR1HLV", "O5a", "O5b", "O5c"],
+        help="Observation runs to process (folder names inside <subdir>/).",
     )
     parser.add_argument(
         "--detectors",
@@ -112,6 +124,7 @@ def process_zip(
     max_ns_mass=3.0,
     subdir="runs",
     detectors="None",
+    pop="fullpop",
 ):
     """
     Extract and filter GW injection tables from a Zenodo-style ZIP archive.
@@ -121,7 +134,7 @@ def process_zip(
     zip_path : str or Path
         Path to the input ZIP archive.
     runs : list of str
-        Observing run labels to extract (e.g., ["O5", "O6"]).
+        Observing run labels to extract (e.g., ["IR1HL", "O5a"]).
     outdir : str or Path
         Destination directory for output files.
     skymap_dir : str or Path
@@ -132,6 +145,8 @@ def process_zip(
         Name of the root folder inside the ZIP archive.
     detectors : str, optional
         Detector label used in file path construction (e.g., HLVK).
+    pop : str, optional
+        Population-model folder inside each run ("fullpop" or "pixelpop").
 
     Outputs
     -------
@@ -149,7 +164,7 @@ def process_zip(
 
         tables = []
         for run in tqdm(runs, desc="Reading summary tables"):
-            in_run = in_root / f"{run}{detectors}" / "fullpop4"
+            in_run = in_root / f"{run}{detectors}" / pop
             table = reduce(
                 join,
                 (
@@ -193,9 +208,7 @@ def process_zip(
         # Copy FITS skymaps
         for row in tqdm(table, desc="Copying FITS files"):
             filename = f"{row['coinc_event_id']}.fits"
-            in_path = (
-                in_root / f"{row['run']}{detectors}" / "fullpop4" / "allsky" / filename
-            )
+            in_path = in_root / f"{row['run']}{detectors}" / pop / "allsky" / filename
             out_path = skymap_root / row["run"] / filename
             with in_path.open("rb") as in_file, out_path.open("wb") as out_file:
                 copyfileobj(in_file, out_file)
@@ -211,4 +224,5 @@ if __name__ == "__main__":
         max_ns_mass=args.mass_threshold,
         subdir=args.subdir,
         detectors=args.detectors,
+        pop=args.pop,
     )
