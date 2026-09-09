@@ -36,6 +36,18 @@ Poisson–log-normal rate quantiles against a stored fixture in
 `tests/data/`. Parts of the package that require CPLEX, network access, or large
 skymaps are not exercised by the suite.
 
+## Type checking
+
+```bash
+pip install mypy
+mypy -p earthorbitplan
+```
+
+Configuration is in `[tool.mypy]` of `pyproject.toml`. Run it with the package
+installed (`pip install -e ".[test]"`) so mypy resolves imports against the real
+`m4opt` / `astropy` APIs — that is what catches a renamed or removed upstream
+symbol before it reaches a user. CI runs the same check in the `mypy` job.
+
 ## Pre-commit
 
 ```bash

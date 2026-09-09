@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `[dev]` optional-dependency group in `pyproject.toml` (`pre-commit` + test deps).
 - Test suite under `tests/` (pure-helper unit tests plus a regression test
   pinning the Poisson–log-normal rate quantiles against a stored fixture).
-- GitHub Actions CI: pre-commit, pytest (Python 3.12 & 3.13), and a docs build.
+- GitHub Actions CI: `pre-commit`, `mypy` (static type check), `pytest` on
+  Python 3.12 / 3.13 / 3.14, and a Sphinx docs build.
 
 ### Changed
 - **`src/` layout**: the package now lives at `src/earthorbitplan/` (matches
