@@ -32,7 +32,7 @@ to avoid conflicts between dependencies.
 
       Observing Scenarios
 
-   :bdg-warning:`Python >= 3.11`
+   :bdg-warning:`Python >= 3.12`
 
 .. dropdown:: Environment setup
 
@@ -42,14 +42,14 @@ to avoid conflicts between dependencies.
 
          .. code-block:: bash
 
-            conda create -n earthorbitplan_env python=3.11
+            conda create -n earthorbitplan_env python=3.12
             conda activate earthorbitplan_env
 
       .. tab-item:: Python
 
          .. code-block:: bash
 
-            python3.11 -m venv earthorbitplan-env
+            python3.12 -m venv earthorbitplan-env
             source earthorbitplan-env/bin/activate
             pip install --upgrade pip
 

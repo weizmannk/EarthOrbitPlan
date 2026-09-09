@@ -18,7 +18,7 @@ After generating observation plans, post-processing computes detection probabili
                 ^^^
                 .. code-block:: console
 
-                    python earthorbitplan/workflow/postprocess.py --config ./earthorbitplan/config/params_ultrasat.ini
+                    python src/earthorbitplan/workflow/postprocess.py --config ./src/earthorbitplan/config/params_ultrasat.ini
                 +++
                  This command will generate and process all the required parameters, producing the output file :doc:`events.ecsv <../../data/events.ecsv>`.
 
@@ -220,7 +220,7 @@ After generating observation plans, post-processing computes detection probabili
 
                 You can explore,  edit  and run the calculations directly in a Jupyter environment:
 
-                .. button-link:: https://colab.research.google.com/github.com/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/kilonovae_detection_rate.ipynb
+                .. button-link:: https://colab.research.google.com/github/weizmannk/EarthOrbitPlan/blob/main/examples/kilonovae_detection_rate.ipynb
                     :color: info
                     :shadow:
 

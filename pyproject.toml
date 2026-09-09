@@ -1,22 +1,20 @@
 [project]
 name = "EarthOrbitPlan"
 dynamic = ["version"]
-authors = [{name = "", email = "kiend.weizman7@gmail.com"}]
-license = {text = "BSD-3-Clause"}
+authors = [{name = "Ramodgwendé Weizmann Kiendrébéogo", email = "kiend.weizman7@gmail.com"}]
+license = "BSD-3-Clause"
 description = "Educational Framework for Multimessenger Observing Scenarios"
 readme = "README.rst"
-requires-python = ">=3.11, <3.12"
+requires-python = ">=3.12, <3.15"
 dependencies = [
+    # Python floor tracks m4opt (>=3.12 since m4opt v2.13).
     "m4opt",
-    # uv pip install --no-deps git+https://github.com/weizmannk/m4opt@cerenkov-background-light
     "pandas",
     "joblib",
     "dask",
     "dask-jobqueue",
-    "pre-commit",
     "memory-profiler",
     "igwn-ligolw",
-    "memory-profiler",
 ]
 
 #
@@ -24,10 +22,11 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Educational :: Astronomy",
     "Typing :: Typed",
 ]
@@ -37,6 +36,10 @@ test = [
     "astroplan",
     "networkx",
     "pytest-astropy",
+]
+dev = [
+    "pre-commit",
+    "EarthOrbitPlan[test]",
 ]
 docs = [
     "pysiaf",
@@ -73,28 +76,25 @@ Homepage  = "https://EarthOrbitPlan.readthedocs.io"
 "GitHub" = "https://github.com/weizmannk/EarthOrbitPlan"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = [
     "py.typed",
     "*.txt",
     "*.ecsv",
+    "*.xml",
+    "*.h5",
+    "*.ini",
 ]
 [tool.pytest.ini_options]
 testpaths = [
-    "EarthOrbitPlan",
-    "docs",
+    "tests",
 ]
 norecursedirs = [
     "_build",
 ]
 astropy_header = true
-doctest_plus = "enabled"
-text_file_format = "rst"
-addopts = [
-    "--doctest-rst",
-    "--ignore=docs/_build",
-]
 doctest_optionflags = [
     "FLOAT_CMP",
     "IGNORE_EXCEPTION_DETAIL",
@@ -102,10 +102,7 @@ doctest_optionflags = [
 
 [tool.coverage.run]
 omit = [
-    "EarthOrbitPlan/*setup_package*",
-    "*/EarthOrbitPlan/*setup_package*",
-    "*/EarthOrbitPlan/extern/*",
-    "*/EarthOrbitPlan/_version*",
+    "*/earthorbitplan/_version*",
 ]
 
 [tool.coverage.report]
@@ -129,7 +126,16 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "_version.py"
+write_to = "src/earthorbitplan/_version.py"
+
+[tool.ruff]
+# src/ layout: without this, ruff's import sorter cannot tell that
+# `earthorbitplan` is first-party, so `pre-commit` reorders imports differently
+# on a fresh checkout (CI) than in a cached local run.
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["earthorbitplan"]
 
 [tool.mypy]
 exclude = ["^docs/"]

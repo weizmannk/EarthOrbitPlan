@@ -1,0 +1,84 @@
+# Continuous integration for EarthOrbitPlan.
+#
+# Jobs:
+#   pre-commit  - lint / format / hygiene (same command as `pre-commit run --all-files`)
+#   types       - static type check with mypy (config in [tool.mypy] of pyproject.toml)
+#   test        - pytest + coverage on every supported Python (3.12-3.14; floor tracks m4opt)
+#   docs        - build the Sphinx documentation
+#
+# Nothing here is required to pass before a human review, but a green run is expected.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: pre-commit/action@v3.0.1
+
+  types:
+    name: mypy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # setuptools_scm needs the full history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      # Install the package so mypy resolves imports against the real m4opt /
+      # astropy APIs: this is what catches a renamed or removed symbol (e.g. the
+      # m4opt v2.13 removal of synphot.background.update_missions).
+      - run: pip install -e ".[test]" mypy
+      - run: mypy -p earthorbitplan
+
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Floor tracks m4opt (>=3.12 since v2.13); m4opt also tests 3.14.
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # setuptools_scm needs the full history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[test]"
+      - run: pytest -q --cov=earthorbitplan --cov-report=term-missing
+
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y graphviz pandoc
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[docs]"
+      # TODO: switch to `-W --keep-going` once the pre-existing Sphinx warnings
+      # (missing glossary terms, :doc: refs to non-doc files) are cleared.
+      - run: sphinx-build -b html -n docs docs/_build/html

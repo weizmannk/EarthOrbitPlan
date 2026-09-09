@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use EarthOrbitPlan in your research or teaching, please cite it as below."
+title: EarthOrbitPlan
+abstract: >-
+  An educational framework for end-to-end multi-messenger observing
+  scenarios: from gravitational-wave detection to the preparation of
+  electromagnetic follow-up observation plans with tilepy and M4OPT.
+type: software
+authors:
+  - family-names: Kiendrébéogo
+    given-names: Ramodgwendé Weizmann
+    orcid: "https://orcid.org/0000-0002-9108-5059"
+license: BSD-3-Clause
+repository-code: "https://github.com/weizmannk/EarthOrbitPlan"
+url: "https://EarthOrbitPlan.readthedocs.io"
+version: 0.1.0
+# TODO: add the Zenodo DOI here once the 0.1.0 release is archived, e.g.
+# doi: 10.5281/zenodo.XXXXXXX

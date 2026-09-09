@@ -271,18 +271,20 @@ Statistics and predictions
 
                     .. code-block:: console
 
-                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 14142969 --file-name runs_SNR-10.zip
+                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 22550047 --file-name runs.zip
 
                 .. tab-item:: Using a config file
 
                     .. code-block:: console
 
-                        $ earthorbitplan.scenarios.zenodo_downloader --config ./earthorbitplan/config/params_ultrasat.ini
+                        $ earthorbitplan.scenarios.zenodo_downloader --config ./src/earthorbitplan/config/params_ultrasat.ini
 
 
         .. note::
-            For manual processing, see the source Zenodo dataset:
-            `https://zenodo.org/records/14585837 <https://zenodo.org/records/14585837>`_
+            For manual processing, see the source Zenodo datasets (concept DOIs,
+            resolve to the latest version):
+            `FullPop <https://doi.org/10.5281/zenodo.22550047>`_ and
+            `PixelPop <https://doi.org/10.5281/zenodo.22555948>`_.
 
 
 
@@ -292,7 +294,7 @@ Statistics and predictions
             :class: info
 
             This process automates the unpacking, filtering, and conversion of injection datasets
-            (e.g., Farah / GWTC-3) from Zenodo ZIP archives. It processes event tables and associated
+            (GWTC-5.0, FullPop or PixelPop population model) from Zenodo ZIP archives. It processes event tables and associated
             localization files for specific observing runs (e.g., O5, O6), and outputs
             filtered ECSV tables and organized FITS files.
 
@@ -307,13 +309,13 @@ Statistics and predictions
 
                     .. code-block:: console
 
-                        $ earthorbitplan.workflow.unpacker --zip runs_SNR-10.zip --subdir runs_SNR-10 --runs O5 O6 --detectors HLVK --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+                        $ earthorbitplan.workflow.unpacker --zip runs.zip --subdir runs --pop fullpop --runs IR1HL IR1HLV O5a O5b O5c --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
                 .. tab-item:: Using a config file
 
                     .. code-block:: console
 
-                        $ earthorbitplan.workflow.unpacker --config ./earthorbitplan/config/params_ultrasat.ini
+                        $ earthorbitplan.workflow.unpacker --config ./src/earthorbitplan/config/params_ultrasat.ini
 
 
 .. dropdown:: Submitting scheduling jobs in parallel or on a cluster
@@ -356,7 +358,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend slurm
+                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend slurm
 
 
             .. tab-item::  HTCondor
@@ -370,7 +372,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend condor
+                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend condor
 
 
             .. tab-item:: Dask
@@ -381,7 +383,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini --backend dask
+                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend dask
 
 
     .. note::
