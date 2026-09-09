@@ -4,10 +4,9 @@ import regions
 from astropy import units as u
 from astropy.coordinates import ICRS, SkyCoord
 from astropy_healpix import HEALPix
-from matplotlib import pyplot as plt
-
 from m4opt.fov import footprint_healpix
 from m4opt.missions import ultrasat
+from matplotlib import pyplot as plt
 
 
 def customize_style(columns=1):

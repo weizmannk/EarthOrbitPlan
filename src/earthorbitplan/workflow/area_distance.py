@@ -40,6 +40,8 @@ from astropy.table import QTable
 from astropy.time import Time
 from astropy.visualization import quantity_support
 from astropy_healpix import HEALPix
+from m4opt import missions
+from m4opt.synphot import observing
 from matplotlib import colors as mcolors
 from matplotlib import gridspec, patheffects
 from matplotlib import pyplot as plt
@@ -48,9 +50,6 @@ from matplotlib.patches import FancyBboxPatch
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import stats
 from tqdm.auto import tqdm
-
-from m4opt import missions
-from m4opt.synphot import observing
 
 # Suppress known warnings from astropy and lal
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")

@@ -2,9 +2,8 @@ import os
 
 from dask_jobqueue import HTCondorCluster
 from distributed import Client, as_completed
-from tqdm import tqdm
-
 from m4opt._cli import app
+from tqdm import tqdm
 
 
 def _schedule_argv(run_name, event_id, args):

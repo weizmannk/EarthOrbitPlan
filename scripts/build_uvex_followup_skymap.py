@@ -19,10 +19,10 @@ from astropy.table import QTable, unique
 from astropy_healpix import HEALPix
 from ligo.skymap.bayestar import derasterize, rasterize
 from ligo.skymap.io import read_sky_map, write_sky_map
-
-from earthorbitplan.utils.path import get_project_root
 from m4opt import missions
 from m4opt.fov import footprint_healpix
+
+from earthorbitplan.utils.path import get_project_root
 
 root = get_project_root()
 ultrasat_schedule = root / "data" / "ultrasat" / "1000.ecsv"

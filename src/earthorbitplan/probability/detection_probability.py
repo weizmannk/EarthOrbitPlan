@@ -10,13 +10,12 @@ from astropy.table import unique
 from astropy_healpix import HEALPix, nside_to_level
 from ligo.skymap import distance
 from ligo.skymap.bayestar import rasterize
-from scipy import stats
-from tqdm import tqdm
-
 from m4opt import missions
 from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot.extinction import DustExtinction
+from scipy import stats
+from tqdm import tqdm
 
 warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
 warnings.filterwarnings("ignore", ".*dubious year.*")

@@ -31,13 +31,12 @@ from astropy_healpix import HEALPix
 from ligo.skymap.bayestar import rasterize
 from ligo.skymap.distance import parameters_to_marginal_moments, parameters_to_moments
 from ligo.skymap.io import read_sky_map
-from scipy import stats
-
 from m4opt import missions
 from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot._math import countrate
 from m4opt.synphot.extinction import DustExtinction
+from scipy import stats
 
 
 # ---------------------------------------------------------------------------

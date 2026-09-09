@@ -128,6 +128,15 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 write_to = "src/earthorbitplan/_version.py"
 
+[tool.ruff]
+# src/ layout: without this, ruff's import sorter cannot tell that
+# `earthorbitplan` is first-party, so `pre-commit` reorders imports differently
+# on a fresh checkout (CI) than in a cached local run.
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["earthorbitplan"]
+
 [tool.mypy]
 exclude = ["^docs/"]
 ignore_missing_imports = true
