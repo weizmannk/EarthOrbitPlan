@@ -7,12 +7,12 @@ change merged.
 
 ## Development environment
 
-EarthOrbitPlan targets **Python 3.11 only** (M4OPT pins this).
+EarthOrbitPlan targets **Python 3.12+** (floor tracks M4OPT).
 
 ```bash
 git clone https://github.com/weizmannk/EarthOrbitPlan.git
 cd EarthOrbitPlan
-python3.11 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -e ".[dev,docs]"

@@ -17,8 +17,8 @@ __pycache__
 *.c
 
 # Other generated files
-*/_version.py
-*/cython_version.py
+**/_version.py
+**/cython_version.py
 htmlcov
 .coverage
 .coverage.*
@@ -31,6 +31,10 @@ junit.xml
 docs/api
 docs/_build
 docs/guide/roman_wfi.ds9
+# sphinx-gallery generated output
+docs/auto_tutorials/
+docs/sg_execution_times.rst
+docs/**/sg_execution_times.rst
 
 
 # Exclude folders

@@ -205,7 +205,7 @@ Observing Scenarios
                     import matplotlib.pyplot as plt
 
                     # Load and process data
-                    data_dir = '../../earthorbitplan/scenarios/farah.h5'
+                    data_dir = '../../src/earthorbitplan/scenarios/farah.h5'
                     Farah = Table.read(data_dir)[:10000]
                     Farah.sort('mass1')
 
@@ -320,7 +320,7 @@ Observing Scenarios
 
         ^^^
 
-        .. button-link:: https://colab.research.google.com/github/weizmannk/EarthOrbitPlan/blob/main/earthorbitplan/tutorials/observing_scenarios.ipynb
+        .. button-link:: https://colab.research.google.com/github/weizmannk/EarthOrbitPlan/blob/main/examples/observing_scenarios.ipynb
             :color: info
             :shadow:
 

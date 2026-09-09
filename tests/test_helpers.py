@@ -15,13 +15,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # get_project_root
 # --------------------------------------------------------------------------
 def test_get_project_root_finds_the_markers(monkeypatch):
-    # get_project_root() walks up from the current working directory looking
-    # for the data/, earthorbitplan/ and pyproject.toml markers.
+    # get_project_root() walks up from the module file looking for the
+    # pyproject.toml + data/ markers.
     monkeypatch.chdir(REPO_ROOT)
     root = get_project_root()
     assert (root / "pyproject.toml").is_file()
-    assert (root / "earthorbitplan").is_dir()
     assert (root / "data").is_dir()
+    assert (root / "src" / "earthorbitplan").is_dir()
 
 
 # --------------------------------------------------------------------------

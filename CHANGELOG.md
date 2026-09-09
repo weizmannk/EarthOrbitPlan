@@ -12,19 +12,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `[dev]` optional-dependency group in `pyproject.toml` (`pre-commit` + test deps).
 - Test suite under `tests/` (pure-helper unit tests plus a regression test
   pinning the Poisson–log-normal rate quantiles against a stored fixture).
-- GitHub Actions CI: pre-commit, pytest (Python 3.11), and a warnings-as-errors
-  docs build.
+- GitHub Actions CI: pre-commit, pytest (Python 3.12 & 3.13), and a docs build.
 
 ### Changed
-- `earthorbitplan.__version__` is now importable; the setuptools_scm version
-  file is written to `earthorbitplan/_version.py` instead of the repository root.
+- **`src/` layout**: the package now lives at `src/earthorbitplan/` (matches
+  `m4opt`). setuptools_scm writes `src/earthorbitplan/_version.py`.
+- **Python floor raised to 3.12** (`requires-python = ">=3.12, <3.15"`), tracking
+  `m4opt` v2.13; CI runs 3.12 and 3.13.
+- `earthorbitplan.__version__` is now importable.
 - `license` is declared as the SPDX string `BSD-3-Clause`; `pyproject.toml` is
   the single source of dependency truth.
-- `build_uvex_followup_skymap.py` moved to `scripts/`.
+- Non-package files moved out of the package: notebooks and helper scripts to
+  `scripts/notebooks/`, paper figures/tables to `scripts/paper_plots/`,
+  `build_uvex_followup_skymap.py` to `scripts/`.
+- `get_project_root()` now keys off `pyproject.toml` + `data/` and uses the real
+  `__file__` (was a quoted string literal, silently cwd-dependent).
+- Observing-scenario downloader points at the GWTC-5.0 datasets (concept DOIs
+  `22550047` FullPop / `22555948` PixelPop); `unpacker` gains `--pop
+  {fullpop,pixelpop}`.
+- **m4opt v2.13 API**: dropped the removed `m4opt.synphot.background.update_missions`
+  calls in `detection_probability`, `mission_limmag` and `area_distance`. The
+  Cerenkov / AE8 background is now part of the mission background model and is
+  applied automatically from each `observing()` context. **Numerical outputs for
+  ULTRASAT must be revalidated against the pre-v2.13 results.**
 
 ### Fixed
 - Pre-commit `exclude` patterns written as `|` block scalars were silently
   disabled (trailing newline in the regex); the PSD data file is excluded again.
+- Pre-commit `exclude` paths updated for the `src/` layout.
+- `docs/tutorials/observing_scenarios.ipynb` reads `farah.h5` from
+  `src/earthorbitplan/scenarios/` (was a stale in-tree path); the duplicate
+  32 MB `docs/tutorials/farah.h5` copy is removed.
+- sphinx-gallery output (`docs/auto_tutorials/`, `sg_execution_times.rst`) is
+  no longer committed.
 
 ### Removed
 - `old_requirements.txt` and `requirements.txt` (unused / superseded by

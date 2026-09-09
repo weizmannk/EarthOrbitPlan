@@ -10,9 +10,9 @@ EarthOrbitPlan: An Educational Framework for Multimessenger Observing Scenarios
 .. image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
    :alt: License: BSD-3-Clause
-.. image:: https://img.shields.io/badge/python-3.11-blue.svg
-   :target: https://www.python.org/downloads/release/python-3110/
-   :alt: Python 3.11
+.. image:: https://img.shields.io/badge/python-3.12%2B-blue.svg
+   :target: https://www.python.org/downloads/
+   :alt: Python 3.12+
 .. Replace XXXXXXX with the Zenodo record id once the release is archived.
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg
    :target: https://doi.org/10.5281/zenodo.XXXXXXX
@@ -25,11 +25,11 @@ By simulating realistic observing scenarios, from the initial detection of a GW 
 Install
 -------
 
-EarthOrbitPlan requires **Python 3.11** (inherited from `M⁴OPT <https://github.com/m4opt/m4opt>`_).
+EarthOrbitPlan requires **Python 3.12+** (inherited from `M⁴OPT <https://github.com/m4opt/m4opt>`_).
 
 .. code-block:: bash
 
-   python3.11 -m venv .venv
+   python3.12 -m venv .venv
    source .venv/bin/activate
    pip install --upgrade pip
    pip install earthorbitplan            # from PyPI

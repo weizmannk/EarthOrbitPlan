@@ -5,9 +5,9 @@ authors = [{name = "Ramodgwendé Weizmann Kiendrébéogo", email = "kiend.weizma
 license = "BSD-3-Clause"
 description = "Educational Framework for Multimessenger Observing Scenarios"
 readme = "README.rst"
-requires-python = ">=3.11, <3.12"
+requires-python = ">=3.12, <3.15"
 dependencies = [
-    # m4opt pins Python to 3.11; see requires-python above.
+    # Python floor tracks m4opt (>=3.12 since m4opt v2.13).
     "m4opt",
     "pandas",
     "joblib",
@@ -24,7 +24,9 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Educational :: Astronomy",
     "Typing :: Typed",
 ]
@@ -74,12 +76,16 @@ Homepage  = "https://EarthOrbitPlan.readthedocs.io"
 "GitHub" = "https://github.com/weizmannk/EarthOrbitPlan"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = [
     "py.typed",
     "*.txt",
     "*.ecsv",
+    "*.xml",
+    "*.h5",
+    "*.ini",
 ]
 [tool.pytest.ini_options]
 testpaths = [
@@ -97,7 +103,6 @@ doctest_optionflags = [
 [tool.coverage.run]
 omit = [
     "*/earthorbitplan/_version*",
-    "*/earthorbitplan/tutorials/*",
 ]
 
 [tool.coverage.report]
@@ -121,7 +126,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "earthorbitplan/_version.py"
+write_to = "src/earthorbitplan/_version.py"
 
 [tool.mypy]
 exclude = ["^docs/"]
