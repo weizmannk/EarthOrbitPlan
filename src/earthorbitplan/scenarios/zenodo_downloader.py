@@ -55,11 +55,18 @@ def parse_arguments():
     args, remaining_args = parser.parse_known_args()
 
     if args.config:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(inline_comment_prefixes=("#",))
         config.read(args.config)
-        cfg = config["params"]
-        return argparse.Namespace(
-            permanent_doi=cfg.get("permanent_doi"), file_name=cfg.get("file_name")
+        # The mission configs keep these under [download]; params_scenarios.ini
+        # uses a flat [params] section.
+        for section in ("download", "params"):
+            if config.has_option(section, "permanent_doi"):
+                return argparse.Namespace(
+                    permanent_doi=config.get(section, "permanent_doi"),
+                    file_name=config.get(section, "file_name", fallback="runs.zip"),
+                )
+        parser.error(
+            f"{args.config}: no 'permanent_doi' found in a [download] or [params] section"
         )
 
     parser.add_argument(

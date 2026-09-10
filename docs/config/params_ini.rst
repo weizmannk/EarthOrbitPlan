@@ -15,13 +15,13 @@ To use this configuration file with the scheduler:
 
 .. code-block:: bash
 
-   python src/earthorbitplan/workflow/scheduler.py --config ./src/earthorbitplan/config/params_ultrasat.ini
+   python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini
 
 To use this configuration file with the unpacker:
 
 .. code-block:: bash
 
-   python src/earthorbitplan/workflow/unpacker.py --config  ./src/earthorbitplan/config/params_ultrasat.ini
+   python -m earthorbitplan.workflow.unpacker --config  ./src/earthorbitplan/scenarios/params_scenarios.ini
 
 Supported Backends
 ------------------

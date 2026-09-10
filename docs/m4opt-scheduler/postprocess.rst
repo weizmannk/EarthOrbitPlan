@@ -18,7 +18,7 @@ After generating observation plans, post-processing computes detection probabili
                 ^^^
                 .. code-block:: console
 
-                    python src/earthorbitplan/workflow/postprocess.py --config ./src/earthorbitplan/config/params_ultrasat.ini
+                    python -m earthorbitplan.workflow.postprocess --config ./src/earthorbitplan/config/params_ultrasat.ini
                 +++
                  This command will generate and process all the required parameters, producing the output file :doc:`events.ecsv <../../data/events.ecsv>`.
 
@@ -31,7 +31,7 @@ After generating observation plans, post-processing computes detection probabili
                 ^^^
                 .. code-block:: console
 
-                    python postprocess.py --data-dir ./data --event-table ./data/observing-scenarios.ecsv  --output-file ./data/events.ecsv --sched-dir ./data/schedules
+                    python -m earthorbitplan.workflow.postprocess --data-dir ./data --event-table ./data/observing-scenarios.ecsv  --output-file ./data/events.ecsv --sched-dir ./data/schedules
 
                 +++
                 This command processes your observation scenarios and generates the output file :doc:`events.ecsv <../../data/events.ecsv>`.
@@ -206,7 +206,7 @@ After generating observation plans, post-processing computes detection probabili
 
             .. dropdown:: Functions for propagating errors in rates
 
-                .. card:: `earthorbitplan.workflow.probability.rate.poisson_lognormal_rate_quantiles`
+                .. card:: `earthorbitplan.probability.rate.poisson_lognormal_rate_quantiles`
 
                     ^^^
                     .. autofunction:: earthorbitplan.probability.rate.poisson_lognormal_rate_quantiles

@@ -271,13 +271,13 @@ Statistics and predictions
 
                     .. code-block:: console
 
-                        $ earthorbitplan.scenarios.zenodo_downloader --permanent-doi 22550047 --file-name runs.zip
+                        $ python -m earthorbitplan.scenarios.zenodo_downloader --permanent-doi 22550047 --file-name runs.zip
 
                 .. tab-item:: Using a config file
 
                     .. code-block:: console
 
-                        $ earthorbitplan.scenarios.zenodo_downloader --config ./src/earthorbitplan/config/params_ultrasat.ini
+                        $ python -m earthorbitplan.scenarios.zenodo_downloader --config ./src/earthorbitplan/config/params_ultrasat.ini
 
 
         .. note::
@@ -309,13 +309,13 @@ Statistics and predictions
 
                     .. code-block:: console
 
-                        $ earthorbitplan.workflow.unpacker --zip runs.zip --subdir runs --pop fullpop --runs IR1HL IR1HLV O5a O5b O5c --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
+                        $ python -m earthorbitplan.workflow.unpacker --zip runs.zip --subdir runs --pop fullpop --runs IR1HL IR1HLV O5a O5b O5c --data-dir ./data --mass-threshold 3 --skymap-dir skymaps
 
                 .. tab-item:: Using a config file
 
                     .. code-block:: console
 
-                        $ earthorbitplan.workflow.unpacker --config ./src/earthorbitplan/config/params_ultrasat.ini
+                        $ python -m earthorbitplan.workflow.unpacker --config ./src/earthorbitplan/scenarios/params_scenarios.ini
 
 
 .. dropdown:: Submitting scheduling jobs in parallel or on a cluster
@@ -349,7 +349,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ../../config/params_ultrasat.ini --backend parallel
+                    python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend parallel
 
             .. tab-item::  SLURM
 
@@ -358,7 +358,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend slurm
+                    python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend slurm
 
 
             .. tab-item::  HTCondor
@@ -372,7 +372,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend condor
+                    python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend condor
 
 
             .. tab-item:: Dask
@@ -383,7 +383,7 @@ Statistics and predictions
 
                 .. code-block:: console
 
-                    python earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend dask
+                    python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini --backend dask
 
 
     .. note::

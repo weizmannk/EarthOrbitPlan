@@ -6,8 +6,9 @@
 #   ./scripts/setup-cplex.sh [/path/to/CPLEX_Studio]
 #
 # With no argument the usual install locations are probed:
-#   Linux  /opt/ibm/ILOG/CPLEX_Studio*   ~/CPLEX_Studio*
-#   macOS  ~/Applications/CPLEX_Studio*
+#   Linux  /opt/ibm/ILOG/CPLEX_Studio*   ~/opt/ibm/ILOG/CPLEX_Studio*
+#          ~/CPLEX_Studio*
+#   macOS  ~/Applications/CPLEX_Studio*  /Applications/CPLEX_Studio*
 #
 set -euo pipefail
 
@@ -16,6 +17,7 @@ find_studio() {
     for base in \
         "${CPLEX_STUDIO_DIR:-}" \
         /opt/ibm/ILOG/CPLEX_Studio* \
+        "$HOME"/opt/ibm/ILOG/CPLEX_Studio* \
         "$HOME"/CPLEX_Studio* \
         "$HOME"/Applications/CPLEX_Studio* \
         /Applications/CPLEX_Studio*
