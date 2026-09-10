@@ -23,12 +23,17 @@ CPLEX Optimization Studio, then swap the size-limited PyPI runtime for the full
 engine:
 
 ```bash
-./scripts/setup-cplex.sh            # defaults to ~/Applications/CPLEX_Studio222
+./scripts/setup-cplex.sh                              # auto-detects the install
+./scripts/setup-cplex.sh /opt/ibm/ILOG/CPLEX_Studio222  # or pass it explicitly
 ```
 
-Re-run that script after any reinstall of the `cplex` wheel (e.g. a fresh
-`uv pip install`). `pyproject.toml` pins `cplex` exactly under `[tool.uv]` so
-routine installs leave it untouched. See also the
+The script probes the usual locations on Linux (`/opt/ibm/ILOG/CPLEX_Studio*`)
+and macOS (`~/Applications/CPLEX_Studio*`).
+
+Re-run it after **any** reinstall of the `cplex` wheel — `uv sync` and
+`uv pip install` both replace the runtime with the size-limited PyPI build.
+`pyproject.toml` pins `cplex` exactly under `[tool.uv]` so routine installs
+leave it untouched. See also the
 [M4OPT CPLEX guide](https://m4opt.readthedocs.io/en/latest/install/cplex.html).
 
 `m4opt` itself is taken from the sibling `../m4opt` checkout via
