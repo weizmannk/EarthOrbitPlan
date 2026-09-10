@@ -98,15 +98,18 @@ def parse_arguments():
             )
 
         def get_opt(section, key):
-            """Return the raw string, or None when the key is missing/blank
-            (so the corresponding m4opt flag is omitted and its default used)."""
+            """Return the raw string, or None when the key is missing/blank or
+            the literal ``none`` (so the m4opt flag is omitted and its default
+            used)."""
             v = config.get(section, key, fallback=None)
-            return v or None
+            if v is None or v.strip().lower() in ("", "none"):
+                return None
+            return v
 
         return argparse.Namespace(
             # [mission]
             mission=get("mission", "mission"),
-            skygrid=get("mission", "skygrid"),
+            skygrid=get_opt("mission", "skygrid"),
             bandpass=get("mission", "bandpass"),
             nside=geti("mission", "nside", 128),
             # [kilonova]

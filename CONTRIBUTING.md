@@ -18,8 +18,21 @@ pip install --upgrade pip
 pip install -e ".[dev,docs]"
 ```
 
-CPLEX is required for the M4OPT scheduler. See the
-[M4OPT CPLEX install guide](https://m4opt.readthedocs.io/en/latest/install/cplex.html).
+CPLEX is required for the M4OPT scheduler at real problem sizes. Install IBM
+CPLEX Optimization Studio, then swap the size-limited PyPI runtime for the full
+engine:
+
+```bash
+./scripts/setup-cplex.sh            # defaults to ~/Applications/CPLEX_Studio222
+```
+
+Re-run that script after any reinstall of the `cplex` wheel (e.g. a fresh
+`uv pip install`). `pyproject.toml` pins `cplex` exactly under `[tool.uv]` so
+routine installs leave it untouched. See also the
+[M4OPT CPLEX guide](https://m4opt.readthedocs.io/en/latest/install/cplex.html).
+
+`m4opt` itself is taken from the sibling `../m4opt` checkout via
+`[tool.uv.sources]` — clone it next to this repo and keep it on `main`.
 
 `[dev]` pulls in `pre-commit` and the test dependencies (`[test]`); add `[docs]`
 only if you intend to build the documentation.

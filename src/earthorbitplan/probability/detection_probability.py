@@ -15,7 +15,6 @@ from m4opt.fov import footprint_healpix
 from m4opt.synphot import observing
 from m4opt.synphot.extinction import DustExtinction
 from scipy import stats
-from tqdm import tqdm
 
 warnings.filterwarnings("ignore", ".*Wswiglal-redir-stdio.*")
 warnings.filterwarnings("ignore", ".*dubious year.*")
@@ -23,57 +22,15 @@ warnings.filterwarnings("ignore", ".*polar motions.*")
 
 
 # -- helpers ------------------------------------------------------------
-
-"""Missions requiring field-by-field Cherenkov correction (AE8 model)."""
-_CHERENKOV_MISSIONS = {"ultrasat"}
-
-
-def _limmag_single_field(field, mission, plan_args):
-    """
-    Evaluate limiting magnitude at a single orbital position.
-
-    Takes into account:
-    - Observer location in orbit (affects Cerenkov background via AE8 model)
-    - Observation time (affects SNR accumulation)
-    - Dust extinction along line of sight
-    """
-    with observing(
-        observer_location=field["observer_location"],
-        target_coord=field["target_coord"],
-        obstime=(field["start_time"] + 0.5 * field["duration"]),
-    ):
-        # The mission background model already includes the position-dependent
-        # Cerenkov / AE8 term (m4opt >= 2.13); it is evaluated from the
-        # observer_location and obstime of this observing() context.
-
-        # Create spectrum with dust extinction
-        spectrum = synphot.SourceSpectrum(
-            synphot.ConstFlux1D, amplitude=0 * u.ABmag
-        ) * synphot.SpectralElement(DustExtinction())
-
-        # Compute limiting magnitude for this field
-        return mission.detector.get_limmag(
-            plan_args["snr"], field["duration"], spectrum, plan_args["bandpass"]
-        )
-
-
 def _compute_limmag(fields, mission, plan_args):
-    """Best limiting magnitude across all fields, dispatching on mission type.
+    """Best limiting magnitude over all observed fields, in one vectorized call.
 
-    Loops field-by-field for Cherenkov-sensitive missions, vectorizes otherwise.
+    The mission background model is evaluated from the ``observer_location`` and
+    ``obstime`` of the ``observing()`` context. For ULTRASAT this already
+    includes the position-dependent Cerenkov / AE8 term (m4opt >= 2.13), so no
+    per-field loop is needed — this was verified to match the old field-by-field
+    result bit-for-bit.
     """
-    if mission.name in _CHERENKOV_MISSIONS:
-        limmag = max(
-            _limmag_single_field(field, mission, plan_args)
-            for field in tqdm(
-                fields, desc=f"Computing limmag ({mission.name})", unit="field"
-            )
-        )
-        print(f"Final limmag ({mission.name}): {limmag}")
-        return limmag
-
-    # Background (galactic + zodiacal) has no orbital dependence —
-    # all fields can be evaluated in a single vectorized call
     with observing(
         observer_location=fields["observer_location"],
         target_coord=fields["target_coord"],
@@ -82,12 +39,9 @@ def _compute_limmag(fields, mission, plan_args):
         spectrum = synphot.SourceSpectrum(
             synphot.ConstFlux1D, amplitude=0 * u.ABmag
         ) * synphot.SpectralElement(DustExtinction())
-
-        limmag = mission.detector.get_limmag(
+        return mission.detector.get_limmag(
             plan_args["snr"], fields["duration"], spectrum, plan_args["bandpass"]
         ).max()
-        print(f"Final limmag ({mission.name}): {limmag}")
-        return limmag
 
 
 # -- main ------------------------------------------------------------

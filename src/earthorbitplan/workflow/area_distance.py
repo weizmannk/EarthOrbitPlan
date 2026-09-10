@@ -122,7 +122,7 @@ def compute_theoretical_limmag(
         Required keys: ``snr``, ``deadline``, ``delay``,
         ``exptime_max``, ``bandpass``.
     date : astropy.time.Time, optional
-        Reference date for orbit propagation. Defaults to 2026-03-01.
+        Reference date for orbit propagation. Defaults to 2026-09-01.
     time_step : astropy.units.Quantity, optional
         Time step between orbital samples (default: 1 hour).
         For GEO orbits (ULTRASAT), 1 hour is sufficient since the Cerenkov
@@ -135,7 +135,7 @@ def compute_theoretical_limmag(
         observable sky pixels and all sampled orbital positions.
     """
     if date is None:
-        date = Time("2026-03-01")
+        date = Time("2026-09-01")
 
     # Propagate orbit over one full GEO period (24 h) — same pattern as M4OPT
     obstimes = date + np.arange(0, 24 * u.hour, time_step, like=time_step)
