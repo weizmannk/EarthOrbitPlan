@@ -139,3 +139,7 @@ ipython_config.py
 
 ipython_config.py
 m4opt/
+
+# Installers (large binaries, not source)
+*.pkg
+IBM_ILOG_CPLEX_*

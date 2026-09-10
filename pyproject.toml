@@ -128,6 +128,20 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 write_to = "src/earthorbitplan/_version.py"
 
+# --- uv-only dev settings (ignored by plain pip / by a PyPI install) ---------
+[tool.uv.sources]
+# Use the m4opt dev checkout sitting next to this repo instead of the PyPI
+# release. Requires `m4opt/` to be cloned alongside.
+m4opt = { path = "m4opt", editable = true }
+
+[tool.uv]
+# m4opt pins `cplex ~= 22.1.2.0`. Override it with an EXACT pin matching the
+# CPLEX Studio 22.2 install: an exact pin means uv leaves an already-installed
+# cplex untouched on routine `uv pip install`, so the full runtime that
+# `docplex config --upgrade` drops into site-packages survives.
+# After ANY reinstall of the cplex wheel, re-run: scripts/setup-cplex.sh
+override-dependencies = ["cplex==22.2.0.1"]
+
 [tool.ruff]
 # src/ layout: without this, ruff's import sorter cannot tell that
 # `earthorbitplan` is first-party, so `pre-commit` reorders imports differently
