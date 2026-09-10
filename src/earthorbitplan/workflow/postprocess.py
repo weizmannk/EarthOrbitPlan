@@ -33,7 +33,10 @@ def parse_arguments():
 
     if args.config:
         config = configparser.ConfigParser(inline_comment_prefixes=("#",))
-        config.read(args.config)
+        if not config.read(args.config):
+            # configparser silently ignores an unreadable path, which would turn
+            # every setting into a default and fail much later (or silently).
+            parser.error(f"config file not found or unreadable: {args.config}")
 
         def get(
             key, fallback, sections=("paths", "postprocessing", "output", "params")

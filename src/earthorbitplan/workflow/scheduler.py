@@ -76,10 +76,21 @@ def parse_arguments():
 
     if args.config:
         config = configparser.ConfigParser(inline_comment_prefixes=("#",))
-        config.read(args.config)
+        if not config.read(args.config):
+            # configparser silently ignores a path it cannot read, which would
+            # turn every setting into None and only surface much later as
+            # `--mission=None` inside m4opt. Fail here instead.
+            parser.error(f"config file not found or unreadable: {args.config}")
 
         def get(section, key, fallback=None):
             return config.get(section, key, fallback=fallback)
+
+        def get_required(section, key):
+            """Return a mandatory value, or abort with a clear message."""
+            v = config.get(section, key, fallback=None)
+            if v is None or not v.strip():
+                parser.error(f"[{section}] {key} is required in {args.config}")
+            return v
 
         def getf(section, key, fallback):
             v = config.get(section, key, fallback=None)
@@ -108,9 +119,9 @@ def parse_arguments():
 
         return argparse.Namespace(
             # [mission]
-            mission=get("mission", "mission"),
+            mission=get_required("mission", "mission"),
             skygrid=get_opt("mission", "skygrid"),
-            bandpass=get("mission", "bandpass"),
+            bandpass=get_required("mission", "bandpass"),
             nside=geti("mission", "nside", 128),
             # [kilonova]
             absmag_mean=getf("kilonova", "absmag_mean", -16),

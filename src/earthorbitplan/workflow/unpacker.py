@@ -59,7 +59,10 @@ def parse_arguments():
 
     if args.config:
         config = configparser.ConfigParser(inline_comment_prefixes=("#",))
-        config.read(args.config)
+        if not config.read(args.config):
+            # configparser silently ignores an unreadable path, which would turn
+            # every setting into a default and fail much later (or silently).
+            parser.error(f"config file not found or unreadable: {args.config}")
 
         def get(key, fallback=None, sections=("scenarios", "paths", "params")):
             """Read a key from the first section that defines it.
@@ -73,8 +76,12 @@ def parse_arguments():
                     return v
             return fallback
 
+        zip_path = get("zip")
+        if not zip_path:
+            parser.error(f"'zip' is required in {args.config}")
+
         return argparse.Namespace(
-            zip=get("zip"),
+            zip=zip_path,
             subdir=get("subdir", "runs"),
             pop=get("pop", "fullpop"),
             runs=get("runs", "IR1HL IR1HLV O5a O5b O5c").split(),
