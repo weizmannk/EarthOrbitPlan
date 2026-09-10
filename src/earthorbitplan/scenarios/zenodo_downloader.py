@@ -163,12 +163,19 @@ class ZenodoDownloader:
             if downloaded > 0:
                 headers["Range"] = f"bytes={downloaded}-"
 
-            headers = self.headers.copy()
-            if downloaded > 0:
-                headers["Range"] = f"bytes={downloaded}-"
-
-            response = requests.get(file_url, stream=True)
+            response = requests.get(file_url, headers=headers, stream=True)
             response.raise_for_status()
+
+            # A resume only works if the server honours the range request with
+            # 206 Partial Content. If it answers 200 it is sending the whole
+            # file, so appending would corrupt the output: start over instead.
+            if downloaded > 0 and response.status_code != 206:
+                logging.warning(
+                    "Server ignored the range request (HTTP %s); "
+                    "restarting the download from scratch.",
+                    response.status_code,
+                )
+                downloaded = 0
 
             file_size = int(response.headers.get("content-length", 0)) + downloaded
             mode = "ab" if downloaded > 0 else "wb"

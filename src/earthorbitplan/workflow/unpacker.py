@@ -58,19 +58,30 @@ def parse_arguments():
     args, remaining_args = parser.parse_known_args()
 
     if args.config:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(inline_comment_prefixes=("#",))
         config.read(args.config)
-        cfg = config["params"]
+
+        def get(key, fallback=None, sections=("scenarios", "paths", "params")):
+            """Read a key from the first section that defines it.
+
+            The mission configs split settings across [scenarios] and [paths];
+            params_scenarios.ini keeps everything in a flat [params] section.
+            """
+            for section in sections:
+                v = config.get(section, key, fallback=None)
+                if v is not None:
+                    return v
+            return fallback
 
         return argparse.Namespace(
-            zip=cfg.get("zip"),
-            subdir=cfg.get("subdir", fallback="runs"),
-            pop=cfg.get("pop", fallback="fullpop"),
-            runs=cfg.get("runs", fallback="IR1HL IR1HLV O5a O5b O5c").split(),
-            detectors=cfg.get("detectors", fallback=""),
-            data_dir=cfg.get("data_dir", fallback="data"),
-            skymap_dir=cfg.get("skymap_dir", fallback="skymaps"),
-            mass_threshold=cfg.getfloat("mass_threshold", fallback=3.0),
+            zip=get("zip"),
+            subdir=get("subdir", "runs"),
+            pop=get("pop", "fullpop"),
+            runs=get("runs", "IR1HL IR1HLV O5a O5b O5c").split(),
+            detectors=get("detectors", ""),
+            data_dir=get("data_dir", "data"),
+            skymap_dir=get("skymap_dir", "skymaps"),
+            mass_threshold=float(get("mass_threshold", 3.0)),
         )
 
     parser.add_argument(

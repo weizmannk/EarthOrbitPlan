@@ -5,8 +5,8 @@ postprocess.py : Compute Detection Probabilities and Optimization Metrics
 
 Usage
 -----
-    python postprocess.py --data-dir data
-    python earthorbitplan/workflow/postprocess.py --config earthorbitplan/config/params_ultrasat.ini
+    python -m earthorbitplan.workflow.postprocess --data-dir data
+    python -m earthorbitplan.workflow.postprocess --config src/earthorbitplan/config/params_ultrasat.ini
 """
 
 import argparse
@@ -32,14 +32,29 @@ def parse_arguments():
     args, remaining_args = parser.parse_known_args()
 
     if args.config:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(inline_comment_prefixes=("#",))
         config.read(args.config)
-        cfg = config["params"]
+
+        def get(
+            key, fallback, sections=("paths", "postprocessing", "output", "params")
+        ):
+            """Read a key from the first section that defines it.
+
+            The mission configs split settings across [paths] and
+            [postprocessing] / [output]; params_scenarios.ini uses a flat
+            [params] section.
+            """
+            for section in sections:
+                v = config.get(section, key, fallback=None)
+                if v is not None:
+                    return v
+            return fallback
+
         return argparse.Namespace(
-            data_dir=cfg.get("data_dir", fallback="data"),
-            event_table=cfg.get("event_table", fallback="observing-scenarios.ecsv"),
-            output_file=cfg.get("output_file", fallback="events.ecsv"),
-            sched_dir=cfg.get("sched_dir", fallback="schedules"),
+            data_dir=get("data_dir", "data"),
+            event_table=get("event_table", "observing-scenarios.ecsv"),
+            output_file=get("output_file", "events.ecsv"),
+            sched_dir=get("sched_dir", "schedules"),
         )
 
     parser.add_argument("--data-dir", type=str, default="data")
