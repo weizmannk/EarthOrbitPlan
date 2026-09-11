@@ -145,6 +145,11 @@ def parse_arguments():
             timelimit=get("solver", "timelimit", "20min"),
             memory=get("solver", "memory", ""),
             jobs=geti("solver", "jobs", 0),
+            request_memory=get("solver", "request_memory", "40000 MB"),
+            request_disk=get("solver", "request_disk", "8000 MB"),
+            max_retries=geti("solver", "max_retries", 3),
+            growth_factor=getf("solver", "growth_factor", 2.0),
+            max_request_memory=get("solver", "max_request_memory", "200000 MB"),
             # [paths]
             data_dir=get("paths", "data_dir", "data"),
             skymap_dir=get("paths", "skymap_dir", "skymaps"),
@@ -223,6 +228,36 @@ def parse_arguments():
         type=int,
         default=0,
         help="Threads for solving one MILP (0 = all cores)",
+    )
+    parser.add_argument(
+        "--request-memory",
+        type=str,
+        default="40000 MB",
+        help="Initial HTCondor cgroup memory limit for the whole job; grown on retry",
+    )
+    parser.add_argument(
+        "--request-disk",
+        type=str,
+        default="8000 MB",
+        help="Initial HTCondor scratch disk request; grown on retry",
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=3,
+        help="How many times a job held for exceeding memory/disk is retried larger",
+    )
+    parser.add_argument(
+        "--growth-factor",
+        type=float,
+        default=2.0,
+        help="Multiplier applied to the measured usage on each retry",
+    )
+    parser.add_argument(
+        "--max-request-memory",
+        type=str,
+        default="200000 MB",
+        help="Ceiling on escalation; keep below the RAM of the largest slot",
     )
 
     parser.add_argument("--data-dir", type=str, default="data", help="Data directory")
@@ -389,7 +424,17 @@ if __name__ == "__main__":
                 )
                 continue
 
-            submit_condor_job(run_name, event_id, log_dir, wrapper_script)
+            submit_condor_job(
+                run_name,
+                event_id,
+                log_dir,
+                wrapper_script,
+                request_memory=args.request_memory,
+                request_disk=args.request_disk,
+                max_retries=args.max_retries,
+                growth_factor=args.growth_factor,
+                max_request_memory=args.max_request_memory,
+            )
 
     # Parallel backend
     elif args.backend == "parallel":
