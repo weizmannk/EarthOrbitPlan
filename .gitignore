@@ -49,7 +49,7 @@ data/logs/
 data/progress/
 data/schedules/
 data/skymaps/
-
+ultrasat-non-overlap/
 
 # Eclipse editor project files
 .project
