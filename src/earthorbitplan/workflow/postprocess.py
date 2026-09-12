@@ -13,6 +13,7 @@ import argparse
 import configparser
 import logging
 import sys
+from functools import partial
 from pathlib import Path
 
 from astropy.table import QTable
@@ -151,6 +152,14 @@ def main():
     table = QTable.read(input_path)
 
     logging.info("Computing detection probabilities and optimization metrics...")
+    # progress_map ships the callable to worker processes through pickle, so it
+    # cannot be a lambda or any other closure defined inside main().
+    #
+    # It pickles each item too, and an astropy Row keeps a reference to its
+    # parent table: sending one row of this table costs 1.7 MB instead of the
+    # 5 kB the row itself needs. Detaching each row into its own one-row table
+    # first cuts the traffic ~340x and is what makes jobs=None worth using.
+    rows = [table[i : i + 1][0] for i in range(len(table))]
     (
         table["detection_probability_known_position"],
         table["objective_value"],
@@ -172,7 +181,7 @@ def main():
         table["visits"],
         table["skymap"],
         table["skygrid"],
-    ) = zip(*progress_map(lambda row: process(row, sched_path), table, jobs=None))
+    ) = zip(*progress_map(partial(process, sched_path=sched_path), rows, jobs=None))
 
     logging.info(f"Saving results to: {output_path}")
     table.write(output_path, overwrite=True)
