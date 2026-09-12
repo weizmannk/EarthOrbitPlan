@@ -50,6 +50,7 @@ data/progress/
 data/schedules/
 data/skymaps/
 ultrasat-non-overlap/
+ultrasat-allsky/
 
 # Eclipse editor project files
 .project

@@ -15,7 +15,7 @@
 
 # Or use a config file (must contain a [params] section):
 
-#     python earthorbitplan/workflow/unpacker.py --config  earthorbitplan/scenarios/params_scenarios.ini
+#     python src/earthorbitplan/workflow/unpacker.py --config  src/earthorbitplan/scenarios/params_ultrasat.ini
 
 # Or import and call `process_zip()` in your Python code.
 

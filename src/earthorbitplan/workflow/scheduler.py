@@ -11,14 +11,14 @@
 # -----
 # You can run the script either with Command-Line Interface arguments:
 
-#     python ./earthorbitplan/workflow/scheduler.py --mission ULTRASAT --bandpass NUV ...
+#     python src/earthorbitplan/workflow/scheduler.py --mission ULTRASAT --bandpass NUV ...
 
 # Or with a configuration file:
 
-#     python ./earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
+#     python ./src/earthorbitplan/workflow/scheduler.py --config ./earthorbitplan/config/params_ultrasat.ini
 
 # In the root directory of the project:
-#     python -m earthorbitplan.workflow.scheduler --config ./earthorbitplan/config/params_ultrasat.ini
+#     python -m earthorbitplan.workflow.scheduler --config ./src/earthorbitplan/config/params_ultrasat.ini
 
 
 import argparse
