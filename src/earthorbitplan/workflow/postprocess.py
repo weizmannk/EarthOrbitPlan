@@ -6,7 +6,7 @@ postprocess.py : Compute Detection Probabilities and Optimization Metrics
 Usage
 -----
     python -m earthorbitplan.workflow.postprocess --data-dir data
-    python -m earthorbitplan.workflow.postprocess --config src/earthorbitplan/config/params_ultrasat.ini
+    python src/earthorbitplan/workflow/postprocess.py --config src/earthorbitplan/config/params_ultrasat.ini
 """
 
 import argparse
