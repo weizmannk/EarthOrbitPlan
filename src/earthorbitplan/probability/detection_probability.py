@@ -44,6 +44,36 @@ def _compute_limmag(fields, mission, plan_args):
         ).max()
 
 
+def _any_masked(column):
+    """Whether ``column`` actually has masked entries.
+
+    SkyCoord and EarthLocation carry a structured mask with one field per
+    axis, and reductions such as ``any()`` do not work on those directly.
+    """
+    mask = getattr(column, "mask", None)
+    if mask is None:
+        return False
+    if getattr(mask, "dtype", None) is not None and mask.dtype.names:
+        return any(mask[name].any() for name in mask.dtype.names)
+    return bool(mask.any())
+
+
+def observed_fields(plan):
+    """Select the observing rows of a schedule and resolve their masks.
+
+    ``QTable.filled()`` fills every column at once, which raises on a masked
+    Time column because astropy has no fill value it can convert to a time.
+    m4opt schedules do carry a masked ``start_time`` -- the mask marks the
+    rows that are not observations -- so only call ``filled()`` when this
+    selection genuinely still holds masked entries. When it does not, the
+    values are already the ones ``filled()`` would have returned.
+    """
+    observations = plan[plan["action"] == "observe"]
+    if any(_any_masked(column) for column in observations.columns.values()):
+        return observations.filled()
+    return observations
+
+
 # -- main ------------------------------------------------------------
 def get_detection_probability_known_position(plan, event_row, plan_args):
     if len(plan) == 0:
@@ -52,7 +82,7 @@ def get_detection_probability_known_position(plan, event_row, plan_args):
     hpx = HEALPix(nside=plan_args["nside"], order="nested", frame=ICRS())
     mission = getattr(missions, plan_args["mission"])
 
-    observations = plan[plan["action"] == "observe"].filled()
+    observations = observed_fields(plan)
     coords = observations["target_coord"].to_table()
     coords["i"] = np.arange(len(coords))
     i = np.sort(unique(coords, keys=["ra", "dec"])["i"])
@@ -122,7 +152,7 @@ def get_detection_probability_unknown_position(plan, skymap_moc, plan_args):
 
     skymap = rasterize(skymap_moc, order=nside_to_level(plan_args["nside"]))
 
-    observations = plan[plan["action"] == "observe"].filled()
+    observations = observed_fields(plan)
     coords = observations["target_coord"].to_table()
     coords["i"] = np.arange(len(coords))
     i = np.sort(unique(coords, keys=["ra", "dec"])["i"])

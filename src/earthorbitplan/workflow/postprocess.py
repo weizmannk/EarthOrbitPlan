@@ -16,11 +16,13 @@ import sys
 from functools import partial
 from pathlib import Path
 
+import numpy as np
 from astropy.table import QTable
 from ligo.skymap.util.progress import progress_map
 
 from earthorbitplan.probability.detection_probability import (
     get_detection_probability_known_position,
+    observed_fields,
 )
 
 
@@ -94,7 +96,7 @@ def process(row, sched_path):
     -------
     tuple
         detection_probability_known_position, objective_value, best_bound,
-        solution_status, solution_time, num_fields,
+        solution_status, solution_time, num_fields, field_ids,
         cutoff, nside, mission, snr, deadline, delay,
         exptime_min, exptime_max, bandpass,
         absmag_mean, absmag_stdev, visits, skymap, skygrid.
@@ -106,14 +108,26 @@ def process(row, sched_path):
 
     if not plan_file.exists():
         logging.warning(f"Missing schedule file: {plan_file}")
-        return (None,) * 20
+        # field_ids has to stay an array even when unknown: a None cannot be
+        # written to the variable-length ECSV column.
+        return (None,) * 6 + (np.array([], dtype=int),) + (None,) * 14
 
     plan = QTable.read(plan_file)
     plan_args = plan.meta["args"]
     plan_args.pop("skymap", None)
 
-    observations = plan[plan["action"] == "observe"].filled()
-    num_fields = len(observations) // plan_args["visits"]
+    observations = observed_fields(plan)
+    if "field_id" in observations.colnames:
+        # m4opt >= 2.13 names the sky grid tile of every observation, so the
+        # fields can be counted directly instead of assuming that each one
+        # received all of its visits -- an assumption that breaks on the plans
+        # that stopped on "time limit exceeded".
+        field_ids = np.unique(np.asarray(observations["field_id"]))
+        num_fields = len(field_ids)
+    else:
+        # Schedules written before m4opt 2.13 carry no field_id.
+        field_ids = np.array([], dtype=int)
+        num_fields = len(observations) // plan_args["visits"]
 
     return (
         get_detection_probability_known_position(plan, row, plan_args),
@@ -122,6 +136,7 @@ def process(row, sched_path):
         plan.meta.get("solution_status"),
         plan.meta.get("solution_time"),
         num_fields,
+        field_ids,
         plan_args.get("cutoff"),
         plan_args.get("nside"),
         plan_args.get("mission"),
@@ -167,6 +182,7 @@ def main():
         table["solution_status"],
         table["solution_time"],
         table["num_fields"],
+        table["field_ids"],
         table["cutoff"],
         table["nside"],
         table["mission"],
