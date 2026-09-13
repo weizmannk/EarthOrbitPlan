@@ -33,8 +33,8 @@ main_table = main_table[main_table["objective_value"] >= cutoff]
 event_tables_by_run = {run: main_table[main_table["run"] == run] for run in runs}
 
 # ------------------------------------------------------------------------------
-# Set merger rate priors from O3 R&P Table II (last column)
-lo, mid, hi = 100, 240, 510  # In Gpc^-3 yr^-1
+# Set merger rate priors from O4 R&P
+lo, mid, hi = 50, 100, 203  # In Gpc^-3 yr^-1
 
 # Log-normal width for 90% interval
 (standard_90pct_interval,) = np.diff(stats.norm.interval(0.9))
@@ -122,20 +122,3 @@ rst_table = make_rst_table(headers, rst_rows)
 
 # Print the table
 print(rst_table)
-
-
-# Collaboration einstein telescope
-# et l'organisation, mored than 2000 scientist
-#
-# AT the end of 2030 or in the beginning of 2040
-# end of 2026 taking the crucial decisions about the building and operational
-# 40 km or 20 km  , geometry (N, L or triangle), 2L should be better  than an triangle
-# Location : Génèves + Region EMR , Laboratoir DZA (germany) with 90million €
-# estimation about the cost :  billion €
-
-# iltalia = 1.3 billion €
-# belgium + suise = 1.5billion €
-
-# cosmic explorer are in advance than ET
-# ET look more for low frequency and cosmic explorer for high frequency
-#

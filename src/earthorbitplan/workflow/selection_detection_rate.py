@@ -6,10 +6,10 @@ from scipy import stats
 
 def summarize_selected_detected_events(
     events_file,
+    merger_rate_lo,
+    merger_rate_mid,
+    merger_rate_hi,
     quantiles=(0.5, 0.05, 0.95),
-    merger_rate_lo=50,
-    merger_rate_mid=130,
-    merger_rate_hi=290,
     run_duration=1.0,
     poisson_lognormal_rate_quantiles=None,
     output_file=None,
@@ -37,12 +37,11 @@ def summarize_selected_detected_events(
         Path to the ECSV table of candidate events.
     quantiles : sequence of float, optional
         Probability quantiles to compute (default: (0.5, 0.05, 0.95)).
-    merger_rate_lo : float, optional
-        Lower bound of target merger rate (Gpc^-3 yr^-1).
-    merger_rate_mid : float, optional
-        Median of target merger rate (Gpc^-3 yr^-1).
-    merger_rate_hi : float, optional
-        Upper bound of target merger rate (Gpc^-3 yr^-1).
+    merger_rate_lo, merger_rate_mid, merger_rate_hi : float
+        5%, 50% and 95% quantiles of the target merger rate density, in
+        Gpc^-3 yr^-1. Required, with no default: the rate depends on the
+        population model the run was drawn from, so the caller states it
+        rather than inheriting a silent default.
     run_duration : float, optional
         Duration of the observing run in years (default: 1.5).
     poisson_lognormal_rate_quantiles : callable
@@ -71,9 +70,8 @@ def summarize_selected_detected_events(
     # Load main event table
     main_table = QTable.read(events_file)
 
-    # Get unique run names, excluding O5a-HL
+    # Get unique run names
     runs = np.unique(main_table["run"])
-    runs = runs[runs != "O5a-HL"]
 
     # Extract mission and skygrid from metadata
     mission = np.unique(main_table["mission"])[0]

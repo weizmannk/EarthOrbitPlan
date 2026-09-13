@@ -46,7 +46,6 @@ from matplotlib import colors as mcolors
 from matplotlib import gridspec, patheffects
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.patches import FancyBboxPatch
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import stats
 from tqdm.auto import tqdm
@@ -391,9 +390,6 @@ def plot_area_distance(events_file, outdir="output", show=False):
     runs = np.unique(main_table["run"])
 
     for run in runs:
-        if run == "O5a-HL":
-            continue
-
         logging.info(f"Processing run: {run}")
 
         # Filter events for current run
@@ -670,34 +666,18 @@ def plot_area_distance(events_file, outdir="output", show=False):
         # ===================================================================
         # Style the legend grid box (Seaborn elegant style)
         # ===================================================================
-        # Hide top and right spines
-        ax_legend.spines[["top", "right"]].set_visible(False)
+        # Close the box on all four sides, in one uniform soft gray. The twiny
+        # axes above only carries the "Objective val." label; its own frame is
+        # off, so it contributes no competing black spine.
+        for spine in ax_legend.spines.values():
+            spine.set_visible(True)
+            spine.set_linewidth(1.2)
+            spine.set_edgecolor("gray")
 
-        # Style bottom and left spines with soft gray
-        for spine in ["bottom", "left"]:
-            ax_legend.spines[spine].set_linewidth(1.2)
-            ax_legend.spines[spine].set_edgecolor("gray")
-
-        # Set white semi-transparent background
+        # White semi-transparent background so the grid reads over the scatter
         ax_legend.patch.set_facecolor("white")
         ax_legend.patch.set_alpha(0.95)
-
-        # Add rounded corner box overlay
-
-        fancy_box = FancyBboxPatch(
-            (0, 0),
-            1,
-            1,  # Full extent of axes
-            boxstyle="round,pad=0.02",  # Rounded corners
-            transform=ax_legend.transAxes,  # Use axes coordinates
-            facecolor="white",
-            edgecolor="gray",
-            alpha=0.95,
-            linewidth=1.2,
-            zorder=-1,  # Behind all other elements
-        )
-        ax_legend.add_patch(fancy_box)
-        ax_legend.patch.set_visible(False)  # Hide default rectangular patch
+        ax_legend.patch.set_visible(True)
 
         # ===================================================================
         # Create text legend (Missing / Triggered)
