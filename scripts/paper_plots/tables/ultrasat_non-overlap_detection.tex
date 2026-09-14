@@ -2,23 +2,24 @@
 \renewcommand\arraystretch{1.3}
 \setlength{\tabcolsep}{0.3cm}
 \centering
-\caption{Expected number of selected and detected events for ULTRASAT using the \emph{Low-Cadence Survey} (LCS) strategy, per observing run and source class. BNS: both components $\leq 3\,M_\odot$; NSBH: one component $> 3\,M_\odot$; All: BNS $+$ NSBH combined. Values are medians with 90\% credible intervals.}
+\caption{Expected number of selected and detected events for ULTRASAT using the \emph{Low-Cadence Survey} (LCS) strategy, per observing run and source class. BNS: both components $\leq 3\,M_\odot$; NSBH: one component $> 3\,M_\odot$; All: BNS $+$ NSBH combined. $\lambda = \mathcal{R}_{50}\,T\,N / \mathcal{R}_{\mathrm{sim}}$ is the expected count at the fiducial (median) merger rate. The interval is the median and 90\% credible range of the Poisson-lognormal predictive distribution, which marginalises over the rate prior; its mean is $\lambda e^{\sigma^2/2}$, not $\lambda$. Entries marked $<1$ have every percentile below 0.5, where only $\lambda$ discriminates.}
 \label{tab:ultrasat-non-overlap-selected-detected-1yr}
-\begin{tabular}{llccc}
+\begin{tabular}{llcccccc}
 \Xhline{3\arrayrulewidth}
-\textbf{Run} & & \textbf{BNS} & \textbf{NSBH} & \textbf{All} \\
+\textbf{Run} & & \multicolumn{2}{c}{\textbf{BNS}} & \multicolumn{2}{c}{\textbf{NSBH}} & \multicolumn{2}{c}{\textbf{All}} \\
+ & & $\lambda$ & 90\% CI & $\lambda$ & 90\% CI & $\lambda$ & 90\% CI \\
 \Xhline{3\arrayrulewidth}
-\multirow{2}{*}{\textbf{IR1HLV}} & Selected & $0_{-0}^{+2}$ & $0_{-0}^{+1}$ & $1_{-1}^{+3}$ \\
- & Detected & $0_{-0}^{+1}$ & $0_{-0}^{+0}$ & $0_{-0}^{+1}$ \\
+\multirow{2}{*}{\textbf{IR1HLV}} & Selected & 0.90 & $0^{+2}_{-0}$ & 0.30 & $0^{+1}_{-0}$ & 1.20 & $1^{+3}_{-1}$ \\
+ & Detected & 0.28 & $0^{+1}_{-0}$ & 0.11 & $<1$ & 0.39 & $0^{+1}_{-0}$ \\
 \hline
-\multirow{2}{*}{\textbf{O5a}} & Selected & $1_{-1}^{+3}$ & $1_{-1}^{+3}$ & $2_{-2}^{+5}$ \\
- & Detected & $0_{-0}^{+2}$ & $0_{-0}^{+1}$ & $0_{-0}^{+3}$ \\
+\multirow{2}{*}{\textbf{O5a}} & Selected & 1.85 & $1^{+3}_{-1}$ & 1.19 & $1^{+3}_{-1}$ & 3.04 & $2^{+5}_{-2}$ \\
+ & Detected & 0.68 & $0^{+2}_{-0}$ & 0.39 & $0^{+1}_{-0}$ & 1.07 & $0^{+3}_{-0}$ \\
 \hline
-\multirow{2}{*}{\textbf{O5b}} & Selected & $1_{-1}^{+3}$ & $0_{-0}^{+3}$ & $2_{-2}^{+5}$ \\
- & Detected & $0_{-0}^{+2}$ & $0_{-0}^{+1}$ & $0_{-0}^{+2}$ \\
+\multirow{2}{*}{\textbf{O5b}} & Selected & 1.80 & $1^{+3}_{-1}$ & 1.12 & $0^{+3}_{-0}$ & 2.92 & $2^{+5}_{-2}$ \\
+ & Detected & 0.56 & $0^{+2}_{-0}$ & 0.35 & $0^{+1}_{-0}$ & 0.91 & $0^{+2}_{-0}$ \\
 \hline
-\multirow{2}{*}{\textbf{O5c}} & Selected & $2_{-2}^{+4}$ & $0_{-0}^{+2}$ & $3_{-3}^{+5}$ \\
- & Detected & $0_{-0}^{+2}$ & $0_{-0}^{+1}$ & $0_{-0}^{+3}$ \\
+\multirow{2}{*}{\textbf{O5c}} & Selected & 2.26 & $2^{+4}_{-2}$ & 0.99 & $0^{+2}_{-0}$ & 3.25 & $3^{+5}_{-3}$ \\
+ & Detected & 0.83 & $0^{+2}_{-0}$ & 0.32 & $0^{+1}_{-0}$ & 1.16 & $0^{+3}_{-0}$ \\
 \Xhline{3\arrayrulewidth}
 \end{tabular}
 \end{table}

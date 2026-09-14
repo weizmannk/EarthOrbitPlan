@@ -144,6 +144,12 @@ def summarize_selected_detected_events(
 
     mu = np.moveaxis(np.array(mu), 2, 0)
 
+    # Expected count, straight from mu and before the CDF inversion. The
+    # median of a Poisson-lognormal collapses to 0 once lambda drops below
+    # ~0.7, so the table reports lambda alongside the interval: it is what
+    # separates runs that the median makes look identical.
+    lam = np.exp(mu)
+
     # Compute Poisson-lognormal quantiles
     # rate_quantiles shape: (2, n_runs, n_classes, 3)
     #   axis 0: [selected, detected]
@@ -170,12 +176,42 @@ def summarize_selected_detected_events(
     xhline = r"\Xhline{3\arrayrulewidth}"
     hline = r"\hline"
 
-    def fmt(mid, lo, hi):
+    def interval_parts(mid, lo, hi):
+        """Rounded (median, minus, plus), or None if every percentile is 0."""
         m, lo_val, h_val = np.rint([mid, mid - lo, hi - mid]).astype(int)
-        return f"${m}_{{-{lo_val}}}^{{+{h_val}}}$"
+        if m == 0 and lo_val == 0 and h_val == 0:
+            # "0^{+0}_{-0}" says nothing that the lambda column does not say
+            # better, so the renderers below collapse it to "<1".
+            return None
+        return m, lo_val, h_val
 
-    col_spec = "llccc"
-    header = r"\textbf{Run} & & \textbf{BNS} & \textbf{NSBH} & \textbf{All} \\"
+    def fmt(mid, lo, hi):
+        """LaTeX cell, AAS convention: superscript before subscript."""
+        parts = interval_parts(mid, lo, hi)
+        if parts is None:
+            return r"$<1$"
+        m, lo_val, h_val = parts
+        return f"${m}^{{+{h_val}}}_{{-{lo_val}}}$"
+
+    def fmt_plain(mid, lo, hi):
+        """Same cell, for the plain-text table shown in a notebook."""
+        parts = interval_parts(mid, lo, hi)
+        if parts is None:
+            return "<1"
+        m, lo_val, h_val = parts
+        return f"{m}^{{+{h_val}}}_{{-{lo_val}}}"
+
+    col_spec = "ll" + "cc" * len(classes)
+    header = "\n".join(
+        [
+            r"\textbf{Run} & & "
+            + " & ".join(
+                rf"\multicolumn{{2}}{{c}}{{\textbf{{{cls}}}}}" for cls in classes
+            )
+            + r" \\",
+            " & & " + " & ".join([r"$\lambda$ & 90\% CI"] * len(classes)) + r" \\",
+        ]
+    )
 
     data_rows = []
     for i_run, run in enumerate(runs):
@@ -184,10 +220,10 @@ def summarize_selected_detected_events(
             run_cell = (
                 rf"\multirow{{2}}{{*}}{{\textbf{{{run}}}}}" if i_label == 0 else ""
             )
-            cells = [
-                fmt(*rate_quantiles[i_label, i_run, i_cls, :])
-                for i_cls in range(len(classes))
-            ]
+            cells = []
+            for i_cls in range(len(classes)):
+                cells.append(f"{lam[i_label, i_run, i_cls]:.2f}")
+                cells.append(fmt(*rate_quantiles[i_label, i_run, i_cls, :]))
             data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
         # thin \hline between runs, nothing after last
         if i_run < len(runs) - 1:
@@ -219,7 +255,9 @@ def summarize_selected_detected_events(
             r" BNS: both components $\leq 3\,M_\odot$;"
             r" NSBH: one component $> 3\,M_\odot$;"
             r" All: BNS $+$ NSBH combined."
-            r" Values are medians with 90\% credible intervals.}",
+            r" $\lambda = \mathcal{R}_{50}\,T\,N / \mathcal{R}_{\mathrm{sim}}$ is the expected count at the fiducial (median) merger rate. The interval"
+            r" is the median and 90\% credible range of the Poisson-lognormal predictive distribution, which marginalises over the rate prior; its"
+            r" mean is $\lambda e^{\sigma^2/2}$, not $\lambda$. Entries marked $<1$ have every percentile below 0.5, where only $\lambda$ discriminates.}",
             rf"\label{{tab:{mission}-{skygrid}-selected-detected-{run_duration}yr}}",
             tabular,
             r"\end{table}",
@@ -251,20 +289,18 @@ def summarize_selected_detected_events(
                 lines.append(sep())
             return "\n".join(lines)
 
-        headers = ["Run", "", "BNS", "NSBH", "All"]
+        headers = ["Run", ""]
+        for cls in classes:
+            headers += [f"{cls} lambda", f"{cls} 90% CI"]
+
         rst_rows = []
         for i_run, run in enumerate(runs):
             for i_label, label in enumerate(row_labels):
                 run_cell = run if i_label == 0 else ""
-                cells = [
-                    "{}_{{-{}}}^{{+{}}}".format(
-                        *np.rint([mid, mid - lo, hi - mid]).astype(int)
-                    )
-                    for mid, lo, hi in [
-                        rate_quantiles[i_label, i_run, i_cls, :]
-                        for i_cls in range(len(classes))
-                    ]
-                ]
+                cells = []
+                for i_cls in range(len(classes)):
+                    cells.append(f"{lam[i_label, i_run, i_cls]:.2f}")
+                    cells.append(fmt_plain(*rate_quantiles[i_label, i_run, i_cls, :]))
                 rst_rows.append([run_cell, label] + cells)
 
         print(make_rst_table(headers, rst_rows))
