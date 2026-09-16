@@ -33,13 +33,14 @@ import warnings
 import numpy as np
 import synphot
 from astropy import units as u
-from astropy.coordinates import ICRS
+from astropy.coordinates import ICRS, SkyCoord
 from astropy.cosmology import Planck15 as cosmo
 from astropy.cosmology import z_at_value
 from astropy.table import QTable
 from astropy.time import Time
 from astropy.visualization import quantity_support
 from astropy_healpix import HEALPix
+from m4opt import fov as m4opt_fov
 from m4opt import missions
 from m4opt.synphot import observing
 from matplotlib import colors as mcolors
@@ -49,6 +50,29 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import stats
 from tqdm.auto import tqdm
+
+from earthorbitplan.utils.table import get_skygrid
+
+
+def fov_area(mission, nside=2048):
+    """Instantaneous field-of-view area of a mission.
+
+    A single rectangular footprint (ULTRASAT) carries its own dimensions, and
+    the exact product is used. A mosaic of polygons (UVEX: nine detector
+    tiles) exposes no such shortcut -- ``mission.fov`` is then a ``Regions``
+    collection with no ``width`` -- so the footprint is rasterised onto
+    HEALPix and the covered pixels are counted. At nside=2048 that recovers
+    the published areas to better than 2%.
+    """
+    region = mission.fov
+    width = getattr(region, "width", None)
+    if width is not None:
+        return (width * region.height).to(u.deg**2)
+
+    hpx = HEALPix(nside=nside, frame=ICRS())
+    pixels = m4opt_fov.footprint_healpix(hpx, region, SkyCoord(0 * u.deg, 0 * u.deg))
+    return (len(np.unique(pixels)) * hpx.pixel_area).to(u.deg**2)
+
 
 # Suppress known warnings from astropy and lal
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
@@ -322,7 +346,7 @@ def plot_area_distance(events_file, outdir="output", show=False):
     # ===================================================================
     # These define the boundaries of detectability in the area-distance plane
 
-    min_area = (mission.fov.width * mission.fov.height).to(u.deg**2)
+    min_area = fov_area(mission)
 
     # Full sky area in square degrees
     full_sky_area = (1 * u.spat).to(u.deg**2)  # 41,253 deg^2
@@ -384,8 +408,7 @@ def plot_area_distance(events_file, outdir="output", show=False):
     # ===================================================================
 
     # Extract mission skygrid from metadata
-    skygrid_raw = np.unique(main_table["skygrid"])[0]
-    skygrid = "" if skygrid_raw == "None" else skygrid_raw
+    skygrid = get_skygrid(main_table)
 
     runs = np.unique(main_table["run"])
 
@@ -1017,7 +1040,10 @@ def plot_area_distance(events_file, outdir="output", show=False):
         # ===================================================================
         # Save figure to PDF
         # ===================================================================
-        output_file = f"{outdir}/{mission.name}_{skygrid}_area-distance_{run}.pdf"
+        # Join on the non-empty parts only: a mission without skygrid
+        # variants (UVEX) would otherwise yield "uvex__area-distance".
+        stem = "_".join(part for part in (mission.name, skygrid) if part)
+        output_file = f"{outdir}/{stem}_area-distance_{run}.pdf"
         fig.savefig(output_file, dpi=300, bbox_inches="tight")
         logging.info(f" Saved: {output_file}")
         logging.info(

@@ -3,6 +3,8 @@ from astropy import units as u
 from astropy.table import QTable
 from scipy import stats
 
+from earthorbitplan.utils.table import get_skygrid
+
 
 def summarize_selected_detected_events(
     events_file,
@@ -75,8 +77,7 @@ def summarize_selected_detected_events(
 
     # Extract mission and skygrid from metadata
     mission = np.unique(main_table["mission"])[0]
-    skygrid_raw = np.unique(main_table["skygrid"])[0]
-    skygrid = "" if skygrid_raw == "None" else skygrid_raw
+    skygrid = get_skygrid(main_table)
 
     # Map skygrid for ULTRASAT to be add in the the caption
     skygrid_label = {
@@ -171,6 +172,10 @@ def summarize_selected_detected_events(
     #   - \hline between runs
     # Requires: \usepackage{multirow, makecell} in preamble
     # -------------------------------------------------------------------------
+    # Same rule as the figure file names: skip the empty skygrid so a
+    # mission without grid variants does not produce "tab:uvex--...".
+    label_stem = "-".join(part for part in (str(mission), skygrid) if part)
+
     classes = list(is_class_by_category.keys())  # ["BNS", "NSBH", "All"]
     row_labels = ["Selected", "Detected"]
     xhline = r"\Xhline{3\arrayrulewidth}"
@@ -258,7 +263,7 @@ def summarize_selected_detected_events(
             r" $\lambda = \mathcal{R}_{50}\,T\,N / \mathcal{R}_{\mathrm{sim}}$ is the expected count at the fiducial (median) merger rate. The interval"
             r" is the median and 90\% credible range of the Poisson-lognormal predictive distribution, which marginalises over the rate prior; its"
             r" mean is $\lambda e^{\sigma^2/2}$, not $\lambda$. Entries marked $<1$ have every percentile below 0.5, where only $\lambda$ discriminates.}",
-            rf"\label{{tab:{mission}-{skygrid}-selected-detected-{run_duration}yr}}",
+            rf"\label{{tab:{label_stem}-selected-detected-{run_duration}yr}}",
             tabular,
             r"\end{table}",
         ]
