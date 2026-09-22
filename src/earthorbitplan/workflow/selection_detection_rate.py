@@ -3,6 +3,7 @@ from astropy import units as u
 from astropy.table import QTable
 from scipy import stats
 
+from earthorbitplan.probability.rate import poisson_lognormal_rate_cdf
 from earthorbitplan.utils.table import get_skygrid
 
 
@@ -14,6 +15,9 @@ def summarize_selected_detected_events(
     quantiles=(0.5, 0.05, 0.95),
     run_duration=1.0,
     poisson_lognormal_rate_quantiles=None,
+    aggregate_runs=None,
+    aggregate_label="O5 total",
+    include_zero_probability=False,
     output_file=None,
     verbose=True,
 ):
@@ -48,6 +52,23 @@ def summarize_selected_detected_events(
         Duration of the observing run in years (default: 1.5).
     poisson_lognormal_rate_quantiles : callable
         Function to calculate Poisson-lognormal rate quantiles.
+    aggregate_runs : sequence of str, optional
+        Run names to combine into one extra block at the foot of the table,
+        e.g. ``("O5a", "O5b", "O5c")``. The merger-rate prior is the same
+        astrophysical rate for every run, so its uncertainty is fully
+        correlated across them: the aggregate is built by summing the
+        expected counts, ``lambda_total = sum_r exp(mu_r)``, and re-deriving
+        the quantiles from ``log(lambda_total)`` at the *same* prior width.
+        Convolving the per-run predictive distributions as if independent, or
+        summing their quantiles, would both be wrong -- the median is not
+        additive. ``None`` (default) adds no such block.
+    aggregate_label : str, optional
+        Row label for that block (default ``"O5 total"``).
+    include_zero_probability : bool, optional
+        If True, add a ``P(N=0)`` column per class: the probability of
+        observing no event at all, from the Poisson-lognormal CDF at zero.
+        It follows neither from lambda nor from the median, and it is what
+        tells the reader the risk of an empty year. Default False.
     verbose : bool, optional
         If True, displays the tabular in Jupyter via IPython.display.Latex.
 
@@ -146,9 +167,10 @@ def summarize_selected_detected_events(
     mu = np.moveaxis(np.array(mu), 2, 0)
 
     # Expected count, straight from mu and before the CDF inversion. The
-    # median of a Poisson-lognormal collapses to 0 once lambda drops below
-    # ~0.7, so the table reports lambda alongside the interval: it is what
-    # separates runs that the median makes look identical.
+    # table reports it because the median is uninformative here: it rounds to
+    # zero for every Detected entry, including those at lambda = 1.07 and
+    # 1.16, whose continuous medians are 0.41 and 0.50. Only lambda tells the
+    # sub-periods apart.
     lam = np.exp(mu)
 
     # Compute Poisson-lognormal quantiles
@@ -163,6 +185,47 @@ def summarize_selected_detected_events(
         mu[:, :, :, np.newaxis],
         log_target_rate_sigma,
     )
+
+    # Probability of seeing nothing at all, P(N = 0), per run and class.
+    zero_prob = (
+        poisson_lognormal_rate_cdf(0, mu, log_target_rate_sigma)
+        if include_zero_probability
+        else None
+    )
+
+    # Aggregate block. The merger-rate prior is one astrophysical rate shared
+    # by every run, so its uncertainty is fully correlated across them: the
+    # expected counts add, and the quantiles are re-derived once from their
+    # sum at the same prior width. Summing quantiles, or convolving the
+    # per-run predictive distributions as if independent, would both be wrong.
+    aggregate = None
+    if aggregate_runs:
+        run_index = {run: i for i, run in enumerate(runs)}
+        missing = [run for run in aggregate_runs if run not in run_index]
+        if missing:
+            raise ValueError(
+                f"aggregate_runs names absent from {events_file}: {missing}. "
+                f"Available runs: {sorted(run_index)}."
+            )
+        columns = [run_index[run] for run in aggregate_runs]
+
+        # Sum exp(mu) in full precision -- never the rounded printed values.
+        lam_aggregate = lam[:, columns, :].sum(axis=1)
+        mu_aggregate = np.log(lam_aggregate)
+        aggregate_quantiles = poisson_lognormal_rate_quantiles(
+            prob_quantiles[np.newaxis, np.newaxis, :],
+            mu_aggregate[:, :, np.newaxis],
+            log_target_rate_sigma,
+        )
+        aggregate = {
+            "lam": lam_aggregate,
+            "quantiles": aggregate_quantiles,
+            "zero_prob": (
+                poisson_lognormal_rate_cdf(0, mu_aggregate, log_target_rate_sigma)
+                if include_zero_probability
+                else None
+            ),
+        }
 
     # -------------------------------------------------------------------------
     # Build LaTeX table — article style:
@@ -206,17 +269,30 @@ def summarize_selected_detected_events(
         m, lo_val, h_val = parts
         return f"{m}^{{+{h_val}}}_{{-{lo_val}}}"
 
-    col_spec = "ll" + "cc" * len(classes)
+    # One sub-column per quantity, per class.
+    sub_headers = [r"$\lambda$", r"90\% CI"]
+    if include_zero_probability:
+        sub_headers.append(r"$P(N{=}0)$")
+    n_sub = len(sub_headers)
+
+    col_spec = "ll" + "c" * n_sub * len(classes)
     header = "\n".join(
         [
             r"\textbf{Run} & & "
             + " & ".join(
-                rf"\multicolumn{{2}}{{c}}{{\textbf{{{cls}}}}}" for cls in classes
+                rf"\multicolumn{{{n_sub}}}{{c}}{{\textbf{{{cls}}}}}" for cls in classes
             )
             + r" \\",
-            " & & " + " & ".join([r"$\lambda$ & 90\% CI"] * len(classes)) + r" \\",
+            " & & " + " & ".join([" & ".join(sub_headers)] * len(classes)) + r" \\",
         ]
     )
+
+    def cells_for(lam_row, quantile_row, zero_row, i_cls):
+        """The sub-columns of one class, in header order."""
+        out = [f"{lam_row[i_cls]:.2f}", fmt(*quantile_row[i_cls, :])]
+        if include_zero_probability:
+            out.append(rf"{100 * zero_row[i_cls]:.1f}\%")
+        return out
 
     data_rows = []
     for i_run, run in enumerate(runs):
@@ -227,12 +303,38 @@ def summarize_selected_detected_events(
             )
             cells = []
             for i_cls in range(len(classes)):
-                cells.append(f"{lam[i_label, i_run, i_cls]:.2f}")
-                cells.append(fmt(*rate_quantiles[i_label, i_run, i_cls, :]))
+                cells += cells_for(
+                    lam[i_label, i_run],
+                    rate_quantiles[i_label, i_run],
+                    zero_prob[i_label, i_run] if include_zero_probability else None,
+                    i_cls,
+                )
             data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
         # thin \hline between runs, nothing after last
         if i_run < len(runs) - 1:
             data_rows.append(hline)
+
+    if aggregate is not None:
+        data_rows.append(xhline)
+        for i_label, label in enumerate(row_labels):
+            run_cell = (
+                rf"\multirow{{2}}{{*}}{{\textbf{{{aggregate_label}}}}}"
+                if i_label == 0
+                else ""
+            )
+            cells = []
+            for i_cls in range(len(classes)):
+                cells += cells_for(
+                    aggregate["lam"][i_label],
+                    aggregate["quantiles"][i_label],
+                    (
+                        aggregate["zero_prob"][i_label]
+                        if include_zero_probability
+                        else None
+                    ),
+                    i_cls,
+                )
+            data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
 
     # tabular only — KaTeX-compatible for Jupyter display
     tabular = "\n".join(
@@ -249,6 +351,28 @@ def summarize_selected_detected_events(
     # Caption with mission and skygrid
     skygrid_str = rf" using the {skygrid_label} strategy," if skygrid_label else ","
 
+    aggregate_caption = (
+        (
+            rf" The {aggregate_label} block combines "
+            + ", ".join(aggregate_runs)
+            + r". The merger-rate prior is a single astrophysical rate shared by"
+            r" those runs, so its uncertainty is fully correlated across them:"
+            r" the aggregate adds the expected counts, $\lambda_\mathrm{tot} ="
+            r" \sum_r \lambda_r$, and its interval is re-derived from"
+            r" $\ln \lambda_\mathrm{tot}$ at the same prior width. Medians are not"
+            r" additive and must not be summed."
+        )
+        if aggregate is not None
+        else ""
+    )
+    zero_caption = (
+        r" $P(N{=}0)$ is the probability of observing no event at all, from the"
+        r" Poisson-lognormal CDF at zero; it follows neither from $\lambda$ nor"
+        r" from the median."
+        if include_zero_probability
+        else ""
+    )
+
     latex_table = "\n".join(
         [
             r"\begin{table}",
@@ -256,7 +380,7 @@ def summarize_selected_detected_events(
             r"\setlength{\tabcolsep}{0.3cm}",
             r"\centering",
             rf"\caption{{Expected number of selected and detected events for {mission.upper()}"
-            rf"{skygrid_str} per observing run and source class."
+            rf"{skygrid_str} per observing run and source class.{aggregate_caption}{zero_caption}"
             r" BNS: both components $\leq 3\,M_\odot$;"
             r" NSBH: one component $> 3\,M_\odot$;"
             r" All: BNS $+$ NSBH combined."
@@ -297,6 +421,14 @@ def summarize_selected_detected_events(
         headers = ["Run", ""]
         for cls in classes:
             headers += [f"{cls} lambda", f"{cls} 90% CI"]
+            if include_zero_probability:
+                headers.append(f"{cls} P(N=0)")
+
+        def plain_cells_for(lam_row, quantile_row, zero_row, i_cls):
+            out = [f"{lam_row[i_cls]:.2f}", fmt_plain(*quantile_row[i_cls, :])]
+            if include_zero_probability:
+                out.append(f"{100 * zero_row[i_cls]:.1f}%")
+            return out
 
         rst_rows = []
         for i_run, run in enumerate(runs):
@@ -304,8 +436,29 @@ def summarize_selected_detected_events(
                 run_cell = run if i_label == 0 else ""
                 cells = []
                 for i_cls in range(len(classes)):
-                    cells.append(f"{lam[i_label, i_run, i_cls]:.2f}")
-                    cells.append(fmt_plain(*rate_quantiles[i_label, i_run, i_cls, :]))
+                    cells += plain_cells_for(
+                        lam[i_label, i_run],
+                        rate_quantiles[i_label, i_run],
+                        zero_prob[i_label, i_run] if include_zero_probability else None,
+                        i_cls,
+                    )
+                rst_rows.append([run_cell, label] + cells)
+
+        if aggregate is not None:
+            for i_label, label in enumerate(row_labels):
+                run_cell = aggregate_label if i_label == 0 else ""
+                cells = []
+                for i_cls in range(len(classes)):
+                    cells += plain_cells_for(
+                        aggregate["lam"][i_label],
+                        aggregate["quantiles"][i_label],
+                        (
+                            aggregate["zero_prob"][i_label]
+                            if include_zero_probability
+                            else None
+                        ),
+                        i_cls,
+                    )
                 rst_rows.append([run_cell, label] + cells)
 
         print(make_rst_table(headers, rst_rows))
@@ -313,6 +466,8 @@ def summarize_selected_detected_events(
     if output_file is not None:
         from pathlib import Path
 
-        Path(output_file).write_text(latex_table)
+        # Trailing newline: without it the end-of-file-fixer pre-commit hook
+        # rewrites the file on every regeneration, showing a spurious diff.
+        Path(output_file).write_text(latex_table + "\n")
 
     return latex_table
