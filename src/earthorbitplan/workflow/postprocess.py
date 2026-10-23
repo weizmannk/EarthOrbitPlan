@@ -22,7 +22,6 @@ from ligo.skymap.util.progress import progress_map
 
 from earthorbitplan.probability.detection_probability import (
     get_detection_probability_known_position,
-    get_detection_probability_two_visits,
     observed_fields,
 )
 
@@ -96,8 +95,7 @@ def process(row, sched_path):
     Returns
     -------
     tuple
-        detection_probability_known_position,
-        detection_probability_two_visits, objective_value, best_bound,
+        detection_probability_known_position, objective_value, best_bound,
         solution_status, solution_time, num_fields, field_ids,
         cutoff, nside, mission, snr, deadline, delay,
         exptime_min, exptime_max, bandpass,
@@ -112,10 +110,22 @@ def process(row, sched_path):
         logging.warning(f"Missing schedule file: {plan_file}")
         # field_ids has to stay an array even when unknown: a None cannot be
         # written to the variable-length ECSV column.
-        return (None,) * 7 + (np.array([], dtype=int),) + (None,) * 14
+        return (None,) * 6 + (np.array([], dtype=int),) + (None,) * 14
 
     plan = QTable.read(plan_file)
-    plan_args = plan.meta["args"]
+    # plan_args = plan.meta["args"]
+    
+    plan_args = dict(plan.meta["args"])
+    # m4opt >= 3.0 stores bandpass and exptime_min as one entry per visit.
+    for key in ("bandpass", "exptime_min"):
+        value = plan_args.get(key)
+        if isinstance(value, list):
+            if len({str(v) for v in value}) > 1:
+                raise NotImplementedError(f"several bandpasses: {key} = {value}")
+            plan_args[key] = value[0] if value else None
+    
+    
+    
     plan_args.pop("skymap", None)
 
     observations = observed_fields(plan)
@@ -133,7 +143,6 @@ def process(row, sched_path):
 
     return (
         get_detection_probability_known_position(plan, row, plan_args),
-        get_detection_probability_two_visits(plan, row, plan_args),
         plan.meta.get("objective_value"),
         plan.meta.get("best_bound"),
         plan.meta.get("solution_status"),
@@ -180,7 +189,6 @@ def main():
     rows = [table[i : i + 1][0] for i in range(len(table))]
     (
         table["detection_probability_known_position"],
-        table["detection_probability_two_visits"],
         table["objective_value"],
         table["best_bound"],
         table["solution_status"],
