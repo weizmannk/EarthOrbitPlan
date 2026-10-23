@@ -33,14 +33,13 @@ import warnings
 import numpy as np
 import synphot
 from astropy import units as u
-from astropy.coordinates import ICRS, SkyCoord
+from astropy.coordinates import ICRS
 from astropy.cosmology import Planck15 as cosmo
 from astropy.cosmology import z_at_value
 from astropy.table import QTable
 from astropy.time import Time
 from astropy.visualization import quantity_support
 from astropy_healpix import HEALPix
-from m4opt import fov as m4opt_fov
 from m4opt import missions
 from m4opt.synphot import observing
 from matplotlib import colors as mcolors
@@ -54,24 +53,57 @@ from tqdm.auto import tqdm
 from earthorbitplan.utils.table import get_skygrid
 
 
-def fov_area(mission, nside=2048):
-    """Instantaneous field-of-view area of a mission.
+def fov_area(mission):
+    """Instantaneous field-of-view area of a mission, analytically.
 
-    A single rectangular footprint (ULTRASAT) carries its own dimensions, and
-    the exact product is used. A mosaic of polygons (UVEX: nine detector
-    tiles) exposes no such shortcut -- ``mission.fov`` is then a ``Regions``
-    collection with no ``width`` -- so the footprint is rasterised onto
-    HEALPix and the covered pixels are counted. At nside=2048 that recovers
-    the published areas to better than 2%.
+    ``m4opt-paper`` computes this as ``fov.width * fov.height``, which assumes
+    a single rectangular footprint. That holds for ULTRASAT and is used
+    unchanged here. UVEX, however, exposes ``mission.fov`` as a ``Regions``
+    collection of nine detector polygons with no ``width``, so the areas of
+    the tiles are summed instead.
+
+    The tiles are summed rather than unioned because they do not overlap:
+    the sum, 12.3604 deg^2, agrees with the HEALPix rasterisation of the same
+    footprint to 0.02% once that is converged (12.3628 deg^2 at nside=8192).
+    Rasterising is what this function used to do, and at a usable resolution
+    it overestimated by about 1%, since boundary pixels count whole.
+
+    Each polygon is projected on the tangent plane at its own declination and
+    closed with the shoelace formula. Over a field a few degrees across the
+    curvature correction is of order 1e-4 and negligible here.
+
+    Note that the published UVEX figure of 12.25 deg^2 is the nominal
+    3.5 x 3.5 deg specification, not the active area of the nine chips.
+
+    Parameters
+    ----------
+    mission : m4opt.missions.Mission
+        Mission whose ``fov`` is read.
+
+    Returns
+    -------
+    astropy.units.Quantity
+        Field-of-view area, in square degrees.
     """
     region = mission.fov
     width = getattr(region, "width", None)
     if width is not None:
         return (width * region.height).to(u.deg**2)
 
-    hpx = HEALPix(nside=nside, frame=ICRS())
-    pixels = m4opt_fov.footprint_healpix(hpx, region, SkyCoord(0 * u.deg, 0 * u.deg))
-    return (len(np.unique(pixels)) * hpx.pixel_area).to(u.deg**2)
+    area = 0.0
+    for polygon in region:
+        vertices = polygon.vertices
+        # Tangent plane: compress right ascension by cos(dec) so that the
+        # shoelace formula measures a solid angle rather than a coordinate
+        # area.
+        x = ((vertices.ra.deg + 180) % 360 - 180) * np.cos(
+            np.radians(vertices.dec.deg)
+        )
+        y = vertices.dec.deg
+        area += 0.5 * abs(
+            np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))
+        )
+    return area * u.deg**2
 
 
 # Suppress known warnings from astropy and lal
@@ -379,7 +411,22 @@ def plot_area_distance(events_file, outdir="output", show=False):
             f"ratio = {ratio:.2f} x full sky area"
         )
 
-    # Maximum distance: beyond this, sources are too faint to detect
+    # Maximum distance: beyond this, fewer than `cutoff` of kilonovae would be
+    # bright enough, so no plan can reach the objective threshold.
+    #
+    # Inverting the distance modulus, m - M = 5 log10(d / 10 pc):
+    #
+    #     d / Mpc = 10 ** (0.2 * (m_lim - M - 25))
+    #
+    # M is not the mean absolute magnitude but its bright tail,
+    # M = absmag_mean - Phi^-1(1 - cutoff) * absmag_stdev. With cutoff = 0.1
+    # that is the 10th percentile, M = -16 - 1.28 * 1.3 = -17.67: the distance
+    # at which exactly `cutoff` of the kilonova population still clears the
+    # limit, which is the same threshold the scheduler applies to P_obj.
+    #
+    # m_lim is the best case: the whole window on a single field, at the most
+    # favourable sky position and orbital phase (see compute_theoretical_limmag).
+    # The boundary is therefore a ceiling no plan can beat, not a prediction.
     max_distance = (
         10
         ** (
@@ -449,7 +496,12 @@ def plot_area_distance(events_file, outdir="output", show=False):
         xlim_min, xlim_max = 40, 4000  # Distance range in Mpc
         crossover_val = crossover_distance.to_value(u.Mpc)
         max_dist_val = max_distance.to_value(u.Mpc)
-        max_area_display_val = full_sky_area.to_value(u.deg**2)
+        # The ceiling of the boundary is whichever is smaller: the sky, or
+        # what the mission can actually tile in the window. Hardcoding the
+        # full sky here drew UVEX as if it could cover any localization,
+        # and contradicted the crossover distance, which already uses
+        # max_area_display.
+        max_area_display_val = max_area_display.to_value(u.deg**2)
         min_area_val = min_area.to_value(u.deg**2)
 
         # Dynamic y-axis limit based on actual data

@@ -14,6 +14,7 @@ def summarize_selected_detected_events(
     merger_rate_hi,
     quantiles=(0.5, 0.05, 0.95),
     run_duration=1.0,
+    detection_column="detection_probability_known_position",
     poisson_lognormal_rate_quantiles=None,
     aggregate_runs=None,
     aggregate_label="O5 total",
@@ -50,6 +51,11 @@ def summarize_selected_detected_events(
         rather than inheriting a silent default.
     run_duration : float, optional
         Duration of the observing run in years (default: 1.5).
+    detection_column : str, optional
+        Column whose sum over the selected events gives the detected counts.
+        The default is the single-deepest-field metric. Pass
+        ``"detection_probability_two_visits"`` for the stricter criterion that
+        requires the source above threshold in every visit.
     poisson_lognormal_rate_quantiles : callable
         Function to calculate Poisson-lognormal rate quantiles.
     aggregate_runs : sequence of str, optional
@@ -155,7 +161,7 @@ def summarize_selected_detected_events(
         mu_run = []
         for table_class in event_tables_by_run_and_class[run].values():
             n_selected = len(table_class)
-            n_detected = np.sum(table_class["detection_probability_known_position"])
+            n_detected = np.sum(table_class[detection_column])
             mu_run.append(
                 log_target_rate_mu
                 + np.log(run_duration)
@@ -241,8 +247,9 @@ def summarize_selected_detected_events(
 
     classes = list(is_class_by_category.keys())  # ["BNS", "NSBH", "All"]
     row_labels = ["Selected", "Detected"]
-    xhline = r"\Xhline{3\arrayrulewidth}"
-    hline = r"\hline"
+    toprule = r"\toprule"
+    midrule = r"\midrule"
+    bottomrule = r"\bottomrule"
 
     def interval_parts(mid, lo, hi):
         """Rounded (median, minus, plus), or None if every percentile is 0."""
@@ -275,85 +282,96 @@ def summarize_selected_detected_events(
         sub_headers.append(r"$P(N{=}0)$")
     n_sub = len(sub_headers)
 
-    col_spec = "ll" + "c" * n_sub * len(classes)
+    # Layout: one row per (run, source class); Selected and Detected are
+    # column groups. booktabs rules, no vertical lines.
+    col_spec = "ll" + "c" * n_sub * len(row_labels)
+
+    def cmidrules():
+        r"""One \cmidrule under each column group."""
+        parts = []
+        for i_group in range(len(row_labels)):
+            first = 3 + i_group * n_sub
+            parts.append(rf"\cmidrule(lr){{{first}-{first + n_sub - 1}}}")
+        return " ".join(parts)
+
     header = "\n".join(
         [
-            r"\textbf{Run} & & "
+            " & & "
             + " & ".join(
-                rf"\multicolumn{{{n_sub}}}{{c}}{{\textbf{{{cls}}}}}" for cls in classes
+                rf"\multicolumn{{{n_sub}}}{{c}}{{{label}}}" for label in row_labels
             )
             + r" \\",
-            " & & " + " & ".join([" & ".join(sub_headers)] * len(classes)) + r" \\",
+            cmidrules(),
+            "Run & Source & "
+            + " & ".join([" & ".join(sub_headers)] * len(row_labels))
+            + r" \\",
         ]
     )
 
-    def cells_for(lam_row, quantile_row, zero_row, i_cls):
-        """The sub-columns of one class, in header order."""
-        out = [f"{lam_row[i_cls]:.2f}", fmt(*quantile_row[i_cls, :])]
-        if include_zero_probability:
-            out.append(rf"{100 * zero_row[i_cls]:.1f}\%")
+    def cells_for(i_run_lam, i_run_quantiles, i_run_zero, i_cls):
+        """The sub-columns of one (run, class) row, across the column groups."""
+        out = []
+        for i_label in range(len(row_labels)):
+            out.append(f"{i_run_lam[i_label][i_cls]:.2f}")
+            out.append(fmt(*i_run_quantiles[i_label][i_cls, :]))
+            if include_zero_probability:
+                out.append(rf"{100 * i_run_zero[i_label][i_cls]:.1f}\%")
         return out
+
+    def block(name, lam_block, quantile_block, zero_block):
+        """The rows of one run, with the name spanning the source classes."""
+        rows = []
+        width = max(len(cls) for cls in classes)
+        for i_cls, cls in enumerate(classes):
+            if i_cls == 0:
+                label_cell = rf"\multirow{{{len(classes)}}}{{*}}{{{name}}}"
+            else:
+                label_cell = " " * len(rf"\multirow{{{len(classes)}}}{{*}}{{{name}}}")
+            cells = cells_for(lam_block, quantile_block, zero_block, i_cls)
+            rows.append(
+                f"{label_cell} & {cls.ljust(width)} & " + " & ".join(cells) + r" \\"
+            )
+        return rows
 
     data_rows = []
     for i_run, run in enumerate(runs):
-        for i_label, label in enumerate(row_labels):
-            # \multirow on first sub-row only; blank on second
-            run_cell = (
-                rf"\multirow{{2}}{{*}}{{\textbf{{{run}}}}}" if i_label == 0 else ""
-            )
-            cells = []
-            for i_cls in range(len(classes)):
-                cells += cells_for(
-                    lam[i_label, i_run],
-                    rate_quantiles[i_label, i_run],
-                    zero_prob[i_label, i_run] if include_zero_probability else None,
-                    i_cls,
-                )
-            data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
-        # thin \hline between runs, nothing after last
-        if i_run < len(runs) - 1:
-            data_rows.append(hline)
+        if i_run:
+            data_rows.append(midrule)
+        data_rows += block(
+            run,
+            lam[:, i_run],
+            rate_quantiles[:, i_run],
+            zero_prob[:, i_run] if include_zero_probability else None,
+        )
 
     if aggregate is not None:
-        data_rows.append(xhline)
-        for i_label, label in enumerate(row_labels):
-            run_cell = (
-                rf"\multirow{{2}}{{*}}{{\textbf{{{aggregate_label}}}}}"
-                if i_label == 0
-                else ""
-            )
-            cells = []
-            for i_cls in range(len(classes)):
-                cells += cells_for(
-                    aggregate["lam"][i_label],
-                    aggregate["quantiles"][i_label],
-                    (
-                        aggregate["zero_prob"][i_label]
-                        if include_zero_probability
-                        else None
-                    ),
-                    i_cls,
-                )
-            data_rows.append(f"{run_cell} & {label} & " + " & ".join(cells) + r" \\")
+        data_rows.append(midrule)
+        data_rows += block(
+            aggregate_label,
+            aggregate["lam"],
+            aggregate["quantiles"],
+            aggregate["zero_prob"],
+        )
 
     # tabular only — KaTeX-compatible for Jupyter display
     tabular = "\n".join(
         [
             rf"\begin{{tabular}}{{{col_spec}}}",
-            xhline,
+            toprule,
             header,
-            xhline,
+            midrule,
             *data_rows,
-            xhline,
+            bottomrule,
             r"\end{tabular}",
         ]
     )
     # Caption with mission and skygrid
-    skygrid_str = rf" using the {skygrid_label} strategy," if skygrid_label else ","
+    skygrid_str = rf" with the {skygrid_label} grid." if skygrid_label else "."
+    duration_str = "year" if run_duration == 1 else rf"{run_duration:g} years"
 
     aggregate_caption = (
         (
-            rf" The {aggregate_label} block combines "
+            rf" The {aggregate_label} rows combine "
             + ", ".join(aggregate_runs)
             + r". The merger-rate prior is a single astrophysical rate shared by"
             r" those runs, so its uncertainty is fully correlated across them:"
@@ -375,19 +393,21 @@ def summarize_selected_detected_events(
 
     latex_table = "\n".join(
         [
-            r"\begin{table}",
-            r"\renewcommand\arraystretch{1.3}",
-            r"\setlength{\tabcolsep}{0.3cm}",
+            r"\begin{table}[!htb]",
             r"\centering",
-            rf"\caption{{Expected number of selected and detected events for {mission.upper()}"
-            rf"{skygrid_str} per observing run and source class.{aggregate_caption}{zero_caption}"
-            r" BNS: both components $\leq 3\,M_\odot$;"
-            r" NSBH: one component $> 3\,M_\odot$;"
-            r" All: BNS $+$ NSBH combined."
-            r" $\lambda = \mathcal{R}_{50}\,T\,N / \mathcal{R}_{\mathrm{sim}}$ is the expected count at the fiducial (median) merger rate. The interval"
-            r" is the median and 90\% credible range of the Poisson-lognormal predictive distribution, which marginalises over the rate prior; its"
-            r" mean is $\lambda e^{\sigma^2/2}$, not $\lambda$. Entries marked $<1$ have every percentile below 0.5, where only $\lambda$ discriminates.}",
-            rf"\label{{tab:{label_stem}-selected-detected-{run_duration}yr}}",
+            r"\renewcommand\arraystretch{1.15}",
+            r"\setlength{\tabcolsep}{0.22cm}",
+            rf"\caption{{Expected number of GW events per {duration_str} for"
+            rf" {mission.upper()}{skygrid_str}"
+            rf" \emph{{Selected}}: events for which the scheduler finds a plan with"
+            rf" $P_\mathrm{{obj}} \geq {cutoff:g}$."
+            r" \emph{Detected}: expected number of kilonovae recovered, i.e.\ the sum"
+            r" of $P_\mathrm{det}^\mathrm{known}$ over the selected events."
+            r" $\lambda$ is the expected count at the median merger rate."
+            r" The range is the 90\% credible interval, which includes both the"
+            rf" merger-rate uncertainty and Poisson fluctuations.{aggregate_caption}"
+            rf"{zero_caption}}}",
+            rf"\label{{tab:{label_stem}-selected-detected-{run_duration:g}yr}}",
             tabular,
             r"\end{table}",
         ]
@@ -418,48 +438,45 @@ def summarize_selected_detected_events(
                 lines.append(sep())
             return "\n".join(lines)
 
-        headers = ["Run", ""]
-        for cls in classes:
-            headers += [f"{cls} lambda", f"{cls} 90% CI"]
+        headers = ["Run", "Source"]
+        for label in row_labels:
+            headers += [f"{label} lambda", f"{label} 90% CI"]
             if include_zero_probability:
-                headers.append(f"{cls} P(N=0)")
+                headers.append(f"{label} P(N=0)")
 
-        def plain_cells_for(lam_row, quantile_row, zero_row, i_cls):
-            out = [f"{lam_row[i_cls]:.2f}", fmt_plain(*quantile_row[i_cls, :])]
-            if include_zero_probability:
-                out.append(f"{100 * zero_row[i_cls]:.1f}%")
+        def plain_cells_for(lam_block, quantile_block, zero_block, i_cls):
+            out = []
+            for i_label in range(len(row_labels)):
+                out.append(f"{lam_block[i_label][i_cls]:.2f}")
+                out.append(fmt_plain(*quantile_block[i_label][i_cls, :]))
+                if include_zero_probability:
+                    out.append(f"{100 * zero_block[i_label][i_cls]:.1f}%")
             return out
+
+        def plain_block(name, lam_block, quantile_block, zero_block):
+            rows = []
+            for i_cls, cls in enumerate(classes):
+                rows.append(
+                    [name if i_cls == 0 else "", cls]
+                    + plain_cells_for(lam_block, quantile_block, zero_block, i_cls)
+                )
+            return rows
 
         rst_rows = []
         for i_run, run in enumerate(runs):
-            for i_label, label in enumerate(row_labels):
-                run_cell = run if i_label == 0 else ""
-                cells = []
-                for i_cls in range(len(classes)):
-                    cells += plain_cells_for(
-                        lam[i_label, i_run],
-                        rate_quantiles[i_label, i_run],
-                        zero_prob[i_label, i_run] if include_zero_probability else None,
-                        i_cls,
-                    )
-                rst_rows.append([run_cell, label] + cells)
-
+            rst_rows += plain_block(
+                run,
+                lam[:, i_run],
+                rate_quantiles[:, i_run],
+                zero_prob[:, i_run] if include_zero_probability else None,
+            )
         if aggregate is not None:
-            for i_label, label in enumerate(row_labels):
-                run_cell = aggregate_label if i_label == 0 else ""
-                cells = []
-                for i_cls in range(len(classes)):
-                    cells += plain_cells_for(
-                        aggregate["lam"][i_label],
-                        aggregate["quantiles"][i_label],
-                        (
-                            aggregate["zero_prob"][i_label]
-                            if include_zero_probability
-                            else None
-                        ),
-                        i_cls,
-                    )
-                rst_rows.append([run_cell, label] + cells)
+            rst_rows += plain_block(
+                aggregate_label,
+                aggregate["lam"],
+                aggregate["quantiles"],
+                aggregate["zero_prob"],
+            )
 
         print(make_rst_table(headers, rst_rows))
 
